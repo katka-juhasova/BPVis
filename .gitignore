@@ -1,4 +1,6 @@
-data/*
-stats.py
+.idea
+src/__pycache__/
+data/
+modules/
 src/tester.py
-
+src/image.png

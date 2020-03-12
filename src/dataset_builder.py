@@ -1,5 +1,5 @@
 import os
-from module_handler import ModuleHandler
+from src.module_handler import ModuleHandler
 from console_progressbar import ProgressBar
 
 
@@ -15,7 +15,8 @@ def main():
             if '.json' in file:
                 files.append(os.path.join(r, file))
 
-    pb = ProgressBar(total=len(files), prefix='0 files', suffix='{} files'.format(len(files)),
+    pb = ProgressBar(total=len(files), prefix='0 files',
+                     suffix='{} files'.format(len(files)),
                      decimals=2, length=50, fill='X', zfill='-')
     progress = 0
 

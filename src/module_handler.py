@@ -10,18 +10,19 @@ PATH_CONTEXT = List[NODE or PATH]
 
 
 class ModuleHandler:
-    def __init__(self, file_path: str, json_dict=None):
+    def __init__(self, path: str, json_dict=None):
         if json_dict is not None:
             self.data = json_dict
         else:
-            with open(file_path) as f:
+            with open(path) as f:
                 self.data = json.load(f)
 
         self.tree = dict()
         self.__build_tree()
 
     '''
-    build tree representation of AST in dictionary without all the additional info from AST
+    build tree representation of AST in dictionary 
+    without all the additional info from AST
     AST tree in .json file would look something like this:
         tree = {0: [1, 3, 4],
                 1: [2],
@@ -29,7 +30,8 @@ class ModuleHandler:
                 3: [],
                 4: [5],
                 5: []}
-    but as we need to find path from the leaves to the root tree looks like this:
+    but as we need to find path from the leaves to the root
+    tree looks like this:
         tree = {0: [1, 3, 4],
             1: [0, 2],
             2: [1],
@@ -40,8 +42,12 @@ class ModuleHandler:
 
     def __add_children_to_tree(self, node: dict):
         for child in node['children']:
-            self.tree[str(node['master_index'])].append(str(child['master_index']))
-            self.tree[str(child['master_index'])] = list(str(node['master_index']))
+            self.tree[str(node['master_index'])].append(
+                str(child['master_index'])
+            )
+            self.tree[str(child['master_index'])] = list(
+                str(node['master_index'])
+            )
             if 'children' in child:
                 self.__add_children_to_tree(child)
 
@@ -50,7 +56,8 @@ class ModuleHandler:
 
         for node in self.data['nodes']:
             self.tree['0'].append(str(node['master_index']))
-            self.tree[str(node['master_index'])] = list('0')       # edge back to the root
+            # edge back to the root
+            self.tree[str(node['master_index'])] = list('0')
             if 'children' in node:
                 self.__add_children_to_tree(node)
 
@@ -59,7 +66,8 @@ class ModuleHandler:
 
         if 'children' in node:
             for child in node['children']:
-                nodes += [(str(child['master_index']), child['container'])] + self.__get_child_nodes(child)
+                nodes += [(str(child['master_index']),
+                           child['container'])] + self.__get_child_nodes(child)
 
         return nodes
 
@@ -67,7 +75,8 @@ class ModuleHandler:
     def get_all_nodes(self) -> List[NODE]:
         nodes = [('0', 'root')]
         for node in self.data['nodes']:
-            nodes += [(str(node['master_index']), node['container'])] + self.__get_child_nodes(node)
+            nodes += [(str(node['master_index']),
+                       node['container'])] + self.__get_child_nodes(node)
 
         return nodes
 
@@ -76,7 +85,8 @@ class ModuleHandler:
 
         for child in node['children']:
             if 'children' not in child:
-                terminals.append((str(child['master_index']), child['container']))
+                terminals.append((str(child['master_index']),
+                                  child['container']))
             else:
                 terminals += self.__get_child_terminals(child)
 
@@ -86,13 +96,15 @@ class ModuleHandler:
     def get_terminals(self) -> List[NODE]:
         terminals = list()
 
-        # there are some cases when root has only one child and in that case root is also terminal
+        # there are some cases when root has only one child
+        # in that case root is also terminal
         if len(self.tree['0']) == 1:
             terminals.append(('0', 'root'))
 
         for node in self.data['nodes']:
             if 'children' not in node:
-                terminals.append((str(node['master_index']), node['container']))
+                terminals.append((str(node['master_index']),
+                                  node['container']))
             else:
                 terminals += self.__get_child_terminals(node)
 
