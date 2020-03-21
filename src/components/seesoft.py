@@ -2,19 +2,10 @@ import json
 import chardet
 from PIL import Image
 from PIL import ImageDraw
+from src.constant import COLORS
 
 DEFAULT_BYTE_SIZE = 10
 DEFAULT_MARGIN_SIZE = 50
-
-# discuss proper color choice
-# I just played with this https://color.adobe.com/create/color-wheel
-COLORS = {'require': '#FFAD7A',
-          'variable': '#75EB87',
-          'function': '#9ECBFF',
-          'interface': '#E58DF0',
-          'other': '#FFEC91',
-          'comment': '#E0E0E0',
-          'empty': '#FFFFFF'}
 
 
 class SeeSoft:
@@ -45,7 +36,7 @@ class SeeSoft:
                 for child in node['children']:
                     self.__add_color(child)
 
-    def __build_byte_line(self):
+    def __build_byte_table(self):
         # assign container to each character form source code
         for node in self.data['nodes']:
             self.__add_color(node)
@@ -142,7 +133,7 @@ class SeeSoft:
         byte_size = byte_size or DEFAULT_BYTE_SIZE
         margin_size = margin_size or DEFAULT_MARGIN_SIZE
 
-        self.__build_byte_line()
+        self.__build_byte_table()
 
         width = (self.__max_line() * byte_size) + 2 * margin_size
         height = (self.__lines_count() * byte_size) + 2 * margin_size
