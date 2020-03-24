@@ -3,10 +3,7 @@ from src.constant import COLUMNS
 
 
 def blank_column(columns: str):
-    return html.Div(
-        children='x',
-        style={
-            'color': 'white'
-        },
+    return html.Pre(
+        children='',
         className=COLUMNS[columns]
     )

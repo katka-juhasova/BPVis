@@ -1,9 +1,9 @@
 import json
 import chardet
 from typing import List
-import dash_html_components as html
-from src.constant import COLUMNS
 from src.constant import COLORS
+from src.constant import COLUMNS
+import dash_html_components as html
 
 
 # read original lua source code
@@ -87,7 +87,7 @@ def _build_color_text_table(tag_table: List[dict]):
 
 # children may contain pure string element, html.Br() or html.Span element
 # with corresponding color background
-def view_code(path: str, columns: str):
+def code_view(dash_id: str, path: str, columns: str):
     tag_table = _build_tag_table(path)
     color_text_table = _build_color_text_table(tag_table)
 
@@ -110,6 +110,7 @@ def view_code(path: str, columns: str):
             )
 
     return html.Pre(
+        id=dash_id,
         children=pre_children,
         style={
             'background-color': "#E4E4E4",
