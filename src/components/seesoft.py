@@ -3,7 +3,6 @@ import chardet
 from PIL import Image
 from PIL import ImageDraw
 from src.constant import COLORS
-from src.constant import COLUMNS
 import plotly.graph_objects as go
 import base64
 import dash_core_components as dcc
@@ -12,7 +11,8 @@ import dash_core_components as dcc
 BYTE_WIDTH = 5
 BYTE_HEIGHT = 10
 MARGIN_SIZE = 20
-TOOLBOX_SIZE = 50
+MAX_VIEW_WIDTH = 200
+MAX_VIEW_HEIGHT = 780
 
 
 class SeeSoft:
@@ -26,10 +26,9 @@ class SeeSoft:
         self.byte_width = BYTE_WIDTH
         self.byte_height = BYTE_HEIGHT
         self.margin_size = MARGIN_SIZE
-        self.toolbox_size = 0
         self.comments = comments
         self.source_code = self.__read_source_code()
-        self.bytes = [dict() for _ in range(len(self.source_code))]
+        self.tag_table = [dict() for _ in range(len(self.source_code))]
 
     def __read_source_code(self) -> str:
         raw_data = open(self.data['path'], 'rb').read()
@@ -40,11 +39,13 @@ class SeeSoft:
 
         return raw_data.decode("utf-8")
 
+    # builds tag table so that every character from source file has color
+    # assigned according to the container from json file
     def __add_color(self, node: dict):
         position = node['position'] - 1
         for i in range(position, position + node['characters_count']):
-            self.bytes[i]['container'] = node['container']
-            self.bytes[i]['char'] = self.source_code[i]
+            self.tag_table[i]['container'] = node['container']
+            self.tag_table[i]['char'] = self.source_code[i]
 
             if 'children' in node:
                 for child in node['children']:
@@ -56,7 +57,7 @@ class SeeSoft:
             self.__add_color(node)
 
         # add None container to characters which don't belong anywhere
-        for i, byte in enumerate(self.bytes):
+        for i, byte in enumerate(self.tag_table):
             if not byte:
                 byte['container'] = None
                 byte['char'] = self.source_code[i]
@@ -65,56 +66,58 @@ class SeeSoft:
                 byte['container'] = None
 
         # remove '\r'
-        self.bytes = list(filter(lambda b: b['char'] != '\r', self.bytes))
+        self.tag_table = list(
+            filter(lambda b: b['char'] != '\r', self.tag_table)
+        )
 
         if self.comments:
             # add comments and other code segments which don't belong to any
             # container to 'comment' container
-            for byte in self.bytes:
+            for byte in self.tag_table:
                 if not byte['container'] and not byte['char'].isspace():
                     byte['container'] = 'comment'
 
             # make spaces in comments colorful instead of white
-            for i, byte in enumerate(self.bytes):
+            for i, byte in enumerate(self.tag_table):
                 if (
                         byte['char'] == ' '
                         and i - 1 >= 0
-                        and i + 1 < len(self.bytes)
-                        and self.bytes[i - 1]['container'] == 'comment'
-                        and self.bytes[i + 1]['container'] == 'comment'
+                        and i + 1 < len(self.tag_table)
+                        and self.tag_table[i - 1]['container'] == 'comment'
+                        and self.tag_table[i + 1]['container'] == 'comment'
                 ):
                     byte['container'] = 'comment'
 
         else:
             # delete comments and code segments without container
-            self.bytes = list(
+            self.tag_table = list(
                 filter(lambda b: b['container'] or b['char'] == '\n',
-                       self.bytes)
+                       self.tag_table)
             )
 
         # remove empty lines from te beginning of the file
-        while self.bytes[0]['char'].isspace():
-            del self.bytes[0]
+        while self.tag_table[0]['char'].isspace():
+            del self.tag_table[0]
 
         # handle white spaces in the beginning of the line
         # it's about keeping tabs white in the final image
-        for i, byte in enumerate(self.bytes):
+        for i, byte in enumerate(self.tag_table):
             if byte['char'] == '\n':
                 j = i + 1
 
-                while (j < len(self.bytes) and
-                       self.bytes[j]['char'].isspace()):
-                    self.bytes[j]['container'] = None
+                while (j < len(self.tag_table) and
+                       self.tag_table[j]['char'].isspace()):
+                    self.tag_table[j]['container'] = None
                     j += 1
 
         # reduce empty lines sequence to <= 2
         i = 0
-        while i < len(self.bytes) - 3:
-            if (self.bytes[i]['char'] == '\n'
-                    and self.bytes[i + 1]['char'] == '\n'
-                    and self.bytes[i + 2]['char'] == '\n'
-                    and self.bytes[i + 3]['char'] == '\n'):
-                del self.bytes[i]
+        while i < len(self.tag_table) - 3:
+            if (self.tag_table[i]['char'] == '\n'
+                    and self.tag_table[i + 1]['char'] == '\n'
+                    and self.tag_table[i + 2]['char'] == '\n'
+                    and self.tag_table[i + 3]['char'] == '\n'):
+                del self.tag_table[i]
             else:
                 i += 1
 
@@ -122,7 +125,7 @@ class SeeSoft:
         max_len = 0
         local_len = 0
 
-        for byte in self.bytes:
+        for byte in self.tag_table:
             if byte['char'] == '\n':
                 if local_len > max_len:
                     max_len = local_len
@@ -137,33 +140,32 @@ class SeeSoft:
     def __lines_count(self) -> int:
         count = 1
 
-        for byte in self.bytes:
+        for byte in self.tag_table:
             if byte['char'] == '\n':
                 count += 1
 
         return count
 
-    def draw(self, toolbox=False, byte_width=None, byte_height=None,
+    def draw(self, byte_width=None, byte_height=None,
              margin_size=None, img_path=None):
         self.byte_width = byte_width or BYTE_WIDTH
         self.byte_height = byte_height or BYTE_HEIGHT
         self.margin_size = margin_size or MARGIN_SIZE
-        self.toolbox_size = TOOLBOX_SIZE if toolbox else 0
         self.img_path = img_path or self.img_path
 
         self.__build_byte_table()
         self.img_width = ((self.__max_line() * self.byte_width)
                           + 2 * self.margin_size)
         self.img_height = ((self.__lines_count() * self.byte_height)
-                           + 2 * self.margin_size + self.toolbox_size)
+                           + 2 * self.margin_size)
 
         image = Image.new('RGB', (self.img_width, self.img_height),
-                          color='white')
+                          color=COLORS['empty'])
         draw = ImageDraw.Draw(image)
 
         row = 0
         column = 0
-        for byte in self.bytes:
+        for byte in self.tag_table:
 
             if byte['char'] == '\n':
                 row += 1
@@ -171,8 +173,7 @@ class SeeSoft:
             elif byte['char'] == '\t':
                 # when the character is '\t' just write rectangle of size 4
                 x = self.margin_size + column * self.byte_width
-                y = (self.toolbox_size + self.margin_size
-                     + row * self.byte_height)
+                y = self.margin_size + row * self.byte_height
 
                 draw.rectangle(
                     (x, y, x + 4 * self.byte_width, y + self.byte_height),
@@ -182,8 +183,7 @@ class SeeSoft:
                 column += 4
             else:
                 x = self.margin_size + column * self.byte_width
-                y = (self.toolbox_size + self.margin_size
-                     + row * self.byte_height)
+                y = self.margin_size + row * self.byte_height
 
                 draw.rectangle(
                     (x, y, x + self.byte_width, y + self.byte_height),
@@ -194,17 +194,14 @@ class SeeSoft:
 
         image.save(self.img_path)
 
-    def __add_traces(self, fig, scale_factor):
+    def __add_traces(self, fig):
         # note: first line from the file has the highest y value in the graph
-        row = (self.__lines_count()
-               - self.margin_size / self.byte_height
-               - self.toolbox_size / self.byte_height
-               + 1)
+        row = self.__lines_count() - self.margin_size / self.byte_height + 1
         column = 0
         x = list()
         y = list()
 
-        for byte in self.bytes:
+        for byte in self.tag_table:
 
             # when moving to the next line, add the accumulated trace to
             # the figure and clear the trace
@@ -231,18 +228,15 @@ class SeeSoft:
             elif byte['container'] is not None:
                 # add point representing character to the trace
                 x.append(
-                    (self.margin_size
-                     + column * self.byte_width
-                     + self.byte_width * 0.5
-                     ) * scale_factor
+                    self.margin_size
+                    + column * self.byte_width
+                    + self.byte_width * 0.5
                 )
 
                 y.append(
-                    (self.toolbox_size
-                     + self.margin_size
-                     + row * self.byte_height
-                     + self.byte_height * 0.5
-                     ) * scale_factor
+                    self.margin_size
+                    + row * self.byte_height
+                    + self.byte_height * 0.5
                 )
 
                 column += 1
@@ -257,76 +251,108 @@ class SeeSoft:
                 go.Scatter(
                     x=x,
                     y=y,
-                    mode="markers",
+                    mode='markers',
                     marker_opacity=0,
                     hoverinfo='none'
                 )
             )
 
+    # count sizes for the seesoft view and keep the ratio
+    def count_width_and_height(self, width, height, max_width, max_height):
+        max_width = max_width or MAX_VIEW_WIDTH
+        max_height = max_height or MAX_VIEW_HEIGHT
+
+        # if either value is string (e.g. '80vh'), no calculation is involved
+        # if both are set there's no need for any calculation
+        if type(width) is str or type(height) is str:
+            return width, height
+        if width and height:
+            return width, height
+        elif width and not height:
+            height = (width / self.img_width) * self.img_height
+        elif not width and height:
+            width = (height / self.img_height) * self.img_width
+        else:
+            width = min(self.img_width, max_width)
+            height = (width / self.img_width) * self.img_height
+            if height > max_height:
+                height = max_height
+                width = (height / self.img_height) * self.img_width
+
+        return width, height
+
     def get_figure(self):
         fig = go.Figure()
 
-        scale_factor = 0.5
-        with open(self.img_path, "rb") as img_file:
+        with open(self.img_path, 'rb') as img_file:
             encoded_string = base64.b64encode(img_file.read()).decode()
-        encoded_image = "data:image/png;base64," + encoded_string
+        encoded_image = 'data:image/png;base64,' + encoded_string
 
         # add invisible scatter trace
         fig.add_trace(
             go.Scatter(
-                x=[0, self.img_width * scale_factor],
-                y=[0, self.img_height * scale_factor],
-                mode="markers",
-                marker_opacity=0
+                x=[0, self.img_width],
+                y=[0, self.img_height],
+                mode='markers',
+                marker_opacity=0,
+                hoverinfo='none'
             )
         )
 
         # configure axes
         fig.update_xaxes(
             visible=False,
-            range=[0, self.img_width * scale_factor],
+            range=[0, self.img_width],
             fixedrange=True
         )
 
         fig.update_yaxes(
             visible=False,
-            range=[0, self.img_height * scale_factor],
+            range=[0, self.img_height],
             fixedrange=True,
             # ensure that the aspect ratio stays constant
-            scaleanchor="x"
+            scaleanchor='x',
+            scaleratio=1
         )
 
         # add image
         fig.add_layout_image(
             dict(
                 x=0,
-                sizex=self.img_width * scale_factor,
-                y=self.img_height * scale_factor,
-                sizey=self.img_height * scale_factor,
-                xref="x",
-                yref="y",
-                opacity=1.0,
-                layer="below",
-                sizing="stretch",
+                sizex=self.img_width,
+                y=self.img_height,
+                sizey=self.img_height,
+                xref='x',
+                yref='y',
+                opacity=1,
+                layer='below',
+                sizing='stretch',
                 source=encoded_image
             )
         )
 
         # configure other layout
         fig.update_layout(
-            width=self.img_width * scale_factor,
-            height=self.img_height * scale_factor,
-            margin={"l": 0, "r": 0, "t": 0, "b": 0, 'autoexpand': False}
+            margin={'l': 0, 'r': 0, 't': 0, 'b': 0, 'autoexpand': False}
         )
 
-        self.__add_traces(fig, scale_factor)
-
+        self.__add_traces(fig)
         return fig
 
+    def view(self, dash_id: str, width=None, height=None,
+             max_width=None, max_height=None):
 
-def seesoft_view(dash_id: str, seesoft: SeeSoft, columns: str):
-    return dcc.Graph(
-        id=dash_id,
-        figure=seesoft.get_figure(),
-        className=COLUMNS[columns]
-    )
+        width, height = self.count_width_and_height(width, height,
+                                                    max_width, max_height)
+        return dcc.Graph(
+            id=dash_id,
+            figure=self.get_figure(),
+            config={
+                'displayModeBar': False
+            },
+            style={
+                'display': 'inline-block',
+                'width': width,
+                'height': height
+            }
+        )

@@ -1,3 +1,4 @@
+visdcc
 plotly
 dash
 chardet

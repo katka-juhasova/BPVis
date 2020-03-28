@@ -5,4 +5,4 @@ data/
 modules/
 src/tester.py
 src/dash_tester.py
-src/image.png
+src/assets/*.png
