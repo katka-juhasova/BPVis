@@ -4,5 +4,4 @@ src/components/__pycache__/
 data/
 modules/
 src/tester.py
-src/dash_tester.py
 src/assets/*.png

@@ -3,6 +3,7 @@ import chardet
 from typing import List
 from src.constant import COLORS
 from src.constant import COLUMNS
+from src.constant import LUA_LINE_HEIGHT
 import dash_html_components as html
 
 
@@ -48,10 +49,30 @@ class LuaCode:
                 byte['container'] = None
                 byte['char'] = self.source_code[i]
 
+            if byte['char'] == '\n':
+                byte['container'] = None
+
         # remove '\r'
         self.tag_table = list(
             filter(lambda b: b['char'] != '\r', self.tag_table)
         )
+
+        # add comments and other code segments which don't belong to any
+        # container to 'comment' container
+        for byte in self.tag_table:
+            if not byte['container'] and not byte['char'].isspace():
+                byte['container'] = 'comment'
+
+        # make spaces in comments colorful instead of white
+        for i, byte in enumerate(self.tag_table):
+            if (
+                    byte['char'] == ' '
+                    and i - 1 >= 0
+                    and i + 1 < len(self.tag_table)
+                    and self.tag_table[i - 1]['container'] == 'comment'
+                    and self.tag_table[i + 1]['container'] == 'comment'
+            ):
+                byte['container'] = 'comment'
 
         # handle white spaces in the beginning of the line
         # it's about keeping tabs white in the final image
@@ -84,8 +105,9 @@ class LuaCode:
                      'color': COLORS[self.tag_table[i]['container']]}
                 )
 
-    def get_children(self) -> List:
+    def get_children(self, parent_id: str) -> List:
         children = list()
+        child_id = 1
         for section in self.color_text_table:
             if section['text'] == '\n' and not section['color']:
                 children.append(html.Br())
@@ -96,12 +118,15 @@ class LuaCode:
             else:
                 children.append(
                     html.Span(
+                        id='{}{}'.format(parent_id, child_id),
                         children=section['text'],
                         style={
                             'background-color': section['color']
                         }
                     )
                 )
+
+                child_id += 1
 
         return children
 
@@ -110,7 +135,7 @@ class LuaCode:
     def view(self, dash_id: str, columns: str):
         self.__build_tag_table()
         self.__build_color_text_table()
-        children = self.get_children()
+        children = self.get_children(dash_id)
 
         return html.Pre(
             id=dash_id,
@@ -120,6 +145,7 @@ class LuaCode:
                 'font-family': 'Courier, monospace',
                 'color': 'black',
                 'font-size': '10px',
+                'line-height': LUA_LINE_HEIGHT,
                 'padding': '20px',
                 'max-height': '80vh',
                 'overflow': 'auto'

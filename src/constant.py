@@ -14,12 +14,15 @@ COLUMNS = {
 }
 
 # discuss proper color choice
-# I just played with https://color.adobe.com/create/color-wheel
+# I just played with https://color.adobe.com/create/color-wheel/
+# NOTE: in case of changes, colors have to be changed also in .css
 COLORS = {'require': '#FFAD7A',
           'variable': '#75EB87',
           'function': '#9ECBFF',
           'interface': '#E58DF0',
           'other': '#FFEC91',
-          'comment': '#E0E0E0',
+          'comment': '#E4E4E4',
           'empty': '#FFFFFF',
           None: None}
+
+LUA_LINE_HEIGHT = 15

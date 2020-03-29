@@ -15,6 +15,7 @@
 - Utilities
 - Clearing
 - Media Queries
+- Other
 */
 
 
@@ -393,3 +394,61 @@ there.
 
 /* Larger than Desktop HD */
 @media (min-width: 1200px) {}
+
+
+/* Other
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+@keyframes require_highlight {
+    from {background-color: #FF6347;}
+    to {background-color: #FFAD7A;}
+}
+
+.require_animate {
+  animation: require_highlight 1s;
+}
+
+@keyframes variable_highlight {
+  from {background-color: #FF6347;}
+  to {background-color: #75EB87;}
+}
+
+.variable_animate {
+  animation: variable_highlight 1s;
+}
+
+@keyframes function_highlight {
+  from {background-color: #FF6347;}
+  to {background-color: #9ECBFF;}
+}
+
+.function_animate {
+  animation: function_highlight 1s;
+}
+
+@keyframes interface_highlight {
+  /*from {background-color: #D400F0;}*/
+  from {background-color: #FF6347;}
+  to {background-color: #E58DF0;}
+}
+
+.interface_animate {
+  animation: interface_highlight 1s;
+}
+
+@keyframes other_highlight {
+  from {background-color: #FF6347;}
+  to {background-color: #FFEC91;}
+}
+
+.other_animate {
+  animation: other_highlight 1s;
+}
+
+@keyframes comment_highlight {
+  from {background-color: #FF6347;}
+  to {background-color: #E0E0E0;}
+}
+
+.comment_animate {
+  animation: comment_highlight 1s;
+}
