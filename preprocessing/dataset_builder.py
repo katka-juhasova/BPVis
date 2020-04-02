@@ -1,5 +1,5 @@
 import os
-from src.module_handler import ModuleHandler
+from preprocessing.module_handler import ModuleHandler
 from console_progressbar import ProgressBar
 
 

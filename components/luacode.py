@@ -1,9 +1,9 @@
 import json
 import chardet
 from typing import List
-from src.constant import COLORS
-from src.constant import COLUMNS
-from src.constant import LUA_LINE_HEIGHT
+from constant import COLORS
+from constant import COLUMNS
+from constant import LUA_LINE_HEIGHT
 import dash_html_components as html
 
 

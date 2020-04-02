@@ -1,8 +1,8 @@
-from src.components.luacode import LuaCode
 import os
 import dash
 import dash_html_components as html
-from src.components.seesoft import SeeSoft
+from components.luacode import LuaCode
+from components.seesoft import SeeSoft
 from dash.dependencies import Input, Output
 
 

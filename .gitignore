@@ -1,7 +1,6 @@
 .idea
-src/__pycache__/
-src/components/__pycache__/
+__pycache__/
+components/__pycache__/
 data/
 modules/
-src/tester.py
-src/assets/*.png
+assets/*.png

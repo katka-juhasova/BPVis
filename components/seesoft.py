@@ -2,8 +2,8 @@ import json
 import chardet
 from PIL import Image
 from PIL import ImageDraw
-from src.constant import COLORS
-from src.constant import LUA_LINE_HEIGHT
+from constant import COLORS
+from constant import LUA_LINE_HEIGHT
 import plotly.graph_objects as go
 import base64
 import dash_core_components as dcc
