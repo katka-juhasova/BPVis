@@ -18,6 +18,8 @@
 - Other
 */
 
+graph {}
+
 
 /* Grid
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
@@ -404,7 +406,7 @@ there.
 }
 
 .require_animate {
-  animation: require_highlight 1s;
+  animation: require_highlight 2s;
 }
 
 @keyframes variable_highlight {
@@ -413,7 +415,7 @@ there.
 }
 
 .variable_animate {
-  animation: variable_highlight 1s;
+  animation: variable_highlight 2s;
 }
 
 @keyframes function_highlight {
@@ -422,7 +424,7 @@ there.
 }
 
 .function_animate {
-  animation: function_highlight 1s;
+  animation: function_highlight 2s;
 }
 
 @keyframes interface_highlight {
@@ -432,7 +434,7 @@ there.
 }
 
 .interface_animate {
-  animation: interface_highlight 1s;
+  animation: interface_highlight 2s;
 }
 
 @keyframes other_highlight {
@@ -441,14 +443,14 @@ there.
 }
 
 .other_animate {
-  animation: other_highlight 1s;
+  animation: other_highlight 2s;
 }
 
 @keyframes comment_highlight {
   from {background-color: #FF6347;}
-  to {background-color: #E0E0E0;}
+  to {background-color: #E5E5E5;}
 }
 
 .comment_animate {
-  animation: comment_highlight 1s;
+  animation: comment_highlight 2s;
 }

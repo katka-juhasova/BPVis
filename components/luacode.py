@@ -24,7 +24,7 @@ class LuaCode:
         if chardet_result['encoding'] not in ['ascii', 'utf-8']:
             raw_data = raw_data.decode('iso-8859-1').encode('utf-8')
 
-        return raw_data.decode("utf-8")
+        return raw_data.decode('utf-8')
 
     # builds tag table so that every character from source file has color
     # assigned according to the container from json file
@@ -141,7 +141,7 @@ class LuaCode:
             id=dash_id,
             children=children,
             style={
-                'background-color': "#E4E4E4",
+                'background-color': COLORS['grey-background'],
                 'font-family': 'Courier, monospace',
                 'color': 'black',
                 'font-size': '10px',

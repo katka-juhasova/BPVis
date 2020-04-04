@@ -1,8 +1,10 @@
 import os
 import dash
 import dash_html_components as html
+import dash_core_components as dcc
 from components.luacode import LuaCode
 from components.seesoft import SeeSoft
+from components.scatterplot import ScatterPlot
 from dash.dependencies import Input, Output
 
 
@@ -16,7 +18,6 @@ for r, d, f in os.walk(path):
         if '.json' in file:
             files.append(os.path.join(r, file))
 
-
 seesoft_left = SeeSoft(files[1], comments=True)
 seesoft_left.draw(img_path='assets/image_left.png')
 
@@ -26,48 +27,76 @@ seesoft_right.draw(img_path='assets/image_right.png')
 luacode_left = LuaCode(files[1])
 luacode_right = LuaCode(files[0])
 
+scatterplot_left = ScatterPlot(files[1])
+scatterplot_right = ScatterPlot(files[1])
+
 # external_stylesheets = ['https://codepen.io/amyoshino/pen/jzXypZ.css']
 
 app = dash.Dash(__name__)
 
-app.layout = html.Div(
-    html.Div([
-        html.Div(
-            [
-                html.H1(children='Source code visualization',
-                        className='ten columns'),
-            ],
-            className="row"
-        ),
-        html.Div(id='hidden-div-left',
-                 style={'display': 'none'}),
-        html.Div(id='hidden-div-right',
-                 style={'display': 'none'}),
-        html.Div(
-            children=[
-                luacode_left.view(dash_id='lua-code-left', columns='4'),
-                html.Div(
-                    children=seesoft_left.view(dash_id='see-soft-left'),
-                    style={
-                        'display': 'flex',
-                        'justify-content': 'center'
-                    },
-                    className='two columns'
-                ),
-                html.Div(
-                    children=seesoft_right.view(dash_id='see-soft-right'),
-                    style={
-                        'display': 'flex',
-                        'justify-content': 'center',
-                    },
-                    className='two columns'
-                ),
-                luacode_right.view(dash_id='lua-code-right', columns='4'),
-            ],
-            className="row"
-        ),
-        html.Pre(id='click-data'),
-    ], className='ten columns offset-by-one')
+app.layout = html.Div([
+    dcc.Tabs(
+        children=[
+            dcc.Tab(
+                label='Source code visualization',
+                children=[
+                    html.Div(id='hidden-div-left',
+                             style={'display': 'none'}),
+                    html.Div(id='hidden-div-right',
+                             style={'display': 'none'}),
+                    html.Div(
+                        children=[
+                            luacode_left.view(dash_id='lua-code-left',
+                                              columns='4'),
+                            html.Div(
+                                children=seesoft_left.view(
+                                    dash_id='see-soft-left'),
+                                style={
+                                    'display': 'flex',
+                                    'justify-content': 'center'
+                                },
+                                className='two columns'
+                            ),
+                            html.Div(
+                                children=seesoft_right.view(
+                                    dash_id='see-soft-right'),
+                                style={
+                                    'display': 'flex',
+                                    'justify-content': 'center',
+                                },
+                                className='two columns'
+                            ),
+                            luacode_right.view(dash_id='lua-code-right',
+                                               columns='4'),
+                        ],
+                        style={'padding': '3vh'},
+                        className='row'
+                    )
+                ]
+            ),
+            dcc.Tab(
+                label='Input visualization',
+                children=[
+                    html.Div(
+                        children=[
+                            scatterplot_left.view(
+                                dash_id='scatter-plot-left',
+                                columns='6'),
+                            scatterplot_right.view(
+                                dash_id='scatter-plot-right',
+                                columns='6',
+                                show_legend=True,
+                                show_text=True)
+                        ],
+                        style={'padding': '3vh'},
+                        className='row'
+                    )
+                ]
+            )
+        ],
+        style={'font-size': '1.9em'}
+    )],
+    className='ten columns offset-by-one'
 )
 
 # only works properly when seesoft is drawn with comments
@@ -76,13 +105,20 @@ app.clientside_callback(
     '''
     function scroll_lua_code_left(clickData) {
         if (clickData) {
-            var element = document.getElementById("lua-code-left");
-            element.scrollTop = clickData.points[0].customdata;
-
+            var element = document.getElementById("lua-code-left");                    
             var element_text_id = "lua-code-left" + clickData.points[0].text;
             var element_text = document.getElementById(element_text_id);
             var color = element_text.style.backgroundColor;
+            var bounding = element.getBoundingClientRect();
+            var text_bounding = element_text.getBoundingClientRect();
             
+            // handle possible vertical scrolling
+            if (text_bounding.top < bounding.top || 
+                text_bounding.bottom > bounding.bottom) {
+                element.scrollTop = clickData.points[0].customdata;
+            }
+            
+            // handle highlighting
             if (color == "rgb(255, 173, 122)") {
                 element_text.classList.remove("require_animate");
                 void element_text.offsetWidth; 
@@ -108,7 +144,7 @@ app.clientside_callback(
                 void element_text.offsetWidth; 
                 element_text.classList.add("other_animate");
             }
-            else if (color == "rgb(228, 228, 228)") {
+            else {
                 element_text.classList.remove("comment_animate");
                 void element_text.offsetWidth; 
                 element_text.classList.add("comment_animate");
@@ -127,12 +163,19 @@ app.clientside_callback(
     function scroll_lua_code_right(clickData) {
         if (clickData) {
             var element = document.getElementById("lua-code-right");
-            element.scrollTop = clickData.points[0].customdata;
-
             var element_text_id = "lua-code-right" + clickData.points[0].text;
             var element_text = document.getElementById(element_text_id);
             var color = element_text.style.backgroundColor;
-
+            var bounding = element.getBoundingClientRect();
+            var text_bounding = element_text.getBoundingClientRect();
+            
+            // handle possible vertical scrolling
+            if (text_bounding.top < bounding.top || 
+                text_bounding.bottom > bounding.bottom) {
+                element.scrollTop = clickData.points[0].customdata;
+            }
+            
+            // handle highlighting
             if (color == "rgb(255, 173, 122)") {
                 element_text.classList.remove("require_animate");
                 void element_text.offsetWidth; 
@@ -158,7 +201,7 @@ app.clientside_callback(
                 void element_text.offsetWidth; 
                 element_text.classList.add("other_animate");
             }
-            else if (color == "rgb(228, 228, 228)") {
+            else {
                 element_text.classList.remove("comment_animate");
                 void element_text.offsetWidth; 
                 element_text.classList.add("comment_animate");
@@ -171,11 +214,8 @@ app.clientside_callback(
     [Input('see-soft-right', 'clickData')]
 )
 
-# @app.callback(
-#     Output('click-data', 'children'),
-#     [Input('see-soft-left', 'clickData')])
-# def print_stuff(clickData):
-#     return json.dumps(clickData, indent=2)
+# maybe lua code sections and seesoft interaction could be fixed so that
+# whole node text would be one section instead of one line or part of the line
 
 
 if __name__ == '__main__':
