@@ -364,8 +364,8 @@ class SeeSoft:
         return fig
 
     def view(self, dash_id: str, width=None, height=None):
-
         width, height = self.count_width_and_height(width, height)
+
         return dcc.Graph(
             id=dash_id,
             figure=self.get_figure(),

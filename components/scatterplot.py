@@ -80,7 +80,7 @@ class ScatterPlot:
                     y=self.traces[trace]['y'],
                     hovertext=self.traces[trace]['text'] if show_text else '',
                     mode='markers',
-                    opacity=0.7,
+                    opacity=0.8,
                     hoverinfo='x+y+text' if show_text else 'x+y',
                     marker={
                         'color': self.traces[trace]['color'],
@@ -104,21 +104,25 @@ class ScatterPlot:
 
         fig.update_layout(
             template='plotly_white',
+            title='Input nodes order',
             xaxis={
                 'title': 'Order in source code',
-                'tick0': 0,
-                'dtick': 10
+                'rangemode': 'tozero'
             },
             yaxis={'title': 'Container'},
+            margin={'l': 40, 'r': 40, 'b': 40, 't': 40},
             showlegend=show_legend
         )
 
         return fig
 
-    def view(self, dash_id: str, columns: str, show_legend=False,
-             show_text=False):
+    def view(self, dash_id: str, columns: str, height=None,
+             show_legend=False, show_text=False):
         return dcc.Graph(
             id=dash_id,
             figure=self.get_figure(show_legend, show_text),
+            style={
+                'height': height or '30vh'
+            },
             className=COLUMNS[columns]
         )

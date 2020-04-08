@@ -5,6 +5,7 @@ import dash_core_components as dcc
 from components.luacode import LuaCode
 from components.seesoft import SeeSoft
 from components.scatterplot import ScatterPlot
+from components.tree import Tree
 from dash.dependencies import Input, Output
 
 
@@ -18,17 +19,20 @@ for r, d, f in os.walk(path):
         if '.json' in file:
             files.append(os.path.join(r, file))
 
-seesoft_left = SeeSoft(files[1], comments=True)
+seesoft_left = SeeSoft(files[0], comments=True)
 seesoft_left.draw(img_path='assets/image_left.png')
 
-seesoft_right = SeeSoft(files[0], comments=True)
+seesoft_right = SeeSoft(files[1], comments=True)
 seesoft_right.draw(img_path='assets/image_right.png')
 
-luacode_left = LuaCode(files[1])
-luacode_right = LuaCode(files[0])
+luacode_left = LuaCode(files[0])
+luacode_right = LuaCode(files[1])
 
-scatterplot_left = ScatterPlot(files[1])
+scatterplot_left = ScatterPlot(files[0])
 scatterplot_right = ScatterPlot(files[1])
+
+tree_left = Tree(files[0])
+tree_right = Tree(files[1])
 
 # external_stylesheets = ['https://codepen.io/amyoshino/pen/jzXypZ.css']
 
@@ -89,6 +93,13 @@ app.layout = html.Div([
                                 show_text=True)
                         ],
                         style={'padding': '3vh'},
+                        className='row'
+                    ),
+                    html.Div(
+                        children=[
+                            tree_left.view(dash_id='tree-left', columns='6'),
+                            tree_right.view(dash_id='tree-right', columns='6')
+                        ],
                         className='row'
                     )
                 ]

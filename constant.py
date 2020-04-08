@@ -23,7 +23,8 @@ COLORS = {'require': '#FFAD7A',
           'other': '#FFEC91',
           'comment': '#E5E5E5',
           'empty': '#FFFFFF',
-          'grey-background': '#E5E5E5',
+          'code-background': '#E5E5E5',
+          'plot-line': '#E0E0E0',
           None: None}
 
 LUA_LINE_HEIGHT = 15

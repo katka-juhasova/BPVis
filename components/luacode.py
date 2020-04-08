@@ -141,7 +141,7 @@ class LuaCode:
             id=dash_id,
             children=children,
             style={
-                'background-color': COLORS['grey-background'],
+                'background-color': COLORS['code-background'],
                 'font-family': 'Courier, monospace',
                 'color': 'black',
                 'font-size': '10px',

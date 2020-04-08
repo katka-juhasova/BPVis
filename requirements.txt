@@ -1,3 +1,4 @@
+igraph
 plotly
 dash
 chardet
