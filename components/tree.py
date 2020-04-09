@@ -1,4 +1,6 @@
+import logging
 import json
+import urllib
 from igraph import Graph
 import plotly.graph_objects as go
 from constant import COLORS
@@ -6,10 +8,23 @@ from constant import COLUMNS
 import dash_core_components as dcc
 
 
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+log.addHandler(logging.StreamHandler())
+
+
 class Tree:
-    def __init__(self, path: str):
-        with open(path) as f:
-            self.data = json.load(f)
+    def __init__(self, path=None, url=None):
+        if all(arg is None for arg in {path, url}):
+            raise ValueError('Expected either path or url argument')
+
+        if path:
+            with open(path) as f:
+                self.data = json.load(f)
+        else:
+            log.debug('Loading data file from {}'.format(url))
+            with urllib.request.urlopen(url) as url_data:
+                self.data = json.loads(url_data.read().decode())
 
         # all edges between nodes
         self.edges = list()
@@ -23,7 +38,7 @@ class Tree:
         for child in node['children']:
             self.edges.append((node['master_index'], child['master_index']))
             self.colors[child['master_index']] = COLORS[child['container']]
-            self.text[child['master_index']] = '{}: {}'.format(
+            self.text[child['master_index']] = '({}, {})'.format(
                 child['master_index'], child['container'])
 
             if 'children' in child:
@@ -37,7 +52,7 @@ class Tree:
         for node in self.data['nodes']:
             self.edges.append((0, node['master_index']))
             self.colors[node['master_index']] = COLORS[node['container']]
-            self.text[node['master_index']] = '{}: {}'.format(
+            self.text[node['master_index']] = '({}, {})'.format(
                 node['master_index'], node['container'])
 
             # all other edges to child nodes

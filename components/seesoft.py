@@ -1,4 +1,6 @@
+import logging
 import json
+import urllib
 import chardet
 from PIL import Image
 from PIL import ImageDraw
@@ -8,17 +10,30 @@ import plotly.graph_objects as go
 import base64
 import dash_core_components as dcc
 
+
 BYTE_WIDTH = 5
 BYTE_HEIGHT = 10
 MARGIN_SIZE = 20
 MAX_VIEW_WIDTH = 200
 MAX_VIEW_HEIGHT = 760
 
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+log.addHandler(logging.StreamHandler())
+
 
 class SeeSoft:
-    def __init__(self, path: str, comments=True):
-        with open(path) as f:
-            self.data = json.load(f)
+    def __init__(self, path=None, url=None, comments=True):
+        if all(arg is None for arg in {path, url}):
+            raise ValueError('Expected either path or url argument')
+
+        if path:
+            with open(path) as f:
+                self.data = json.load(f)
+        else:
+            log.debug('Loading data file from {}'.format(url))
+            with urllib.request.urlopen(url) as url_data:
+                self.data = json.loads(url_data.read().decode())
 
         self.img_path = 'image.png'
         self.img_width = 0
@@ -31,9 +46,16 @@ class SeeSoft:
         self.tag_table = [dict() for _ in range(len(self.source_code))]
 
     def __read_source_code(self) -> str:
-        raw_data = open(self.data['path'], 'rb').read()
-        chardet_result = chardet.detect(raw_data)
+        # if there's path provided read form it, otherwise read from url
+        if self.data['path']:
+            raw_data = open(self.data['path'], 'rb').read()
 
+        else:
+            log.debug('Loading module file from {}'.format(self.data['url']))
+            url_file = urllib.request.urlopen(self.data['url'])
+            raw_data = url_file.read()
+
+        chardet_result = chardet.detect(raw_data)
         if chardet_result['encoding'] not in ['ascii', 'utf-8']:
             raw_data = raw_data.decode('iso-8859-1').encode('utf-8')
 
