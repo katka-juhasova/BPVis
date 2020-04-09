@@ -63,7 +63,7 @@ class Tree:
         graph.add_edges(self.edges)
 
         # build layout with Reingold-Tilford algorithm
-        layout = graph.layout_reingold_tilford(mode='out', root=0)
+        layout = graph.layout_reingold_tilford(mode='out', root=[0])
         # node positions in graph
         positions = {k: layout[k] for k in range(nodes_count)}
         max_y = max([layout[k][1] for k in range(nodes_count)])
