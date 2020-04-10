@@ -395,7 +395,6 @@ class SeeSoft:
                 'displayModeBar': False
             },
             style={
-                'display': 'inline-block',
                 'width': width,
                 'height': height,
                 'max-height': '80vh'

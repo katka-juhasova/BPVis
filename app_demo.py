@@ -8,7 +8,6 @@ from components.scatterplot import ScatterPlot
 from components.tree import Tree
 from dash.dependencies import Input, Output
 
-
 path = '/home/katka/Desktop/FIIT/BP/BPVis/data'
 files = list()
 
@@ -52,22 +51,18 @@ app.layout = html.Div([
                         children=[
                             luacode_left.view(dash_id='lua-code-left',
                                               columns='4'),
-                            html.Div(
-                                children=seesoft_left.view(
-                                    dash_id='see-soft-left'),
-                                style={
-                                    'display': 'flex',
-                                    'justify-content': 'center'
-                                },
+                            html.Div([
+                                seesoft_left.view(dash_id='see-soft-left')
+                            ],
+                                style={'justify-content': 'center',
+                                       'display': 'flex'},
                                 className='two columns'
                             ),
-                            html.Div(
-                                children=seesoft_right.view(
-                                    dash_id='see-soft-right'),
-                                style={
-                                    'display': 'flex',
-                                    'justify-content': 'center',
-                                },
+                            html.Div([
+                                seesoft_right.view(dash_id='see-soft-right')
+                            ],
+                                style={'justify-content': 'center',
+                                       'display': 'flex'},
                                 className='two columns'
                             ),
                             luacode_right.view(dash_id='lua-code-right',
@@ -116,48 +111,48 @@ app.clientside_callback(
     '''
     function scroll_lua_code_left(clickData) {
         if (clickData) {
-            var element = document.getElementById("lua-code-left");                    
+            var element = document.getElementById("lua-code-left");
             var element_text_id = "lua-code-left" + clickData.points[0].text;
             var element_text = document.getElementById(element_text_id);
             var color = element_text.style.backgroundColor;
             var bounding = element.getBoundingClientRect();
             var text_bounding = element_text.getBoundingClientRect();
-            
+
             // handle possible vertical scrolling
-            if (text_bounding.top < bounding.top || 
+            if (text_bounding.top < bounding.top ||
                 text_bounding.bottom > bounding.bottom) {
                 element.scrollTop = clickData.points[0].customdata;
             }
-            
+
             // handle highlighting
             if (color == "rgb(255, 173, 122)") {
                 element_text.classList.remove("require_animate");
-                void element_text.offsetWidth; 
+                void element_text.offsetWidth;
                 element_text.classList.add("require_animate");
-            }     
+            }
             else if (color == "rgb(117, 235, 135)") {
                 element_text.classList.remove("variable_animate");
-                void element_text.offsetWidth; 
+                void element_text.offsetWidth;
                 element_text.classList.add("variable_animate");
             }
             else if (color == "rgb(158, 203, 255)") {
                 element_text.classList.remove("function_animate");
-                void element_text.offsetWidth; 
+                void element_text.offsetWidth;
                 element_text.classList.add("function_animate");
             }
             else if (color == "rgb(229, 141, 240)") {
                 element_text.classList.remove("interface_animate");
-                void element_text.offsetWidth; 
+                void element_text.offsetWidth;
                 element_text.classList.add("interface_animate");
             }
             else if (color == "rgb(255, 236, 145)") {
                 element_text.classList.remove("other_animate");
-                void element_text.offsetWidth; 
+                void element_text.offsetWidth;
                 element_text.classList.add("other_animate");
             }
             else {
                 element_text.classList.remove("comment_animate");
-                void element_text.offsetWidth; 
+                void element_text.offsetWidth;
                 element_text.classList.add("comment_animate");
             }
         }
@@ -179,42 +174,42 @@ app.clientside_callback(
             var color = element_text.style.backgroundColor;
             var bounding = element.getBoundingClientRect();
             var text_bounding = element_text.getBoundingClientRect();
-            
+
             // handle possible vertical scrolling
-            if (text_bounding.top < bounding.top || 
+            if (text_bounding.top < bounding.top ||
                 text_bounding.bottom > bounding.bottom) {
                 element.scrollTop = clickData.points[0].customdata;
             }
-            
+
             // handle highlighting
             if (color == "rgb(255, 173, 122)") {
                 element_text.classList.remove("require_animate");
-                void element_text.offsetWidth; 
+                void element_text.offsetWidth;
                 element_text.classList.add("require_animate");
-            }     
+            }
             else if (color == "rgb(117, 235, 135)") {
                 element_text.classList.remove("variable_animate");
-                void element_text.offsetWidth; 
+                void element_text.offsetWidth;
                 element_text.classList.add("variable_animate");
             }
             else if (color == "rgb(158, 203, 255)") {
                 element_text.classList.remove("function_animate");
-                void element_text.offsetWidth; 
+                void element_text.offsetWidth;
                 element_text.classList.add("function_animate");
             }
             else if (color == "rgb(229, 141, 240)") {
                 element_text.classList.remove("interface_animate");
-                void element_text.offsetWidth; 
+                void element_text.offsetWidth;
                 element_text.classList.add("interface_animate");
             }
             else if (color == "rgb(255, 236, 145)") {
                 element_text.classList.remove("other_animate");
-                void element_text.offsetWidth; 
+                void element_text.offsetWidth;
                 element_text.classList.add("other_animate");
             }
             else {
                 element_text.classList.remove("comment_animate");
-                void element_text.offsetWidth; 
+                void element_text.offsetWidth;
                 element_text.classList.add("comment_animate");
             }
         }
