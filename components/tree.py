@@ -30,9 +30,9 @@ class Tree:
         self.edges = list()
         # color for each node
         self.colors = ([COLORS['plot-line']]
-                       + ['' for x in range(self.data['nodes_count'])])
+                       + ['' for _ in range(self.data['nodes_count'])])
         # text for each node
-        self.text = ['root'] + ['' for x in range(self.data['nodes_count'])]
+        self.text = ['root'] + ['' for _ in range(self.data['nodes_count'])]
 
     def __add_child_edges(self, node: dict):
         for child in node['children']:

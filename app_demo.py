@@ -8,7 +8,7 @@ from components.scatterplot import ScatterPlot
 from components.tree import Tree
 from dash.dependencies import Input, Output
 
-path = '/home/katka/Desktop/FIIT/BP/BPVis/data'
+path = os.path.dirname(os.path.realpath(__file__)) + '/data'
 files = list()
 
 # r=root, d=directories, f=files
@@ -18,20 +18,23 @@ for r, d, f in os.walk(path):
         if '.json' in file:
             files.append(os.path.join(r, file))
 
-seesoft_left = SeeSoft(files[0], comments=True)
+file_left = files[0]
+file_right = files[1]
+
+seesoft_left = SeeSoft(file_left, comments=True)
 seesoft_left.draw(img_path='assets/image_left.png')
 
-seesoft_right = SeeSoft(files[1], comments=True)
+seesoft_right = SeeSoft(file_right, comments=True)
 seesoft_right.draw(img_path='assets/image_right.png')
 
-luacode_left = LuaCode(files[0])
-luacode_right = LuaCode(files[1])
+luacode_left = LuaCode(file_left)
+luacode_right = LuaCode(file_right)
 
-scatterplot_left = ScatterPlot(files[0])
-scatterplot_right = ScatterPlot(files[1])
+scatterplot_left = ScatterPlot(file_left)
+scatterplot_right = ScatterPlot(file_right)
 
-tree_left = Tree(files[0])
-tree_right = Tree(files[1])
+tree_left = Tree(file_left)
+tree_right = Tree(file_right)
 
 # external_stylesheets = ['https://codepen.io/amyoshino/pen/jzXypZ.css']
 
@@ -80,7 +83,7 @@ app.layout = html.Div([
                         children=[
                             scatterplot_left.view(
                                 dash_id='scatter-plot-left',
-                                columns='6'),
+                                columns='6', show_text=True),
                             scatterplot_right.view(
                                 dash_id='scatter-plot-right',
                                 columns='6',
