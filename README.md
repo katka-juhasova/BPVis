@@ -9,19 +9,18 @@ Interactive visualization tool for deep neural network.
 - Create directories `data` and `modules` in cloned BPVis repository.
 Repository tree should look now like this:
 
-
-    BPVis
-        ├── app_demo.py
-        ├── assets
-        ├── components
-        ├── constant.py 
-        ├── data
-        ├── LICENSE
-        ├── modules 
-        ├── preprocessing
-        ├── README.md 
-        ├── requirements.txt
-        └── setup.py
+BPVis<br />
+    ├── app_demo.py<br />
+    ├── assets<br />
+    ├── components<br />
+    ├── constant.py <br />
+    ├── data<br />
+    ├── LICENSE<br />
+    ├── modules <br />
+    ├── preprocessing<br />
+    ├── README.md <br />
+    ├── requirements.txt<br />
+    └── setup.py<br />
 
 
 - Content of `data-part1` and `data-part2` directories (from BP-data repository) move to `data` directory.
