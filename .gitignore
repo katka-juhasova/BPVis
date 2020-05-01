@@ -5,3 +5,8 @@ data/
 modules/
 assets/*.png
 components/seesoft_update.py
+test_data/
+valid_data/
+venv
+network/final_dataset.csv
+network/train_data_activations.csv

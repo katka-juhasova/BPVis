@@ -8,7 +8,7 @@ from components.scatterplot import ScatterPlot
 from components.tree import Tree
 from dash.dependencies import Input, Output
 
-path = os.path.dirname(os.path.realpath(__file__)) + '/data'
+path = os.path.dirname(os.path.realpath(__file__)) + '/test_data'
 files = list()
 
 # r=root, d=directories, f=files
@@ -18,8 +18,8 @@ for r, d, f in os.walk(path):
         if '.json' in file:
             files.append(os.path.join(r, file))
 
-file_left = files[0]
-file_right = files[1]
+file_left = files[71]
+file_right = files[70]
 
 seesoft_left = SeeSoft(file_left, comments=True)
 seesoft_left.draw(img_path='assets/image_left.png')
@@ -46,6 +46,15 @@ app.layout = html.Div([
             dcc.Tab(
                 label='Source code visualization',
                 children=[
+                    # dcc.Markdown(
+                    #     children='''
+                    #     ```lua
+                    #     local x = require 'nieco'
+                    #     -- poznamocka
+                    #         print('something')
+                    #     ```
+                    #     '''
+                    # ),
                     html.Div(id='hidden-div-left',
                              style={'display': 'none'}),
                     html.Div(id='hidden-div-right',

@@ -87,6 +87,14 @@ class ScatterPlot:
             ).replace('\n', '<br>')
         )
 
+        # hover text may be too long so it needs to be limited to max 10 lines
+        if self.traces[node['container']]['text'][-1].count('<br>') > 10:
+            text = self.traces[node['container']]['text'][-1]
+            text = text.split('<br>', 10)
+            text[-1] = '...'
+            text = '<br>'.join(text)
+            self.traces[node['container']]['text'][-1] = text
+
         if 'children' in node:
             for child in node['children']:
                 self.__add_node_to_trace(child)

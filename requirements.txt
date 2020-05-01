@@ -1,3 +1,5 @@
+keras
+h5py
 igraph
 plotly
 dash
