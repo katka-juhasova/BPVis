@@ -23,17 +23,20 @@ log.addHandler(logging.StreamHandler())
 
 
 class SeeSoft:
-    def __init__(self, path=None, url=None, comments=True):
-        if all(arg is None for arg in {path, url}):
-            raise ValueError('Expected either path or url argument')
-
-        if path:
-            with open(path) as f:
-                self.data = json.load(f)
+    def __init__(self, path=None, url=None, data=None, comments=True):
+        if data:
+            self.data = data
         else:
-            log.debug('Loading data file from {}'.format(url))
-            with urllib.request.urlopen(url) as url_data:
-                self.data = json.loads(url_data.read().decode())
+            if all(arg is None for arg in {path, url}):
+                raise ValueError('Expected either path or url argument')
+
+            if path:
+                with open(path) as f:
+                    self.data = json.load(f)
+            else:
+                log.debug('Loading data file from {}'.format(url))
+                with urllib.request.urlopen(url) as url_data:
+                    self.data = json.loads(url_data.read().decode())
 
         self.img_path = 'image.png'
         self.img_width = 0
@@ -328,7 +331,7 @@ class SeeSoft:
 
         return width, height
 
-    def get_figure(self):
+    def get_figure(self) -> go.Figure:
         fig = go.Figure()
 
         with open(self.img_path, 'rb') as img_file:

@@ -1,3 +1,4 @@
+scikit-learn
 keras
 h5py
 igraph
@@ -6,3 +7,4 @@ dash
 chardet
 numpy
 Pillow
+pandas

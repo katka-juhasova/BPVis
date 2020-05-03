@@ -6,7 +6,9 @@ from components.luacode import LuaCode
 from components.seesoft import SeeSoft
 from components.scatterplot import ScatterPlot
 from components.tree import Tree
+from components.clusters import Clusters
 from dash.dependencies import Input, Output
+from sample import Sample
 
 path = os.path.dirname(os.path.realpath(__file__)) + '/test_data'
 files = list()
@@ -18,23 +20,26 @@ for r, d, f in os.walk(path):
         if '.json' in file:
             files.append(os.path.join(r, file))
 
-file_left = files[71]
+sample = Sample(files[71])
+# file_left = files[71]
 file_right = files[70]
 
-seesoft_left = SeeSoft(file_left, comments=True)
+seesoft_left = SeeSoft(data=sample.data, comments=True)
 seesoft_left.draw(img_path='assets/image_left.png')
 
 seesoft_right = SeeSoft(file_right, comments=True)
 seesoft_right.draw(img_path='assets/image_right.png')
 
-luacode_left = LuaCode(file_left)
+luacode_left = LuaCode(data=sample.data)
 luacode_right = LuaCode(file_right)
 
-scatterplot_left = ScatterPlot(file_left)
+scatterplot_left = ScatterPlot(data=sample.data)
 scatterplot_right = ScatterPlot(file_right)
 
-tree_left = Tree(file_left)
+tree_left = Tree(data=sample.data)
 tree_right = Tree(file_right)
+
+clusters = Clusters(sample=sample)
 
 # external_stylesheets = ['https://codepen.io/amyoshino/pen/jzXypZ.css']
 
@@ -92,7 +97,9 @@ app.layout = html.Div([
                         children=[
                             scatterplot_left.view(
                                 dash_id='scatter-plot-left',
-                                columns='6', show_text=True),
+                                columns='6',
+                                show_text=True,
+                                show_legend=True),
                             scatterplot_right.view(
                                 dash_id='scatter-plot-right',
                                 columns='6',
@@ -106,6 +113,15 @@ app.layout = html.Div([
                         children=[
                             tree_left.view(dash_id='tree-left', columns='6'),
                             tree_right.view(dash_id='tree-right', columns='6')
+                        ],
+                        className='row'
+                    ),
+                    html.Div(
+                        children=[
+                            clusters.view(dash_id='clusters-left', columns='6',
+                                          algorithm='PCA'),
+                            clusters.view(dash_id='clusters-right', columns='6',
+                                          algorithm='TSNE')
                         ],
                         className='row'
                     )

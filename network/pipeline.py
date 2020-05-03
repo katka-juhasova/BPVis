@@ -12,7 +12,8 @@ import json
 
 
 MAX_CONTEXTS = 430
-MODEL_PATH = 'full_LSTM_2_clusters_7_bs_128.h5'
+MODEL_PATH = (os.path.dirname(os.path.realpath(__file__))
+              + '/full_LSTM_2_clusters_7_bs_128.h5')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 log = logging.getLogger(__name__)
@@ -159,8 +160,6 @@ def dataset_activations(layer=None) -> (List[str], dict):
 
     # if the layer number is chosen
     if layer and layer in range(layers_count):
-        log.debug('Building model with output layer {}'.format(layer + 1))
-
         # choose output layer
         encoder = Model(inputs=model.layers[0].input,
                         outputs=model.layers[layer].output, name='encoder')
@@ -173,9 +172,6 @@ def dataset_activations(layer=None) -> (List[str], dict):
     # if the whole network should be tracked
     layer_outputs = dict()
     for i in range(layers_count):
-        log.debug('Building model with output layer {}/{}'.format(
-            i + 1, layers_count))
-
         # choose output layer
         encoder = Model(inputs=model.layers[0].input,
                         outputs=model.layers[i].output, name='encoder')
@@ -203,8 +199,6 @@ def module_activations(json_path: str, layer=None) -> dict:
 
     # if the layer number is chosen
     if layer and layer in range(layers_count):
-        log.debug('Building model with output layer {}'.format(layer + 1))
-
         # choose output layer
         encoder = Model(inputs=model.layers[0].input,
                         outputs=model.layers[layer].output, name='encoder')
@@ -217,9 +211,6 @@ def module_activations(json_path: str, layer=None) -> dict:
     # if the whole network should be tracked
     layer_outputs = dict()
     for i in range(layers_count):
-        log.debug('Building model with output layer {}/{}'.format(
-            i + 1, layers_count))
-
         # choose output layer
         encoder = Model(inputs=model.layers[0].input,
                         outputs=model.layers[i].output, name='encoder')
@@ -232,12 +223,12 @@ def module_activations(json_path: str, layer=None) -> dict:
     return layer_outputs
 
 
-# create csv file containing following info for each module from train data:
+# create csv files containing following info for each module from train data:
 # module path, json path and activations from all layers
-# layers are separated by commas, 1st dimension separated by space
-# and 2nd dimension by '|'
-def save_train_data_activations(filename: str):
-    path = '../data'
+# 1st dimension separated by space and 2nd dimension by '|'
+# activations from each layer are stored in separate files
+def save_train_data_activations():
+    path = os.path.dirname(os.path.realpath(__file__)) + '/../data'
     data_files = list()
 
     # r=root, d=directories, f=files
@@ -262,27 +253,33 @@ def save_train_data_activations(filename: str):
 
         try:
             index = module_names.index(name)
-            data_names[index] = data_file.replace('../data/', '')
+            data_names[index] = data_file.replace('{}/../data/'.format(
+                os.path.dirname(os.path.realpath(__file__))), '')
         except ValueError:
             pass
 
-    csv_header = ['data path', 'module path']
-    for layer in outputs:
-        csv_header.append('layer{}'.format(layer))
+    labels = outputs[len(outputs) - 1]
+    labels = labels.argmax(1)
 
     rows_count = len(module_names)
 
-    with open(filename, 'w', newline='') as file:
-        # write column names
-        writer = csv.writer(file)
-        writer.writerow(csv_header)
+    # write line for each module from train data
+    # saves each layer to separate .csv file
+    for layer in outputs:
+        log.debug('Processing layer {}/{}'.format(layer + 1, len(outputs)))
 
-        # write line for each module from train data
-        for i in range(rows_count):
-            print('Working on row {}/{}'.format(i + 1, rows_count))
-            csv_row = [data_names[i], module_names[i]]
+        csv_header = ['data path', 'module path', 'label',
+                      'layer{}'.format(layer)]
 
-            for layer in outputs:
+        with open('train_data_activations_layer{}.csv'.format(layer),
+                  'w', newline='') as file:
+            # write column names
+            writer = csv.writer(file)
+            writer.writerow(csv_header)
+
+            for i in range(rows_count):
+                csv_row = [data_names[i], module_names[i], labels[i]]
+
                 activations = outputs[layer][i]
                 final_activations = list()
                 shape = activations.shape
@@ -303,5 +300,4 @@ def save_train_data_activations(filename: str):
                     final_activations.append('|'.join(tmp_activations))
 
                 csv_row.append(final_activations[0])
-
-            writer.writerow(csv_row)
+                writer.writerow(csv_row)

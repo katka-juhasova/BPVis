@@ -15,17 +15,20 @@ log.addHandler(logging.StreamHandler())
 
 
 class LuaCode:
-    def __init__(self, path=None, url=None):
-        if all(arg is None for arg in {path, url}):
-            raise ValueError('Expected either path or url argument')
-
-        if path:
-            with open(path) as f:
-                self.data = json.load(f)
+    def __init__(self, path=None, url=None, data=None):
+        if data:
+            self.data = data
         else:
-            log.debug('Loading data file from {}'.format(url))
-            with urllib.request.urlopen(url) as url_data:
-                self.data = json.loads(url_data.read().decode())
+            if all(arg is None for arg in {path, url}):
+                raise ValueError('Expected either path or url argument')
+
+            if path:
+                with open(path) as f:
+                    self.data = json.load(f)
+            else:
+                log.debug('Loading data file from {}'.format(url))
+                with urllib.request.urlopen(url) as url_data:
+                    self.data = json.loads(url_data.read().decode())
 
         self.source_code = self.__read_source_code()
         self.tag_table = [dict() for _ in range(len(self.source_code))]

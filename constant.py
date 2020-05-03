@@ -16,15 +16,27 @@ COLUMNS = {
 # discuss proper color choice
 # I just played with https://color.adobe.com/create/color-wheel/
 # NOTE: in case of changes, colors have to be changed also in stylesheet.css
-COLORS = {'require': '#FFAD7A',
-          'variable': '#75EB87',
-          'function': '#9ECBFF',
-          'interface': '#E58DF0',
-          'other': '#FFEC91',
-          'comment': '#E5E5E5',
-          'empty': '#FFFFFF',
-          'code-background': '#E5E5E5',
-          'plot-line': '#E0E0E0',
-          None: None}
+COLORS = {
+    'require': '#FFAD7A',
+    'variable': '#75EB87',
+    'function': '#9ECBFF',
+    'interface': '#E58DF0',
+    'other': '#FFEC91',
+    'comment': '#E5E5E5',
+    'empty': '#FFFFFF',
+    'code-background': '#E5E5E5',
+    'plot-line': '#E0E0E0',
+    None: None
+}
 
 LUA_LINE_HEIGHT = 15
+
+CLUSTER_COLORS = [
+    '#4C78A8',
+    '#54A24B',
+    '#E45756',
+    '#72B7B2',
+    '#F58518',
+    '#EECA3B',
+    '#B279A2'
+]

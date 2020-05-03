@@ -14,18 +14,22 @@ log.addHandler(logging.StreamHandler())
 
 
 class ScatterPlot:
-    def __init__(self, path=None, url=None):
-        if all(arg is None for arg in {path, url}):
-            raise ValueError('Expected either path or url argument')
-
-        if path:
-            with open(path) as f:
-                self.data = json.load(f)
+    def __init__(self, path=None, url=None, data=None):
+        if data:
+            self.data = data
 
         else:
-            log.debug('Loading data file from {}'.format(url))
-            with urllib.request.urlopen(url) as url_data:
-                self.data = json.loads(url_data.read().decode())
+            if all(arg is None for arg in {path, url}):
+                raise ValueError('Expected either path or url argument')
+
+            if path:
+                with open(path) as f:
+                    self.data = json.load(f)
+
+            else:
+                log.debug('Loading data file from {}'.format(url))
+                with urllib.request.urlopen(url) as url_data:
+                    self.data = json.loads(url_data.read().decode())
 
         self.source_code = self.__read_source_code()
         self.traces = {
@@ -77,7 +81,7 @@ class ScatterPlot:
 
         return raw_data.decode('utf-8')
 
-    def __add_node_to_trace(self, node):
+    def __add_node_to_trace(self, node: dict):
         self.traces[node['container']]['x'].append(node['master_index'])
         self.traces[node['container']]['y'].append(node['container'])
         self.traces[node['container']]['text'].append(
@@ -99,7 +103,7 @@ class ScatterPlot:
             for child in node['children']:
                 self.__add_node_to_trace(child)
 
-    def __add_traces(self, fig, show_text):
+    def __add_traces(self, fig, show_text: bool):
         for node in self.data['nodes']:
             self.__add_node_to_trace(node)
 
@@ -124,7 +128,7 @@ class ScatterPlot:
                 )
             )
 
-    def get_figure(self, show_legend=False, show_text=False):
+    def get_figure(self, show_legend=False, show_text=False) -> go.Figure:
         fig = go.Figure()
         self.__add_traces(fig, show_text)
 
@@ -137,12 +141,12 @@ class ScatterPlot:
             template='plotly_white',
             title='Input nodes order',
             xaxis={
-                'title': 'Order in source code',
                 'rangemode': 'tozero'
             },
             yaxis={'title': 'Container'},
             margin={'l': 40, 'r': 40, 'b': 40, 't': 40},
-            showlegend=show_legend
+            showlegend=show_legend,
+            legend_orientation="h"
         )
 
         return fig
@@ -153,7 +157,7 @@ class ScatterPlot:
             id=dash_id,
             figure=self.get_figure(show_legend, show_text),
             style={
-                'height': height or '30vh'
+                'height': height or '220px'
             },
             className=COLUMNS[columns]
         )

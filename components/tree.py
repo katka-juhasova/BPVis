@@ -14,17 +14,20 @@ log.addHandler(logging.StreamHandler())
 
 
 class Tree:
-    def __init__(self, path=None, url=None):
-        if all(arg is None for arg in {path, url}):
-            raise ValueError('Expected either path or url argument')
-
-        if path:
-            with open(path) as f:
-                self.data = json.load(f)
+    def __init__(self, path=None, url=None, data=None):
+        if data:
+            self.data = data
         else:
-            log.debug('Loading data file from {}'.format(url))
-            with urllib.request.urlopen(url) as url_data:
-                self.data = json.loads(url_data.read().decode())
+            if all(arg is None for arg in {path, url}):
+                raise ValueError('Expected either path or url argument')
+
+            if path:
+                with open(path) as f:
+                    self.data = json.load(f)
+            else:
+                log.debug('Loading data file from {}'.format(url))
+                with urllib.request.urlopen(url) as url_data:
+                    self.data = json.loads(url_data.read().decode())
 
         # all edges between nodes
         self.edges = list()
@@ -44,7 +47,7 @@ class Tree:
             if 'children' in child:
                 self.__add_child_edges(child)
 
-    def get_figure(self):
+    def get_figure(self) -> go.Figure:
         # nodes from .json plus root node
         nodes_count = self.data['nodes_count'] + 1
 

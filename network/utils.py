@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 from typing import List
+import os
 
 
 log = logging.getLogger(__name__)
@@ -10,7 +11,8 @@ log.addHandler(logging.StreamHandler())
 
 # load all acquired preprocessed modules and their names from csv file
 def load_file() -> (List[str], np.ndarray):
-    filename = 'final_dataset.csv'
+    filename = (os.path.dirname(os.path.realpath(__file__))
+                + '/final_dataset.csv')
     with open(filename, 'r') as file:
         lines = file.readlines()
 
