@@ -4,7 +4,6 @@ components/__pycache__/
 data/
 modules/
 assets/*.png
-components/seesoft_update.py
 test_data/
 valid_data/
 venv

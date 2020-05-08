@@ -1,4 +1,5 @@
 import os
+import logging
 from sample import Sample
 import pandas as pd
 import plotly.graph_objects as go
@@ -10,6 +11,11 @@ from constant import COLUMNS
 import dash_core_components as dcc
 
 
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+log.addHandler(logging.StreamHandler())
+
+
 CSV_PATH = (os.path.dirname(os.path.realpath(__file__))
             + '/../network/train_data_activations_layer4.csv')
 
@@ -18,7 +24,9 @@ class Clusters:
     def __init__(self, sample: Sample):
         self.sample_data = self.__load_sample_data(sample)
         self.train_data = self.__load_train_data()
+        log.debug('Performing fit_transform for T-SNE...')
         self.tsne_traces, self.tsne_sample_trace = self.__prepare_tsne_traces()
+        log.debug('Performing fit_transform for PCA...')
         self.pca_traces, self.pca_sample_trace = self.__prepare_pca_traces()
 
     @staticmethod
@@ -55,7 +63,7 @@ class Clusters:
         X = data.values
 
         X_std = StandardScaler().fit_transform(X)
-        pca = PCA(n_components=6)
+        pca = PCA()
         pca.fit(X_std)
         pca_results = pca.transform(X_std)
 

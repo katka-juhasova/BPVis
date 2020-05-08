@@ -26,4 +26,4 @@ class Sample:
 
         self.activations = module_activations(json_path=path)
         last_layer = list(self.activations.keys())[-1]
-        self.label = self.activations[last_layer].argmax(1)
+        self.label = self.activations[last_layer].argmax(1)[0]

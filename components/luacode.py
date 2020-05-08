@@ -172,7 +172,7 @@ class LuaCode:
                 'font-size': '10px',
                 'line-height': LUA_LINE_HEIGHT,
                 'padding': '20px',
-                'max-height': '80vh',
+                'height': '730px',
                 'overflow': 'auto'
             },
             className=COLUMNS[columns]

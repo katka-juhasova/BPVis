@@ -5,6 +5,7 @@ import chardet
 from PIL import Image
 from PIL import ImageDraw
 from constant import COLORS
+from constant import COLUMNS
 from constant import LUA_LINE_HEIGHT
 import plotly.graph_objects as go
 import base64
@@ -389,7 +390,7 @@ class SeeSoft:
         self.__add_traces(fig)
         return fig
 
-    def view(self, dash_id: str, width=None, height=None):
+    def view(self, dash_id: str, columns: str, width=None, height=None):
         width, height = self.count_width_and_height(width, height)
 
         return dcc.Graph(
@@ -401,6 +402,7 @@ class SeeSoft:
             style={
                 'width': width,
                 'height': height,
-                'max-height': '80vh'
-            }
+                'max-height': '750px'
+            },
+            className=COLUMNS[columns]
         )
