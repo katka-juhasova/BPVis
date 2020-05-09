@@ -15,11 +15,11 @@ COLUMNS = {
 
 # NOTE: in case of changes, colors have to be changed also in stylesheet.css
 COLORS = {
-    'require': '#FFAD7A',
-    'variable': '#75EB87',
-    'function': '#9ECBFF',
-    'interface': '#E58DF0',
-    'other': '#FFEC91',
+    'require': '#E45756',
+    'variable': '#54A24B',
+    'function': '#4C78A8',
+    'interface': '#B279A2',
+    'other': '#EECA3B',
     'comment': '#E5E5E5',
     'empty': '#FFFFFF',
     'code-background': '#E5E5E5',

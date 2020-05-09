@@ -20,6 +20,7 @@ class Prediction:
 
     def get_figure(self):
         x = ['Label {}'.format(i) for i in range(len(self.output_layer))]
+        x[self.label] = '<b>' + x[self.label] + '<b>'
         y = [0 for _ in range(len(self.output_layer))]
 
         fig = go.Figure(

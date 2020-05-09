@@ -8,6 +8,7 @@ from components.scatterplot import ScatterPlot
 from components.tree import Tree
 from components.clusters import Clusters
 from components.prediction import Prediction
+from components.network import Network
 from dash.dependencies import Input, Output
 from sample import Sample
 
@@ -44,6 +45,7 @@ tree_right = Tree(file_right)
 
 # clusters = Clusters(sample=sample)
 prediction = Prediction(sample=sample)
+network = Network(sample=sample)
 
 # external_stylesheets = ['https://codepen.io/amyoshino/pen/jzXypZ.css']
 
@@ -51,7 +53,9 @@ app = dash.Dash(__name__)
 
 app.layout = html.Div([
 
-    prediction.view(dash_id='prediction', columns='6')
+    # prediction.view(dash_id='prediction', columns='6'),
+    network.view(dash_id='network', columns='12')
+
     # html.Div([
     #     html.H3(children='Source code visualization',
     #             className='ten columns'),
