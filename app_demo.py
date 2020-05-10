@@ -14,7 +14,7 @@ from sample import Sample
 
 DIMENSIONS = 7
 
-path = os.path.dirname(os.path.realpath(__file__)) + '/test_data'
+path = os.path.dirname(os.path.realpath(__file__)) + '/data'
 files = list()
 
 # r=root, d=directories, f=files

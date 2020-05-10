@@ -4,8 +4,6 @@ components/__pycache__/
 data/
 modules/
 assets/*.png
-test_data/
-valid_data/
 venv
-tester.py
+script.py
 network/*.csv

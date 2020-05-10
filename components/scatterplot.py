@@ -159,5 +159,5 @@ class ScatterPlot:
             style={
                 'height': height or '220px'
             },
-            className=COLUMNS[columns]
+            # className=COLUMNS[columns]
         )

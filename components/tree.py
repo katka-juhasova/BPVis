@@ -150,5 +150,5 @@ class Tree:
             style={
                 'height': height or '60vh'
             },
-            className=COLUMNS[columns]
+            # className=COLUMNS[columns]
         )

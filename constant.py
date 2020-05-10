@@ -15,14 +15,14 @@ COLUMNS = {
 
 # NOTE: in case of changes, colors have to be changed also in stylesheet.css
 COLORS = {
-    'require': '#E45756',
-    'variable': '#54A24B',
-    'function': '#4C78A8',
-    'interface': '#B279A2',
-    'other': '#EECA3B',
-    'comment': '#E5E5E5',
+    'require': '#f8ac61',
+    'variable': '#a9d0a5',
+    'function': '#b2c6dc',
+    'interface': '#c9a1bd',
+    'other': '#f4df89',
+    'comment': '#eaeaea',
     'empty': '#FFFFFF',
-    'code-background': '#E5E5E5',
+    'code-background': '#eaeaea',
     'plot-line': '#E0E0E0',
     None: None
 }
@@ -75,18 +75,4 @@ RED_TO_BLUE = [
     [0.90, '#6f93b9'],
     [0.95, '#5d85b0'],
     [1, '#4c78a8']
-]
-
-RED_TO_WHITE = [
-    '#e45756',
-    '#E66766',
-    '#E97877',
-    '#EC8988',
-    '#EE9A99',
-    '#F1ABAA',
-    '#F4BBBB',
-    '#F6CCCC',
-    '#F9DDDD',
-    '#FCEEEE',
-    '#FFFFFF'
 ]
