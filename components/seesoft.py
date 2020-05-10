@@ -24,7 +24,8 @@ log.addHandler(logging.StreamHandler())
 
 
 class SeeSoft:
-    def __init__(self, path=None, url=None, data=None, comments=True):
+    def __init__(self, path=None, url=None, data=None, img_path=None,
+                 comments=True):
         if data:
             self.data = data
         else:
@@ -39,15 +40,22 @@ class SeeSoft:
                 with urllib.request.urlopen(url) as url_data:
                     self.data = json.loads(url_data.read().decode())
 
-        self.img_path = 'image.png'
-        self.img_width = 0
-        self.img_height = 0
+        # self.img_width = 0
+        # self.img_height = 0
         self.byte_width = BYTE_WIDTH
         self.byte_height = BYTE_HEIGHT
         self.margin_size = MARGIN_SIZE
         self.comments = comments
         self.source_code = self.__read_source_code()
         self.tag_table = [dict() for _ in range(len(self.source_code))]
+
+        self.img_path = img_path or 'image.png'
+
+        self.__build_tag_table()
+        self.img_width = ((self.__max_line() * self.byte_width)
+                          + 2 * self.margin_size)
+        self.img_height = ((self.__lines_count() * self.byte_height)
+                           + 2 * self.margin_size)
 
     def __read_source_code(self) -> str:
         # if there's path provided read form it, otherwise read from url
@@ -335,7 +343,7 @@ class SeeSoft:
     def get_figure(self) -> go.Figure:
         fig = go.Figure()
 
-        with open(self.img_path, 'rb') as img_file:
+        with open('assets/seesoft.png', 'rb') as img_file:
             encoded_string = base64.b64encode(img_file.read()).decode()
         encoded_image = 'data:image/png;base64,' + encoded_string
 
@@ -390,7 +398,7 @@ class SeeSoft:
         self.__add_traces(fig)
         return fig
 
-    def view(self, dash_id: str, columns: str, width=None, height=None):
+    def view(self, dash_id: str, width=None, height=None):
         width, height = self.count_width_and_height(width, height)
 
         return dcc.Graph(
@@ -403,6 +411,5 @@ class SeeSoft:
                 'width': width,
                 'height': height,
                 'max-height': '750px'
-            },
-            className=COLUMNS[columns]
+            }
         )

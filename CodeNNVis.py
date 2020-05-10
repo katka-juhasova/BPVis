@@ -2,6 +2,8 @@ import os
 import dash
 import dash_html_components as html
 import dash_core_components as dcc
+from dash.dependencies import Input, Output, State
+import components.layout as layout
 from sample import Sample
 from components.luacode import LuaCode
 from components.seesoft import SeeSoft
@@ -10,7 +12,7 @@ from components.tree import Tree
 from components.clusters import Clusters
 # from constant import COLORS
 # from constant import LUA_LINE_HEIGHT
-from dash.dependencies import Input, Output, State
+
 
 DIMENSIONS = 7
 here = os.path.dirname(os.path.realpath(__file__))
@@ -77,106 +79,94 @@ app.layout = html.Div([
         className='row'
     ),
     html.Div(
-        # id='first-part',
         children=[
             html.Div(
-                id='lua-code',
+                id='input-luacode',
                 children=[],
                 style={
                     # 'outline': '2px solid black',
                     'height': '800px',
                     'float': 'left',
-                    'width': '660px',
+                    'width': '520px',
                     'padding-left': '10px',
                     'padding-right': '10px',
                     'background-color': 'red'
                 }
             ),
-            # html.Div(
-            #     id='left-column',
-            #     children=[],
-            #     style={
-            #         'float': 'left',
-            #         'width': '660px',
-            #         'padding': '10px',
-            #         'background-color': 'red'
-            #     }
-            #     # className='6 columns'
-            # ),
+            dcc.Graph(
+                id='input-seesoft',
+                figure=layout.get_empty_figure(),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    # 'outline': '2px solid black',
+                    'height': '800px',
+                    'float': 'left',
+                    'width': '200px',
+                    'padding': '10px',
+                    'background-color': 'yellow'
+                }
+            ),
             html.Div(
-                id='right-column',
+                id='input-diagrams',
                 children=[],
                 style={
                     'float': 'left',
-                    'width': '660px',
+                    'width': '720px',
                     'padding': '10px',
                     'background-color': 'blue'
                 }
-                # className='6 columns'
             ),
         ],
         className='row'
     ),
-
-    # html.Div(
-    #     id='lua-code',
-    #     children=[],
-    #     style={
-    #         # 'outline': '2px solid black',
-    #         'height': '800px',
-    #         # 'padding-top': '20px',
-    #         # 'padding-left': '30px'
-    #     }
-    # )
     ],
     className='ten columns offset-by-one'
 )
 
 
 @app.callback(
-    Output('lua-code', 'children'),
+    Output('input-luacode', 'children'),
     [Input('module-input-button', 'n_clicks')],
     [State('module-input', 'value')]
 )
-def update_left_column(n_clicks, value):
+def update_input_luacode(n_clicks, value):
     global sample
     global luacode
-    global seesoft
 
     if n_clicks > 0:
         # sample = Sample(path=here + '/' + str(value))
         luacode = LuaCode(path=value)
-        # seesoft = SeeSoft(data=sample.data, comments=True)
-        # seesoft.draw(img_path='assets/seesoft.png')
 
-        return [
-            luacode.view(dash_id='lua-code-content', columns='8'),
-            # seesoft.view(dash_id='seesoft-content', columns='4')
-        ]
-
-        # return html.Pre(
-        #     id='lua-code-content',
-        #     children=luacode.get_children('lua-code-content'),
-        #     style={
-        #         'background-color': COLORS['code-background'],
-        #         'font-family': 'Courier, monospace',
-        #         'color': 'black',
-        #         'font-size': '10px',
-        #         'line-height': LUA_LINE_HEIGHT,
-        #         'padding': '20px',
-        #         'height': '730px',
-        #         'overflow': 'auto'
-        #     },
-        #     className='8 columns'
-        # )
+        return luacode.view(dash_id='lua-code-content')
+        # seesoft.view(dash_id='seesoft-content', columns='4')
 
 
 @app.callback(
-    Output('right-column', 'children'),
+    Output('input-seesoft', 'figure'),
     [Input('module-input-button', 'n_clicks')],
     [State('module-input', 'value')]
 )
-def update_right_column(n_clicks, value):
+def update_input_seesoft(n_clicks, value):
+    global seesoft
+
+    if n_clicks > 0:
+        seesoft = SeeSoft(path=value, comments=True)
+        # seesoft.draw(img_path='assets/seesoft.png')
+        # return layout.get_colorful_figure()
+        return seesoft.get_figure()
+
+    else:
+        return layout.get_empty_figure()
+
+
+@app.callback(
+    Output('input-diagrams', 'children'),
+    [Input('module-input-button', 'n_clicks')],
+    [State('module-input', 'value')]
+)
+def update_input_diagrams(n_clicks, value):
     # global sample
     global scatterplot
     global tree
