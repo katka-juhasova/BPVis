@@ -93,8 +93,21 @@ app.layout = html.Div([
                     'background-color': 'red'
                 }
             ),
+            # html.Div(
+            #     id='input-seesoft',
+            #     children=[],
+            #     style={
+            #         # 'outline': '2px solid black',
+            #         'height': '800px',
+            #         'float': 'left',
+            #         'width': '200px',
+            #         'padding-left': '10px',
+            #         'padding-right': '10px',
+            #         'background-color': 'red'
+            #     }
+            # ),
             dcc.Graph(
-                id='input-seesoft',
+                id='seesoft-content',
                 figure=layout.get_empty_figure(),
                 config={
                     'displayModeBar': False
@@ -140,11 +153,10 @@ def update_input_luacode(n_clicks, value):
         luacode = LuaCode(path=value)
 
         return luacode.view(dash_id='lua-code-content')
-        # seesoft.view(dash_id='seesoft-content', columns='4')
 
 
 @app.callback(
-    Output('input-seesoft', 'figure'),
+    Output('seesoft-content', 'figure'),
     [Input('module-input-button', 'n_clicks')],
     [State('module-input', 'value')]
 )
@@ -153,9 +165,10 @@ def update_input_seesoft(n_clicks, value):
 
     if n_clicks > 0:
         seesoft = SeeSoft(path=value, comments=True)
-        # seesoft.draw(img_path='assets/seesoft.png')
+        seesoft.draw(img_path='assets/seesoft.png')
         # return layout.get_colorful_figure()
         return seesoft.get_figure()
+        # return seesoft.view(dash_id='seesoft-content')
 
     else:
         return layout.get_empty_figure()
@@ -180,6 +193,62 @@ def update_input_diagrams(n_clicks, value):
             tree.view(dash_id='tree-content', columns='6')
         ]
 
+
+app.clientside_callback(
+    '''
+    function scroll_lua_code_left(clickData) {
+        if (clickData) {
+            var element = document.getElementById("lua-code-content");
+            var element_text_id = "lua-code-content" + clickData.points[0].text;
+            var element_text = document.getElementById(element_text_id);
+            var color = element_text.style.backgroundColor;
+            var bounding = element.getBoundingClientRect();
+            var text_bounding = element_text.getBoundingClientRect();
+
+            // handle possible vertical scrolling
+            if (text_bounding.top < bounding.top ||
+                text_bounding.bottom > bounding.bottom) {
+                element.scrollTop = clickData.points[0].customdata;
+            }
+
+            // handle highlighting
+            if (color == "rgb(255, 173, 122)") {
+                element_text.classList.remove("require_animate");
+                void element_text.offsetWidth;
+                element_text.classList.add("require_animate");
+            }
+            else if (color == "rgb(117, 235, 135)") {
+                element_text.classList.remove("variable_animate");
+                void element_text.offsetWidth;
+                element_text.classList.add("variable_animate");
+            }
+            else if (color == "rgb(158, 203, 255)") {
+                element_text.classList.remove("function_animate");
+                void element_text.offsetWidth;
+                element_text.classList.add("function_animate");
+            }
+            else if (color == "rgb(229, 141, 240)") {
+                element_text.classList.remove("interface_animate");
+                void element_text.offsetWidth;
+                element_text.classList.add("interface_animate");
+            }
+            else if (color == "rgb(255, 236, 145)") {
+                element_text.classList.remove("other_animate");
+                void element_text.offsetWidth;
+                element_text.classList.add("other_animate");
+            }
+            else {
+                element_text.classList.remove("comment_animate");
+                void element_text.offsetWidth;
+                element_text.classList.add("comment_animate");
+            }
+        }
+        return "";
+    }
+    ''',
+    Output('hidden-div', 'children'),
+    [Input('seesoft-content', 'clickData')]
+)
 
 if __name__ == '__main__':
     app.run_server(debug=True)

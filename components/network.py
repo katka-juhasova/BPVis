@@ -203,7 +203,7 @@ class Network:
                 col += 1
 
         axis_settings = {'showticklabels': False, 'showline': False,
-                         'showgrid': False}
+                         'showgrid': False, 'zeroline': False}
 
         fig.update_layout(
             template='plotly_white',

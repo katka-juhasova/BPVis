@@ -160,7 +160,7 @@ class LuaCode:
 
     # children may contain pure string element, html.Br() or html.Span element
     # with corresponding color background
-    def view(self, dash_id: str):
+    def view(self, dash_id: str, columns=None):
         # self.__build_tag_table()
         # self.__build_color_text_table()
         children = self.get_children(dash_id)
@@ -177,5 +177,6 @@ class LuaCode:
                 'padding': '20px',
                 'height': '730px',
                 'overflow': 'auto'
-            }
+            },
+            # className=COLUMNS[columns]
         )

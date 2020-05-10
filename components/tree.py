@@ -3,7 +3,7 @@ import json
 import urllib
 from igraph import Graph
 import plotly.graph_objects as go
-from constant import COLORS
+from constant import DIAGRAM_COLORS as COLORS
 from constant import COLUMNS
 import dash_core_components as dcc
 

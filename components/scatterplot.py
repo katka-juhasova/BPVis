@@ -2,7 +2,7 @@ import logging
 import json
 import urllib
 import chardet
-from constant import COLORS
+from constant import DIAGRAM_COLORS as COLORS
 from constant import COLUMNS
 import plotly.graph_objects as go
 import dash_core_components as dcc

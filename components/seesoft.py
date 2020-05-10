@@ -9,6 +9,7 @@ from constant import COLUMNS
 from constant import LUA_LINE_HEIGHT
 import plotly.graph_objects as go
 import base64
+from io import BytesIO
 import dash_core_components as dcc
 
 
@@ -50,6 +51,7 @@ class SeeSoft:
         self.tag_table = [dict() for _ in range(len(self.source_code))]
 
         self.img_path = img_path or 'image.png'
+        self.bin_img = BytesIO()
 
         self.__build_tag_table()
         self.img_width = ((self.__max_line() * self.byte_width)
@@ -184,16 +186,16 @@ class SeeSoft:
 
     def draw(self, byte_width=None, byte_height=None,
              margin_size=None, img_path=None):
-        self.byte_width = byte_width or BYTE_WIDTH
-        self.byte_height = byte_height or BYTE_HEIGHT
-        self.margin_size = margin_size or MARGIN_SIZE
-        self.img_path = img_path or self.img_path
-
-        self.__build_tag_table()
-        self.img_width = ((self.__max_line() * self.byte_width)
-                          + 2 * self.margin_size)
-        self.img_height = ((self.__lines_count() * self.byte_height)
-                           + 2 * self.margin_size)
+        # self.byte_width = byte_width or BYTE_WIDTH
+        # self.byte_height = byte_height or BYTE_HEIGHT
+        # self.margin_size = margin_size or MARGIN_SIZE
+        # self.img_path = img_path or self.img_path
+        #
+        # self.__build_tag_table()
+        # self.img_width = ((self.__max_line() * self.byte_width)
+        #                   + 2 * self.margin_size)
+        # self.img_height = ((self.__lines_count() * self.byte_height)
+        #                    + 2 * self.margin_size)
 
         image = Image.new('RGB', (self.img_width, self.img_height),
                           color=COLORS['empty'])
@@ -228,7 +230,8 @@ class SeeSoft:
 
                 column += 1
 
-        image.save(self.img_path)
+        image.save(self.bin_img, format='PNG')
+        # image.save(self.img_path)
 
     def __add_traces(self, fig):
         # NOTE: first line from the file has the highest y value in the graph
@@ -343,8 +346,9 @@ class SeeSoft:
     def get_figure(self) -> go.Figure:
         fig = go.Figure()
 
-        with open('assets/seesoft.png', 'rb') as img_file:
-            encoded_string = base64.b64encode(img_file.read()).decode()
+        # with open('assets/seesoft.png', 'rb') as img_file:
+        #     encoded_string = base64.b64encode(img_file.read()).decode()
+        encoded_string = base64.b64encode(self.bin_img.getvalue()).decode()
         encoded_image = 'data:image/png;base64,' + encoded_string
 
         # add invisible scatter trace
@@ -398,7 +402,7 @@ class SeeSoft:
         self.__add_traces(fig)
         return fig
 
-    def view(self, dash_id: str, width=None, height=None):
+    def view(self, dash_id: str, columns=None, width=None, height=None):
         width, height = self.count_width_and_height(width, height)
 
         return dcc.Graph(
@@ -411,5 +415,6 @@ class SeeSoft:
                 'width': width,
                 'height': height,
                 'max-height': '750px'
-            }
+            },
+            # className=COLUMNS[columns]
         )

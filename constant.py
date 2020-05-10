@@ -27,6 +27,19 @@ COLORS = {
     None: None
 }
 
+DIAGRAM_COLORS = {
+    'require': '#F58518',
+    'variable': '#54A24B',
+    'function': '#4C78A8',
+    'interface': '#B279A2',
+    'other': '#EECA3B',
+    'comment': '#eaeaea',
+    'empty': '#FFFFFF',
+    'code-background': '#eaeaea',
+    'plot-line': '#c9c9c9',
+    None: None
+}
+
 LUA_LINE_HEIGHT = 15
 
 CLUSTER_COLORS = [

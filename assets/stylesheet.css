@@ -402,7 +402,7 @@ there.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 @keyframes require_highlight {
     from {background-color: #FF6347;}
-    to {background-color: #FFAD7A;}
+    to {background-color: #f8ac61;}
 }
 
 .require_animate {
@@ -411,7 +411,7 @@ there.
 
 @keyframes variable_highlight {
   from {background-color: #FF6347;}
-  to {background-color: #75EB87;}
+  to {background-color: #a9d0a5;}
 }
 
 .variable_animate {
@@ -420,7 +420,7 @@ there.
 
 @keyframes function_highlight {
   from {background-color: #FF6347;}
-  to {background-color: #9ECBFF;}
+  to {background-color: #b2c6dc;}
 }
 
 .function_animate {
@@ -430,7 +430,7 @@ there.
 @keyframes interface_highlight {
   /*from {background-color: #D400F0;}*/
   from {background-color: #FF6347;}
-  to {background-color: #E58DF0;}
+  to {background-color: #c9a1bd;}
 }
 
 .interface_animate {
@@ -439,7 +439,7 @@ there.
 
 @keyframes other_highlight {
   from {background-color: #FF6347;}
-  to {background-color: #FFEC91;}
+  to {background-color: #f4df89;}
 }
 
 .other_animate {
@@ -448,7 +448,7 @@ there.
 
 @keyframes comment_highlight {
   from {background-color: #FF6347;}
-  to {background-color: #E5E5E5;}
+  to {background-color: #eaeaea;}
 }
 
 .comment_animate {
