@@ -23,22 +23,3 @@ def get_empty_figure():
 
     return fig
 
-
-def get_colorful_figure():
-    fig = {
-        'data': [],
-        'layout': go.Layout(
-            xaxis={
-                'showticklabels': False,
-                'ticks': '',
-                'zeroline': False
-            },
-            yaxis={
-                'showticklabels': False,
-                'ticks': '',
-                'zeroline': False
-            }
-        )
-    }
-
-    return fig

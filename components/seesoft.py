@@ -17,7 +17,8 @@ BYTE_WIDTH = 5
 BYTE_HEIGHT = 10
 MARGIN_SIZE = 20
 MAX_VIEW_WIDTH = 200
-MAX_VIEW_HEIGHT = 760
+MIN_VIEW_HEIGHT = 200
+MAX_VIEW_HEIGHT = 750
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -330,20 +331,20 @@ class SeeSoft:
             return width, height
         if width and height:
             return width, height
-        elif width and not height:
-            height = (width / self.img_width) * self.img_height
-        elif not width and height:
-            width = (height / self.img_height) * self.img_width
         else:
-            width = min(self.img_width, MAX_VIEW_WIDTH)
+            width = MAX_VIEW_WIDTH
             height = (width / self.img_width) * self.img_height
             if height > MAX_VIEW_HEIGHT:
                 height = MAX_VIEW_HEIGHT
-                width = (height / self.img_height) * self.img_width
+            elif height < MIN_VIEW_HEIGHT:
+                height = MIN_VIEW_HEIGHT
 
         return width, height
 
-    def get_figure(self) -> go.Figure:
+    def get_figure(self, height_scale=None,
+                   width=None, height=None) -> go.Figure:
+        width, height = self.count_width_and_height(width, height)
+
         fig = go.Figure()
 
         # with open('assets/seesoft.png', 'rb') as img_file:
@@ -396,6 +397,8 @@ class SeeSoft:
 
         # configure other layout
         fig.update_layout(
+            width=width,
+            height=height,
             margin={'l': 0, 'r': 0, 't': 0, 'b': 0, 'autoexpand': False}
         )
 
@@ -403,7 +406,7 @@ class SeeSoft:
         return fig
 
     def view(self, dash_id: str, columns=None, width=None, height=None):
-        width, height = self.count_width_and_height(width, height)
+        # width, height = self.count_width_and_height(width, height)
 
         return dcc.Graph(
             id=dash_id,

@@ -143,7 +143,7 @@ class Tree:
 
         return fig
 
-    def view(self, dash_id: str, columns: str, height=None):
+    def view(self, dash_id: str, columns=None, height=None):
         return dcc.Graph(
             id=dash_id,
             figure=self.get_figure(),

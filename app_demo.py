@@ -83,7 +83,8 @@ app.layout = html.Div([
         className='row'
     ),
     html.Div(id='hidden-div-left',
-             style={'display': 'none'}),
+             # style={'display': 'none'}
+             ),
     html.Div(id='hidden-div-right',
              style={'display': 'none'}),
     html.Div(
@@ -153,6 +154,9 @@ app.clientside_callback(
             }
 
             // handle highlighting
+            var shit = document.getElementById("hidden-div-left");
+            shit.innerHTML = color;
+            
             if (color == "rgb(255, 173, 122)") {
                 element_text.classList.remove("require_animate");
                 void element_text.offsetWidth;

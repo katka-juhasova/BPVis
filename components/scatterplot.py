@@ -151,7 +151,7 @@ class ScatterPlot:
 
         return fig
 
-    def view(self, dash_id: str, columns: str, height=None,
+    def view(self, dash_id: str, columns=None, height=None,
              show_legend=False, show_text=False):
         return dcc.Graph(
             id=dash_id,

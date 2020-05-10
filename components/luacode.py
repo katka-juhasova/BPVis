@@ -95,7 +95,8 @@ class LuaCode:
                     and i - 1 >= 0
                     and i + 1 < len(self.tag_table)
                     and self.tag_table[i - 1]['container'] == 'comment'
-                    and self.tag_table[i + 1]['container'] == 'comment'
+                    and (self.tag_table[i + 1]['container'] == 'comment'
+                         or self.tag_table[i + 1]['char'].isspace())
             ):
                 byte['container'] = 'comment'
 
