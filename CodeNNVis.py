@@ -8,6 +8,8 @@ from components.seesoft import SeeSoft
 from components.scatterplot import ScatterPlot
 from components.tree import Tree
 from components.clusters import Clusters
+# from constant import COLORS
+# from constant import LUA_LINE_HEIGHT
 from dash.dependencies import Input, Output, State
 
 DIMENSIONS = 7
@@ -24,16 +26,16 @@ here = os.path.dirname(os.path.realpath(__file__))
 #             files.append(os.path.join(r, file))
 
 # sample = None
-# sample = Sample(path=here + '/' + 'data/lut/AST1.json')
+sample = Sample(path=here + '/' + 'data/lut/AST1.json')
 # # seesoft = SeeSoft(data=sample.data, comments=True)
 # # seesoft.draw(img_path='assets/seesoft.png')
-# luacode = None
-# seesoft = None
+luacode = None
+seesoft = None
 # # luacode = LuaCode(data=sample.data)
 # # scatterplot = ScatterPlot(data=sample.data)
 # # tree = Tree(data=sample.data)
-# scatterplot = None
-# tree = None
+scatterplot = None
+tree = None
 # # clusters = Clusters(sample=sample)
 
 
@@ -75,18 +77,32 @@ app.layout = html.Div([
         className='row'
     ),
     html.Div(
+        # id='first-part',
         children=[
             html.Div(
-                id='left-column',
+                id='lua-code',
                 children=[],
                 style={
+                    # 'outline': '2px solid black',
+                    'height': '800px',
                     'float': 'left',
                     'width': '660px',
-                    'padding': '10px',
+                    'padding-left': '10px',
+                    'padding-right': '10px',
                     'background-color': 'red'
                 }
-                # className='6 columns'
             ),
+            # html.Div(
+            #     id='left-column',
+            #     children=[],
+            #     style={
+            #         'float': 'left',
+            #         'width': '660px',
+            #         'padding': '10px',
+            #         'background-color': 'red'
+            #     }
+            #     # className='6 columns'
+            # ),
             html.Div(
                 id='right-column',
                 children=[],
@@ -117,26 +133,42 @@ app.layout = html.Div([
 )
 
 
-# @app.callback(
-#     Output('left-column', 'children'),
-#     [Input('module-input-button', 'n_clicks')],
-#     [State('module-input', 'value')]
-# )
-# def update_left_column(n_clicks, value):
-#     # global sample
-#     # global luacode
-#     # global seesoft
-#
-#     if n_clicks:
-#         # sample = Sample(path=here + '/' + str(value))
-#         luacode = LuaCode(path=value)
-#         seesoft = SeeSoft(path=value, comments=True)
-#         seesoft.draw(img_path='assets/seesoft.png')
-#
-#         return [
-#             luacode.view(dash_id='lua-code-content', columns='8'),
-#             # seesoft.view(dash_id='seesoft-content', columns='4')
-#         ]
+@app.callback(
+    Output('lua-code', 'children'),
+    [Input('module-input-button', 'n_clicks')],
+    [State('module-input', 'value')]
+)
+def update_left_column(n_clicks, value):
+    global sample
+    global luacode
+    global seesoft
+
+    if n_clicks > 0:
+        # sample = Sample(path=here + '/' + str(value))
+        luacode = LuaCode(path=value)
+        # seesoft = SeeSoft(data=sample.data, comments=True)
+        # seesoft.draw(img_path='assets/seesoft.png')
+
+        return [
+            luacode.view(dash_id='lua-code-content', columns='8'),
+            # seesoft.view(dash_id='seesoft-content', columns='4')
+        ]
+
+        # return html.Pre(
+        #     id='lua-code-content',
+        #     children=luacode.get_children('lua-code-content'),
+        #     style={
+        #         'background-color': COLORS['code-background'],
+        #         'font-family': 'Courier, monospace',
+        #         'color': 'black',
+        #         'font-size': '10px',
+        #         'line-height': LUA_LINE_HEIGHT,
+        #         'padding': '20px',
+        #         'height': '730px',
+        #         'overflow': 'auto'
+        #     },
+        #     className='8 columns'
+        # )
 
 
 @app.callback(
@@ -146,8 +178,8 @@ app.layout = html.Div([
 )
 def update_right_column(n_clicks, value):
     # global sample
-    # global scatterplot
-    # global tree
+    global scatterplot
+    global tree
 
     if n_clicks > 0:
         scatterplot = ScatterPlot(path=value)

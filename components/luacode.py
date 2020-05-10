@@ -131,6 +131,9 @@ class LuaCode:
                 )
 
     def get_children(self, parent_id: str) -> List:
+        self.__build_tag_table()
+        self.__build_color_text_table()
+
         children = list()
         child_id = 1
         for section in self.color_text_table:
@@ -158,8 +161,8 @@ class LuaCode:
     # children may contain pure string element, html.Br() or html.Span element
     # with corresponding color background
     def view(self, dash_id: str, columns: str):
-        self.__build_tag_table()
-        self.__build_color_text_table()
+        # self.__build_tag_table()
+        # self.__build_color_text_table()
         children = self.get_children(dash_id)
 
         return html.Pre(

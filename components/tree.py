@@ -134,7 +134,7 @@ class Tree:
 
         fig.update_layout(
             template='plotly_white',
-            title='Input tree',
+            title='Input AST structure',
             xaxis=axis,
             yaxis=axis,
             showlegend=False,
