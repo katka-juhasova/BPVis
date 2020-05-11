@@ -10,24 +10,36 @@ from constant import CLUSTER_COLORS
 from constant import COLUMNS
 import dash_core_components as dcc
 
-
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 log.addHandler(logging.StreamHandler())
-
 
 CSV_PATH = (os.path.dirname(os.path.realpath(__file__))
             + '/../network/train_data_activations_layer4.csv')
 
 
 class Clusters:
-    def __init__(self, sample: Sample):
-        self.sample_data = self.__load_sample_data(sample)
+    def __init__(self, sample=None):
         self.train_data = self.__load_train_data()
-        log.debug('Performing fit_transform for T-SNE...')
-        self.tsne_traces, self.tsne_sample_trace = self.__prepare_tsne_traces()
-        log.debug('Performing fit_transform for PCA...')
-        self.pca_traces, self.pca_sample_trace = self.__prepare_pca_traces()
+
+        if sample:
+            self.sample_data = self.__load_sample_data(sample)
+            log.debug('Performing fit_transform for T-SNE...')
+            self.tsne_traces, self.tsne_sample_trace = (
+                self.__prepare_tsne_traces()
+            )
+            log.debug('Performing fit_transform for PCA...')
+            self.pca_traces, self.pca_sample_trace = (
+                self.__prepare_pca_traces()
+            )
+            log.debug('Successfully finished fit_transform...')
+
+        else:
+            self.sample_data = None
+            self.tsne_traces = None
+            self.tsne_sample_trace = None
+            self.pca_traces = None
+            self.pca_sample_trace = None
 
     @staticmethod
     def __load_sample_data(sample: Sample) -> pd.DataFrame:
@@ -120,7 +132,15 @@ class Clusters:
 
         return traces, sample_trace
 
-    def get_figure(self, algorithm: str) -> go.Figure:
+    def add_sample(self, sample: Sample):
+        self.sample_data = self.__load_sample_data(sample)
+        log.debug('Performing fit_transform for T-SNE...')
+        self.tsne_traces, self.tsne_sample_trace = self.__prepare_tsne_traces()
+        log.debug('Performing fit_transform for PCA...')
+        self.pca_traces, self.pca_sample_trace = self.__prepare_pca_traces()
+        log.debug('Successfully finished fit_transform...')
+
+    def get_figure(self, algorithm: str, height=None) -> go.Figure:
         if algorithm == 'PCA':
             traces = self.pca_traces
             sample_trace = self.pca_sample_trace
@@ -160,9 +180,11 @@ class Clusters:
         )
 
         fig.update_layout(
+            height=height or 500,
             template='plotly_white',
             showlegend=True,
-            hovermode='closest'
+            hovermode='closest',
+            margin={'l': 10, 'b': 10, 't': 20}
         )
 
         return fig
@@ -170,7 +192,7 @@ class Clusters:
     def view(self, dash_id: str, columns: str, algorithm: str, height=None):
         return dcc.Graph(
             id=dash_id,
-            figure=self.get_figure(algorithm),
+            figure=self.get_figure(algorithm, height),
             style={
                 'height': height or '40vh'
             },

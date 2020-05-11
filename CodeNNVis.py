@@ -10,15 +10,9 @@ from components.seesoft import SeeSoft
 from components.scatterplot import ScatterPlot
 from components.tree import Tree
 from components.clusters import Clusters
-
-# from constant import COLORS
-# from constant import LUA_LINE_HEIGHT
-
-
 from keras.models import load_model
 from network.clustering import ClusteringLayer
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 DIMENSIONS = 10
 
@@ -27,33 +21,13 @@ model_path = (os.path.dirname(os.path.realpath(__file__))
 model = load_model(model_path,
                    custom_objects={'ClusteringLayer': ClusteringLayer})
 
-# here = os.path.dirname(os.path.realpath(__file__))
-
-# path = os.path.dirname(os.path.realpath(__file__)) + '/test_data'
-# files = list()
-#
-# # r=root, d=directories, f=files
-# # list all json files
-# for r, d, f in os.walk(path):
-#     for file in f:
-#         if '.json' in file:
-#             files.append(os.path.join(r, file))
-
-# sample = None
-# sample = Sample(path='data/lut/AST1.json', model=model)
-
-
-
-# # seesoft = SeeSoft(data=sample.data, comments=True)
-# # seesoft.draw(img_path='assets/seesoft.png')
 luacode = None
 seesoft = None
-# # luacode = LuaCode(data=sample.data)
-# # scatterplot = ScatterPlot(data=sample.data)
-# # tree = Tree(data=sample.data)
 scatterplot = None
 tree = None
-# # clusters = Clusters(sample=sample)
+sample = None
+sample_path = None
+clusters = Clusters()
 
 
 app = dash.Dash(__name__)
@@ -101,13 +75,11 @@ app.layout = html.Div([
                     layout.get_empty_div(height=750)
                 ],
                 style={
-                    # 'outline': '2px solid black',
                     'height': '800px',
                     'float': 'left',
                     'width': '520px',
                     'padding-left': '10px',
                     'padding-right': '10px',
-                    # 'background-color': '#eaeaea'
                 }
             ),
             dcc.Graph(
@@ -121,7 +93,6 @@ app.layout = html.Div([
                     'float': 'left',
                     'width': '200px',
                     'padding': '10px',
-                    # 'background-color': 'yellow'
                 }
             ),
             html.Div(
@@ -149,15 +120,26 @@ app.layout = html.Div([
                             'height': '300px',
                         }
                     ),
+                    html.H6('Cluster diagram'),
                     dcc.RadioItems(
+                        id='cluster-radio',
                         options=[
-                            {'label': 'New York City', 'value': 'NYC'},
-                            {'label': 'Montréal', 'value': 'MTL'},
-                            {'label': 'San Francisco', 'value': 'SF'}
+                            {'label': 'PCA', 'value': 'pca'},
+                            {'label': 'T-SNE', 'value': 'tsne'}
                         ],
-                        value='MTL',
+                        value='pca',
                         labelStyle={'display': 'inline-block'}
-                    )
+                    ),
+                    dcc.Graph(
+                        id='clusters-content',
+                        figure=layout.get_empty_figure(height=500),
+                        config={
+                            'displayModeBar': False
+                        },
+                        style={
+                            'height': '500px',
+                        }
+                    ),
                 ],
                 style={
                     'float': 'left',
@@ -184,7 +166,6 @@ def update_input_luacode(n_clicks, value):
     global luacode
 
     if n_clicks > 0:
-        sample = Sample(path='data/lut/AST1.json', model=model)
         luacode = LuaCode(path=value)
         return luacode.view(dash_id='lua-code-content')
 
@@ -214,7 +195,7 @@ def update_input_seesoft(n_clicks, value):
     [Input('module-input-button', 'n_clicks')],
     [State('module-input', 'value')]
 )
-def update_input_diagrams(n_clicks, value):
+def update_input_scatterplot(n_clicks, value):
     global scatterplot
 
     if n_clicks > 0:
@@ -230,7 +211,7 @@ def update_input_diagrams(n_clicks, value):
     [Input('module-input-button', 'n_clicks')],
     [State('module-input', 'value')]
 )
-def update_input_diagrams(n_clicks, value):
+def update_input_tree(n_clicks, value):
     global tree
 
     if n_clicks > 0:
@@ -239,6 +220,24 @@ def update_input_diagrams(n_clicks, value):
 
     else:
         return layout.get_empty_figure(height=300)
+
+
+@app.callback(
+    Output('clusters-content', 'figure'),
+    [Input('module-input-button', 'n_clicks')],
+    [State('module-input', 'value')]
+)
+def update_clusters(n_clicks, value):
+    global sample
+    global clusters
+
+    if n_clicks > 0:
+        sample = Sample(path=value, model=model)
+        clusters.add_sample(sample)
+        return clusters.get_figure(algorithm='PCA')
+
+    else:
+        return layout.get_empty_figure(height=500)
 
 
 app.clientside_callback(

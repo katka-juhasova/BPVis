@@ -49,7 +49,10 @@ CLUSTER_COLORS = [
     '#72B7B2',
     '#F58518',
     '#EECA3B',
-    '#B279A2'
+    '#B279A2',
+    '#FF9DA6',
+    '#9D755D',
+    '#BAB0AC'
 ]
 
 # WHITE_TO_BLUE = [
