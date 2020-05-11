@@ -11,7 +11,7 @@ log.addHandler(logging.StreamHandler())
 
 # class containing everything needed for visualization of sample
 class Sample:
-    def __init__(self, path=None, url=None):
+    def __init__(self, path=None, url=None, model=None):
         if all(arg is None for arg in {path, url}):
             raise ValueError('Expected either path or url argument')
 
@@ -24,6 +24,6 @@ class Sample:
             with urllib.request.urlopen(url) as url_data:
                 self.data = json.loads(url_data.read().decode())
 
-        self.activations = module_activations(json_path=path)
+        self.activations = module_activations(json_path=path, model=model)
         last_layer = list(self.activations.keys())[-1]
         self.label = self.activations[last_layer].argmax(1)[0]

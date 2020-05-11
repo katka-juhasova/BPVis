@@ -10,12 +10,24 @@ from components.seesoft import SeeSoft
 from components.scatterplot import ScatterPlot
 from components.tree import Tree
 from components.clusters import Clusters
+
 # from constant import COLORS
 # from constant import LUA_LINE_HEIGHT
 
 
-DIMENSIONS = 7
-here = os.path.dirname(os.path.realpath(__file__))
+from keras.models import load_model
+from network.clustering import ClusteringLayer
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+DIMENSIONS = 10
+
+model_path = (os.path.dirname(os.path.realpath(__file__))
+              + '/network/clustering_model_10.h5')
+model = load_model(model_path,
+                   custom_objects={'ClusteringLayer': ClusteringLayer})
+
+# here = os.path.dirname(os.path.realpath(__file__))
 
 # path = os.path.dirname(os.path.realpath(__file__)) + '/test_data'
 # files = list()
@@ -28,7 +40,10 @@ here = os.path.dirname(os.path.realpath(__file__))
 #             files.append(os.path.join(r, file))
 
 # sample = None
-sample = Sample(path=here + '/' + 'data/lut/AST1.json')
+# sample = Sample(path='data/lut/AST1.json', model=model)
+
+
+
 # # seesoft = SeeSoft(data=sample.data, comments=True)
 # # seesoft.draw(img_path='assets/seesoft.png')
 luacode = None
@@ -82,7 +97,9 @@ app.layout = html.Div([
         children=[
             html.Div(
                 id='input-luacode',
-                children=[],
+                children=[
+                    layout.get_empty_div(height=750)
+                ],
                 style={
                     # 'outline': '2px solid black',
                     'height': '800px',
@@ -90,38 +107,70 @@ app.layout = html.Div([
                     'width': '520px',
                     'padding-left': '10px',
                     'padding-right': '10px',
-                    'background-color': 'red'
+                    # 'background-color': '#eaeaea'
                 }
             ),
             dcc.Graph(
                 id='seesoft-content',
-                figure=layout.get_empty_figure(),
+                figure=layout.get_empty_figure(height=750),
                 config={
                     'displayModeBar': False
                 },
                 style={
-                    # 'outline': '2px solid black',
                     'max-height': '750px',
                     'float': 'left',
                     'width': '200px',
                     'padding': '10px',
-                    'background-color': 'yellow'
+                    # 'background-color': 'yellow'
                 }
             ),
             html.Div(
                 id='input-diagrams',
-                children=[],
+                children=[
+                    html.H6('AST nodes order'),
+                    dcc.Graph(
+                        id='scatterplot-content',
+                        figure=layout.get_empty_figure(height=200),
+                        config={
+                            'displayModeBar': False
+                        },
+                        style={
+                            'height': '200px',
+                        }
+                    ),
+                    html.H6('Input AST structure'),
+                    dcc.Graph(
+                        id='tree-content',
+                        figure=layout.get_empty_figure(height=300),
+                        config={
+                            'displayModeBar': False
+                        },
+                        style={
+                            'height': '300px',
+                        }
+                    ),
+                    dcc.RadioItems(
+                        options=[
+                            {'label': 'New York City', 'value': 'NYC'},
+                            {'label': 'Montréal', 'value': 'MTL'},
+                            {'label': 'San Francisco', 'value': 'SF'}
+                        ],
+                        value='MTL',
+                        labelStyle={'display': 'inline-block'}
+                    )
+                ],
                 style={
                     'float': 'left',
                     'width': '720px',
-                    'padding': '10px',
-                    'background-color': 'blue'
+                    'padding-left': '10px',
+                    'padding-right': '10px',
+                    'padding-bottom': '10px',
                 }
             ),
         ],
         className='row'
     ),
-    ],
+],
     className='ten columns offset-by-one'
 )
 
@@ -135,8 +184,12 @@ def update_input_luacode(n_clicks, value):
     global luacode
 
     if n_clicks > 0:
+        sample = Sample(path='data/lut/AST1.json', model=model)
         luacode = LuaCode(path=value)
         return luacode.view(dash_id='lua-code-content')
+
+    else:
+        return layout.get_empty_div(750)
 
 
 @app.callback(
@@ -153,27 +206,39 @@ def update_input_seesoft(n_clicks, value):
         return seesoft.get_figure()
 
     else:
-        return layout.get_empty_figure()
+        return layout.get_empty_figure(height=750)
 
 
 @app.callback(
-    Output('input-diagrams', 'children'),
+    Output('scatterplot-content', 'figure'),
     [Input('module-input-button', 'n_clicks')],
     [State('module-input', 'value')]
 )
 def update_input_diagrams(n_clicks, value):
     global scatterplot
-    global tree
 
     if n_clicks > 0:
         scatterplot = ScatterPlot(path=value)
-        tree = Tree(path=value)
+        return scatterplot.get_figure(show_legend=True, show_text=True)
 
-        return [
-            scatterplot.view(dash_id='scatterplot-content', show_legend=True,
-                             show_text=True),
-            tree.view(dash_id='tree-content')
-        ]
+    else:
+        return layout.get_empty_figure(height=200)
+
+
+@app.callback(
+    Output('tree-content', 'figure'),
+    [Input('module-input-button', 'n_clicks')],
+    [State('module-input', 'value')]
+)
+def update_input_diagrams(n_clicks, value):
+    global tree
+
+    if n_clicks > 0:
+        tree = Tree(path=value)
+        return tree.get_figure(horizontal=True)
+
+    else:
+        return layout.get_empty_figure(height=300)
 
 
 app.clientside_callback(

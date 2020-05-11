@@ -139,12 +139,12 @@ class ScatterPlot:
 
         fig.update_layout(
             template='plotly_white',
-            title='Input nodes order',
+            # title='Input nodes order',
             xaxis={
                 'rangemode': 'tozero'
             },
             yaxis={'title': 'Container'},
-            margin={'l': 40, 'r': 40, 'b': 40, 't': 40},
+            margin={'l': 40, 'r': 20, 'b': 40, 't': 0},
             showlegend=show_legend,
             legend_orientation="h"
         )

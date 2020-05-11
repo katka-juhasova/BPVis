@@ -20,10 +20,11 @@ ARROW_SIZE = 6
 MAX_Y = 215
 MIDDLE_Y = 107
 INPUT_WIDTH = 3
-LAYERS_LAYOUT_WIDTH = 379
 LSTM1_WIDTH = 128
 LSTM2_WIDTH = 64
+# change these 2 numbers in case of different output layer
 OUTPUT_WIDTH = 7
+LAYERS_LAYOUT_WIDTH = 379
 
 
 class Network:

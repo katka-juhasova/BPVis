@@ -10,10 +10,9 @@ import logging
 import csv
 import json
 
-
 MAX_CONTEXTS = 430
-MODEL_PATH = (os.path.dirname(os.path.realpath(__file__))
-              + '/full_LSTM_2_clusters_7_bs_128.h5')
+model_path = (os.path.dirname(os.path.realpath(__file__))
+              + '/clustering_model_10.h5')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 log = logging.getLogger(__name__)
@@ -95,8 +94,11 @@ def build_input_from_json(json_path: str) -> np.ndarray:
 
     # normalise data, get mean and std from training, here its hardcoded
     log.debug('Normalising data for JSON file "{}"'.format(json_path))
-    masked_data_mean = -120.57979590730959
-    masked_data_std = 1115300671.9887397
+    # masked_data_mean = -120.57979590730959
+    # masked_data_std = 1115300671.9887397
+    masked_data_mean = 21.11153407758736
+    masked_data_std = 1157761522.5453846
+
     # perform z-normalisation
     normalised_masked_data = (masked_data - masked_data_mean) / masked_data_std
     # refill masked values with 0
@@ -111,7 +113,7 @@ def module_pipeline(json_path: str) -> int:
     data = build_input_from_json(json_path)
 
     # load model and generate label
-    model_path = MODEL_PATH
+    # model_path = model_path
     model = load_model(model_path,
                        custom_objects={'ClusteringLayer': ClusteringLayer})
 
@@ -125,7 +127,7 @@ def module_pipeline(json_path: str) -> int:
 
 # pipeline for predicting the whole dataset
 def dataset_pipeline() -> np.ndarray:
-    model_path = MODEL_PATH
+    # model_path = model_path
     model = load_model(model_path,
                        custom_objects={'ClusteringLayer': ClusteringLayer})
 
@@ -144,7 +146,7 @@ def dataset_pipeline() -> np.ndarray:
 # if the module is provided get activations for module, otherwise for
 # whole dataset
 def dataset_activations(layer=None) -> (List[str], dict):
-    model_path = MODEL_PATH
+    # model_path = model_path
     model = load_model(model_path,
                        custom_objects={'ClusteringLayer': ClusteringLayer})
 
@@ -186,14 +188,16 @@ def dataset_activations(layer=None) -> (List[str], dict):
 
 # returns activations for just one module
 # if layer is provided return activations of just one layer, otherwise for all
-def module_activations(json_path: str, layer=None) -> dict:
+def module_activations(json_path: str, model=None, layer=None) -> dict:
     # load the data
     data = build_input_from_json(json_path)
 
     # load model and generate label
-    model_path = MODEL_PATH
-    model = load_model(model_path,
-                       custom_objects={'ClusteringLayer': ClusteringLayer})
+    # model_path = model_path
+    model = (model or
+             load_model(model_path, custom_objects={
+                                    'ClusteringLayer': ClusteringLayer})
+             )
 
     layers_count = len(model.layers)
 
@@ -231,6 +235,8 @@ def save_train_data_activations():
     path = os.path.dirname(os.path.realpath(__file__)) + '/../data'
     data_files = list()
 
+    print(path)
+
     # r=root, d=directories, f=files
     # list all json files
     for r, d, f in os.walk(path):
@@ -248,7 +254,7 @@ def save_train_data_activations():
             json_data = json.load(f)
 
         name = json_data['path']
-        name = name.replace('/home/katka/Desktop/FIIT/BP/BPVis/modules/', '')
+        name = name.replace('modules/', '')
         name = name[:-4]
 
         try:

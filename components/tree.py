@@ -47,7 +47,7 @@ class Tree:
             if 'children' in child:
                 self.__add_child_edges(child)
 
-    def get_figure(self) -> go.Figure:
+    def get_figure(self, horizontal=False) -> go.Figure:
         # nodes from .json plus root node
         nodes_count = self.data['nodes_count'] + 1
 
@@ -83,13 +83,21 @@ class Tree:
             edges_x += [2 * max_y - positions[edge[0]][1],
                         2 * max_y - positions[edge[1]][1], None]
 
-        # mirror the graph in both directions so that the edges are oriented
-        # form left to right and nodes in order from the smallest to
-        # the largest
-        nodes_x = [-x for x in nodes_x]
-        nodes_y = [-y for y in nodes_y]
-        edges_x = list(map(lambda x: -x if x else x, edges_x))
-        edges_y = list(map(lambda y: -y if y else y, edges_y))
+        if horizontal:
+            # just swap axis x and y for horizontal display of the tree
+            nodes_x = [x for x in nodes_x]
+            nodes_y = [y for y in nodes_y]
+            nodes_x, nodes_y = nodes_y, nodes_x
+            edges_x, edges_y = edges_y, edges_x
+
+        else:
+            # mirror the graph in both directions so that the edges
+            # are oriented form left to right and nodes in order from
+            # the smallest to the largest
+            nodes_x = [-x for x in nodes_x]
+            nodes_y = [-y for y in nodes_y]
+            edges_x = list(map(lambda x: -x if x else x, edges_x))
+            edges_y = list(map(lambda y: -y if y else y, edges_y))
 
         fig = go.Figure()
 
@@ -134,21 +142,21 @@ class Tree:
 
         fig.update_layout(
             template='plotly_white',
-            title='Input AST structure',
+            # title='Input AST structure',
             xaxis=axis,
             yaxis=axis,
             showlegend=False,
-            margin={'l': 40, 'r': 40, 'b': 10, 't': 40}
+            margin={'l': 40, 'r': 40, 'b': 10, 't': 0}
         )
 
         return fig
 
-    def view(self, dash_id: str, columns=None, height=None):
+    def view(self, dash_id: str, horizontal=False, columns=None, height=None):
         return dcc.Graph(
             id=dash_id,
-            figure=self.get_figure(),
+            figure=self.get_figure(horizontal),
             style={
-                'height': height or '60vh'
+                'height': height or '300px'
             },
             # className=COLUMNS[columns]
         )
