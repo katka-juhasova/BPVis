@@ -26,7 +26,7 @@ seesoft = None
 scatterplot = None
 tree = None
 sample = None
-sample_path = None
+click_counter = 0
 clusters = Clusters()
 
 
@@ -224,17 +224,23 @@ def update_input_tree(n_clicks, value):
 
 @app.callback(
     Output('clusters-content', 'figure'),
-    [Input('module-input-button', 'n_clicks')],
+    [Input('module-input-button', 'n_clicks'),
+     Input('cluster-radio', 'value')],
     [State('module-input', 'value')]
 )
-def update_clusters(n_clicks, value):
+def update_clusters(n_clicks, value1, value2):
+    global click_counter
     global sample
     global clusters
 
     if n_clicks > 0:
-        sample = Sample(path=value, model=model)
+        if n_clicks == click_counter:
+            return clusters.get_figure(algorithm=value1)
+
+        click_counter = n_clicks
+        sample = Sample(path=value2, model=model)
         clusters.add_sample(sample)
-        return clusters.get_figure(algorithm='PCA')
+        return clusters.get_figure(algorithm=value1)
 
     else:
         return layout.get_empty_figure(height=500)

@@ -141,7 +141,7 @@ class Clusters:
         log.debug('Successfully finished fit_transform...')
 
     def get_figure(self, algorithm: str, height=None) -> go.Figure:
-        if algorithm == 'PCA':
+        if algorithm == 'pca':
             traces = self.pca_traces
             sample_trace = self.pca_sample_trace
         else:
