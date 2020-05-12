@@ -3,7 +3,6 @@ from sample import Sample
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from constant import RED_TO_BLUE
-from constant import COLUMNS
 import dash_core_components as dcc
 
 log = logging.getLogger(__name__)
@@ -11,8 +10,8 @@ log.setLevel(logging.DEBUG)
 log.addHandler(logging.StreamHandler())
 
 MARGIN_TOP = 10
-MARGIN_LEFT = 10
-MARGIN_RIGHT = 10
+MARGIN_LEFT = 50
+MARGIN_RIGHT = 50
 MARGIN_BOTTOM = 10
 CELL_SIZE = 4
 ARROW_SIZE = 6
@@ -21,10 +20,15 @@ MAX_Y = 215
 MIDDLE_Y = 107
 INPUT_WIDTH = 3
 LSTM1_WIDTH = 128
-LSTM2_WIDTH = 64
+# LSTM2_WIDTH = 64
+LSTM2_WIDTH = 5
 # change these 2 numbers in case of different output layer
-OUTPUT_WIDTH = 10
-LAYERS_LAYOUT_WIDTH = 379
+# OUTPUT_WIDTH = 10
+OUTPUT_WIDTH = 5
+# LAYERS_LAYOUT_WIDTH = 379
+# 40 is space for arrows
+LAYERS_LAYOUT_WIDTH = (4 * INPUT_WIDTH + 2 * LSTM1_WIDTH
+                       + LSTM2_WIDTH + OUTPUT_WIDTH + 40)
 
 
 class Network:

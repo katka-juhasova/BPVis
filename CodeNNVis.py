@@ -207,13 +207,16 @@ app.layout = html.Div([
                 config={
                     'displayModeBar': False
                 },
-                figure=layout.get_empty_figure(height=900)
-            )
+                figure=layout.get_empty_figure(height=900),
+                style={
+                    'margin': '0 auto'
+                }
+            ),
         ],
         style={
             'display': 'none',
             'height': '930px',
-            'padding-top': '10px',
+            'padding': '10px',
             'margin-right': '10px'
         },
         className='row',
@@ -946,14 +949,14 @@ def show_network(n_clicks):
         return {
             'display': 'none',
             'height': '930px',
-            'padding-top': '10px',
+            'padding': '10px',
             'margin-right': '10px'
         }
     else:
         return {
             'display': 'block',
             'height': '930px',
-            'padding-top': '10px',
+            'padding': '10px',
             'margin-right': '10px'
         }
 
