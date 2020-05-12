@@ -156,7 +156,7 @@ class Tree:
             id=dash_id,
             figure=self.get_figure(horizontal),
             style={
-                'height': height or '300px'
+                'height': height or '250px'
             },
             # className=COLUMNS[columns]
         )

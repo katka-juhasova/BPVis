@@ -3,6 +3,8 @@ import dash
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
+from keras.models import load_model
+from network.clustering import ClusteringLayer
 import components.layout as layout
 from sample import Sample
 from components.luacode import LuaCode
@@ -10,9 +12,8 @@ from components.seesoft import SeeSoft
 from components.scatterplot import ScatterPlot
 from components.tree import Tree
 from components.clusters import Clusters
-from keras.models import load_model
-from network.clustering import ClusteringLayer
-
+from components.prediction import Prediction
+import time
 
 DIMENSIONS = 10
 
@@ -28,7 +29,7 @@ tree = None
 sample = None
 click_counter = 0
 clusters = Clusters()
-
+prediction = None
 
 app = dash.Dash(__name__)
 
@@ -41,7 +42,7 @@ app.layout = html.Div([
         className="row"
     ),
     html.Div([
-        'Module sample to be analyzed: '],
+        'Source code sample to be analyzed: '],
         style={'margin-bottom': '10px'},
         className='row'
     ),
@@ -63,7 +64,7 @@ app.layout = html.Div([
     html.Div(id='hidden-div',
              style={'display': 'none'}),
     html.Div([
-        html.H5('Source code')],
+        html.H4('Source code visualization')],
         style={'margin-top': '20px'},
         className='row'
     ),
@@ -95,6 +96,28 @@ app.layout = html.Div([
                     'padding': '10px',
                 }
             ),
+            html.H6(
+                'Prediction',
+                style={
+                    'position': 'absolute',
+                    'top': '1050px',
+                    'margin-left': '10px'
+                }
+            ),
+            dcc.Graph(
+                id='prediction-content',
+                figure=layout.get_empty_figure(height=200),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'height': '120px',
+                    'width': '520px',
+                    'position': 'absolute',
+                    'top': '1100px',
+                    'margin-left': '10px'
+                }
+            ),
             html.Div(
                 id='input-diagrams',
                 children=[
@@ -112,12 +135,12 @@ app.layout = html.Div([
                     html.H6('Input AST structure'),
                     dcc.Graph(
                         id='tree-content',
-                        figure=layout.get_empty_figure(height=300),
+                        figure=layout.get_empty_figure(height=250),
                         config={
                             'displayModeBar': False
                         },
                         style={
-                            'height': '300px',
+                            'height': '250px',
                         }
                     ),
                     html.H6('Cluster diagram'),
@@ -152,6 +175,107 @@ app.layout = html.Div([
         ],
         className='row'
     ),
+    html.Div([
+        html.H4('Data comparing')],
+        style={'margin-top': '20px'},
+        className='row'
+    ),
+    dcc.RadioItems(
+        id='compare-radio',
+        options=[
+            {'label': 'AST', 'value': 'ast'},
+            {'label': 'Coloured code', 'value': 'code'}
+        ],
+        value='ast',
+        labelStyle={'display': 'inline-block'}
+    ),
+    html.Div(
+        children=[
+            html.Div('Analyzed sample', style={'width': '230px',
+                                               'float': 'left',
+                                               'margin': '10px'}),
+            html.Div('Train sample #1', style={'width': '230px',
+                                               'float': 'left',
+                                               'margin': '10px'}),
+            html.Div('Train sample #2', style={'width': '230px',
+                                               'float': 'left',
+                                               'margin': '10px'}),
+            html.Div('Train sample #3', style={'width': '230px',
+                                               'float': 'left',
+                                               'margin': '10px'}),
+            html.Div('Train sample #4', style={'width': '230px',
+                                               'float': 'left',
+                                               'margin': '10px'}),
+            html.Div('Train sample #5', style={'width': '230px',
+                                               'float': 'left',
+                                               'margin': '10px'})
+        ],
+        className='row'
+    ),
+    html.Div(
+        children=[
+            html.Pre(
+                [],
+                style={'width': '230px', 'float': 'left',
+                       'margin-right': '20px'}
+            ),
+            dcc.Dropdown(
+                id='train1-dropdown',
+                options=[
+                    {'label': 'New York City', 'value': 'NYC'},
+                    {'label': 'Montreal', 'value': 'MTL'},
+                    {'label': 'San Francisco', 'value': 'SF'}
+                ],
+                style={'width': '230px', 'float': 'left',
+                       'margin-right': '20px'}
+            ),
+            dcc.Dropdown(
+                id='train2-dropdown',
+                options=[
+                    {'label': 'New York City', 'value': 'NYC'},
+                    {'label': 'Montreal', 'value': 'MTL'},
+                    {'label': 'San Francisco', 'value': 'SF'}
+                ],
+                style={'width': '230px', 'float': 'left',
+                       'margin-right': '20px'}
+            ),
+            dcc.Dropdown(
+                id='train3-dropdown',
+                options=[
+                    {'label': 'New York City', 'value': 'NYC'},
+                    {'label': 'Montreal', 'value': 'MTL'},
+                    {'label': 'San Francisco', 'value': 'SF'}
+                ],
+                style={'width': '230px', 'float': 'left',
+                       'margin-right': '20px'}
+            ),
+            dcc.Dropdown(
+                id='train4-dropdown',
+                options=[
+                    {'label': 'New York City', 'value': 'NYC'},
+                    {'label': 'Montreal', 'value': 'MTL'},
+                    {'label': 'San Francisco', 'value': 'SF'}
+                ],
+                style={'width': '230px', 'float': 'left',
+                       'margin-right': '20px'}
+            ),
+            dcc.Dropdown(
+                id='train5-dropdown',
+                options=[
+                    {'label': 'New York City', 'value': 'NYC'},
+                    {'label': 'Montreal', 'value': 'MTL'},
+                    {'label': 'San Francisco', 'value': 'SF'}
+                ],
+                style={'width': '230px', 'float': 'left',
+                       'margin-right': '20px'}
+            ),
+        ],
+        className='row'
+    ),
+    html.Div(
+        children=[],
+        className='row'
+    )
 ],
     className='ten columns offset-by-one'
 )
@@ -219,7 +343,7 @@ def update_input_tree(n_clicks, value):
         return tree.get_figure(horizontal=True)
 
     else:
-        return layout.get_empty_figure(height=300)
+        return layout.get_empty_figure(height=250)
 
 
 @app.callback(
@@ -238,12 +362,33 @@ def update_clusters(n_clicks, value1, value2):
             return clusters.get_figure(algorithm=value1)
 
         click_counter = n_clicks
+        print(value2, value2)
         sample = Sample(path=value2, model=model)
         clusters.add_sample(sample)
         return clusters.get_figure(algorithm=value1)
 
     else:
         return layout.get_empty_figure(height=500)
+
+
+@app.callback(
+    Output('prediction-content', 'figure'),
+    [Input('module-input-button', 'n_clicks')],
+    [State('module-input', 'value')]
+)
+def update_input_tree(n_clicks, value):
+    global prediction
+    global sample
+
+    if n_clicks > 0:
+        while not sample:
+            time.sleep(1.)
+
+        prediction = Prediction(sample=sample)
+        return prediction.get_figure()
+
+    else:
+        return layout.get_empty_figure(height=120)
 
 
 app.clientside_callback(

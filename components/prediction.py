@@ -18,7 +18,7 @@ class Prediction:
         last_layer = list(sample.activations.keys())[-1]
         self.output_layer = sample.activations[last_layer][0].tolist()
 
-    def get_figure(self):
+    def get_figure(self, height=None):
         x = ['Label {}'.format(i) for i in range(len(self.output_layer))]
         x[self.label] = '<b>' + x[self.label] + '<b>'
         y = [0 for _ in range(len(self.output_layer))]
@@ -37,17 +37,18 @@ class Prediction:
         )
 
         fig.update_layout(
-            width=400,
-            height=215,
+            # width=400,
+            height=height or 120,
             xaxis={'tickangle': 45},
-            yaxis={'visible': False}
+            yaxis={'visible': False},
+            margin={'l': 10, 'r': 20, 't': 0}
         )
 
         return fig
 
-    def view(self, dash_id: str, columns: str):
+    def view(self, dash_id: str, columns=None):
         return dcc.Graph(
             id=dash_id,
             figure=self.get_figure(),
-            className=COLUMNS[columns]
+            # className=COLUMNS[columns]
         )
