@@ -650,76 +650,176 @@ def update_train1_content(n_clicks, value1, value2):
         return layout.get_empty_figure(height=650)
 
 
-# @app.callback(
-#     Output('train2-prediction', 'figure'),
-#     [Input('module-input-button', 'n_clicks')],
-#     [State('module-input', 'value')]
-# )
-# def update_train2_prediction(n_clicks, value):
-#     global prediction
-#
-#     if n_clicks > 0:
-#         while not prediction:
-#             time.sleep(1.)
-#
-#         return prediction.get_figure(small=True)
-#
-#     else:
-#         return layout.get_empty_figure(height=100)
-#
-#
-# @app.callback(
-#     Output('train3-prediction', 'figure'),
-#     [Input('module-input-button', 'n_clicks')],
-#     [State('module-input', 'value')]
-# )
-# def update_train3_prediction(n_clicks, value):
-#     global prediction
-#
-#     if n_clicks > 0:
-#         while not prediction:
-#             time.sleep(1.)
-#
-#         return prediction.get_figure(small=True)
-#
-#     else:
-#         return layout.get_empty_figure(height=100)
-#
-#
-# @app.callback(
-#     Output('train4-prediction', 'figure'),
-#     [Input('module-input-button', 'n_clicks')],
-#     [State('module-input', 'value')]
-# )
-# def update_train4_prediction(n_clicks, value):
-#     global prediction
-#
-#     if n_clicks > 0:
-#         while not prediction:
-#             time.sleep(1.)
-#
-#         return prediction.get_figure(small=True)
-#
-#     else:
-#         return layout.get_empty_figure(height=100)
-#
-#
-# @app.callback(
-#     Output('train5-prediction', 'figure'),
-#     [Input('module-input-button', 'n_clicks')],
-#     [State('module-input', 'value')]
-# )
-# def update_train5_prediction(n_clicks, value):
-#     global prediction
-#
-#     if n_clicks > 0:
-#         while not prediction:
-#             time.sleep(1.)
-#
-#         return prediction.get_figure(small=True)
-#
-#     else:
-#         return layout.get_empty_figure(height=100)
+@app.callback(
+    Output('train2-prediction', 'figure'),
+    [Input('train2-yes-button', 'n_clicks')],
+    [State('train2-input', 'value')]
+)
+def update_train2_prediction(n_clicks, value):
+    global model
+    if value == '':
+        return layout.get_empty_figure(height=100)
+
+    if n_clicks > 0:
+        local_sample = Sample(path='data/' + value, model=model)
+        local_prediction = Prediction(sample=local_sample)
+        return local_prediction.get_figure(small=True)
+
+    else:
+        return layout.get_empty_figure(height=100)
+
+
+@app.callback(
+    Output('train2-content', 'figure'),
+    [Input('train2-yes-button', 'n_clicks'),
+     Input('compare-radio', 'value')],
+    [State('train2-input', 'value')]
+)
+def update_train2_content(n_clicks, value1, value2):
+    if value2 == '':
+        return layout.get_empty_figure(height=650)
+
+    if n_clicks > 0:
+        if value1 == 'code':
+            local_seesoft = SeeSoft(path='data/' + value2, comments=True)
+            local_seesoft.draw()
+            return local_seesoft.get_figure(small=True)
+
+        else:
+            local_tree = Tree(path='data/' + value2)
+            return local_tree.get_figure()
+
+    else:
+        return layout.get_empty_figure(height=650)
+
+
+@app.callback(
+    Output('train3-prediction', 'figure'),
+    [Input('train3-yes-button', 'n_clicks')],
+    [State('train3-input', 'value')]
+)
+def update_train1_prediction(n_clicks, value):
+    global model
+    if value == '':
+        return layout.get_empty_figure(height=100)
+
+    if n_clicks > 0:
+        local_sample = Sample(path='data/' + value, model=model)
+        local_prediction = Prediction(sample=local_sample)
+        return local_prediction.get_figure(small=True)
+
+    else:
+        return layout.get_empty_figure(height=100)
+
+
+@app.callback(
+    Output('train3-content', 'figure'),
+    [Input('train3-yes-button', 'n_clicks'),
+     Input('compare-radio', 'value')],
+    [State('train3-input', 'value')]
+)
+def update_train1_content(n_clicks, value1, value2):
+    if value2 == '':
+        return layout.get_empty_figure(height=650)
+
+    if n_clicks > 0:
+        if value1 == 'code':
+            local_seesoft = SeeSoft(path='data/' + value2, comments=True)
+            local_seesoft.draw()
+            return local_seesoft.get_figure(small=True)
+
+        else:
+            local_tree = Tree(path='data/' + value2)
+            return local_tree.get_figure()
+
+    else:
+        return layout.get_empty_figure(height=650)
+
+
+@app.callback(
+    Output('train4-prediction', 'figure'),
+    [Input('train4-yes-button', 'n_clicks')],
+    [State('train4-input', 'value')]
+)
+def update_train1_prediction(n_clicks, value):
+    global model
+    if value == '':
+        return layout.get_empty_figure(height=100)
+
+    if n_clicks > 0:
+        local_sample = Sample(path='data/' + value, model=model)
+        local_prediction = Prediction(sample=local_sample)
+        return local_prediction.get_figure(small=True)
+
+    else:
+        return layout.get_empty_figure(height=100)
+
+
+@app.callback(
+    Output('train4-content', 'figure'),
+    [Input('train4-yes-button', 'n_clicks'),
+     Input('compare-radio', 'value')],
+    [State('train4-input', 'value')]
+)
+def update_train1_content(n_clicks, value1, value2):
+    if value2 == '':
+        return layout.get_empty_figure(height=650)
+
+    if n_clicks > 0:
+        if value1 == 'code':
+            local_seesoft = SeeSoft(path='data/' + value2, comments=True)
+            local_seesoft.draw()
+            return local_seesoft.get_figure(small=True)
+
+        else:
+            local_tree = Tree(path='data/' + value2)
+            return local_tree.get_figure()
+
+    else:
+        return layout.get_empty_figure(height=650)
+
+
+@app.callback(
+    Output('train5-prediction', 'figure'),
+    [Input('train5-yes-button', 'n_clicks')],
+    [State('train5-input', 'value')]
+)
+def update_train1_prediction(n_clicks, value):
+    global model
+    if value == '':
+        return layout.get_empty_figure(height=100)
+
+    if n_clicks > 0:
+        local_sample = Sample(path='data/' + value, model=model)
+        local_prediction = Prediction(sample=local_sample)
+        return local_prediction.get_figure(small=True)
+
+    else:
+        return layout.get_empty_figure(height=100)
+
+
+@app.callback(
+    Output('train5-content', 'figure'),
+    [Input('train5-yes-button', 'n_clicks'),
+     Input('compare-radio', 'value')],
+    [State('train5-input', 'value')]
+)
+def update_train1_content(n_clicks, value1, value2):
+    if value2 == '':
+        return layout.get_empty_figure(height=650)
+
+    if n_clicks > 0:
+        if value1 == 'code':
+            local_seesoft = SeeSoft(path='data/' + value2, comments=True)
+            local_seesoft.draw()
+            return local_seesoft.get_figure(small=True)
+
+        else:
+            local_tree = Tree(path='data/' + value2)
+            return local_tree.get_figure()
+
+    else:
+        return layout.get_empty_figure(height=650)
 
 
 app.clientside_callback(
