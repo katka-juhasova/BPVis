@@ -14,17 +14,18 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 log.addHandler(logging.StreamHandler())
 
+TRAIN_SAMPLES_NUM = 5
 CSV_PATH = (os.path.dirname(os.path.realpath(__file__))
             + '/../network/train_data_activations_layer4.csv')
 
 
 class Clusters:
     def __init__(self, sample=None):
-        self.train_sample1 = None
-        self.train_sample2 = None
-        self.train_sample3 = None
-        self.train_sample4 = None
-        self.train_sample5 = None
+        self.train_samples = [None for _ in range(TRAIN_SAMPLES_NUM)]
+        # self.train_sample2 = None
+        # self.train_sample3 = None
+        # self.train_sample4 = None
+        # self.train_sample5 = None
         self.train_data = self.__load_train_data()
 
         if sample:
@@ -184,110 +185,27 @@ class Clusters:
             )
         )
 
-        # add possible train1 samples for comparison
-        if self.train_sample1:
-            for i, trace in enumerate(traces):
-                if self.train_sample1 in trace['text']:
-                    index = trace['text'].index(self.train_sample1)
-                    fig.add_trace(
-                        go.Scatter(
-                            x=[trace['x'][index]],
-                            y=[trace['y'][index]],
-                            hovertext=[trace['text'][index]],
-                            # name='Analyzed sample',
-                            mode='markers',
-                            hoverinfo='x+y+text',
-                            marker=dict(size=8, color=CLUSTER_COLORS[i],
-                                        line=dict(width=2,
-                                        color='DarkSlateGrey')),
-                            showlegend=False
+        # add possible train samples for comparison
+        for train_sample in self.train_samples:
+            if train_sample:
+                for i, trace in enumerate(traces):
+                    if train_sample in trace['text']:
+                        index = trace['text'].index(train_sample)
+                        fig.add_trace(
+                            go.Scatter(
+                                x=[trace['x'][index]],
+                                y=[trace['y'][index]],
+                                hovertext=[trace['text'][index]],
+                                # name='Analyzed sample',
+                                mode='markers',
+                                hoverinfo='x+y+text',
+                                marker=dict(size=8, color=CLUSTER_COLORS[i],
+                                            line=dict(width=2,
+                                            color='DarkSlateGrey')),
+                                showlegend=False
+                            )
                         )
-                    )
-                    break
-
-        # add possible train2 samples for comparison
-        if self.train_sample2:
-            for i, trace in enumerate(traces):
-                if self.train_sample2 in trace['text']:
-                    index = trace['text'].index(self.train_sample2)
-                    fig.add_trace(
-                        go.Scatter(
-                            x=[trace['x'][index]],
-                            y=[trace['y'][index]],
-                            hovertext=[trace['text'][index]],
-                            # name='Analyzed sample',
-                            mode='markers',
-                            hoverinfo='x+y+text',
-                            marker=dict(size=8, color=CLUSTER_COLORS[i],
-                                        line=dict(width=2,
-                                        color='DarkSlateGrey')),
-                            showlegend=False
-                        )
-                    )
-                    break
-
-        # add possible train3 samples for comparison
-        if self.train_sample3:
-            for i, trace in enumerate(traces):
-                if self.train_sample3 in trace['text']:
-                    index = trace['text'].index(self.train_sample3)
-                    fig.add_trace(
-                        go.Scatter(
-                            x=[trace['x'][index]],
-                            y=[trace['y'][index]],
-                            hovertext=[trace['text'][index]],
-                            # name='Analyzed sample',
-                            mode='markers',
-                            hoverinfo='x+y+text',
-                            marker=dict(size=8, color=CLUSTER_COLORS[i],
-                                        line=dict(width=2,
-                                        color='DarkSlateGrey')),
-                            showlegend=False
-                        )
-                    )
-                    break
-
-        # add possible train4 samples for comparison
-        if self.train_sample4:
-            for i, trace in enumerate(traces):
-                if self.train_sample4 in trace['text']:
-                    index = trace['text'].index(self.train_sample4)
-                    fig.add_trace(
-                        go.Scatter(
-                            x=[trace['x'][index]],
-                            y=[trace['y'][index]],
-                            hovertext=[trace['text'][index]],
-                            # name='Analyzed sample',
-                            mode='markers',
-                            hoverinfo='x+y+text',
-                            marker=dict(size=8, color=CLUSTER_COLORS[i],
-                                        line=dict(width=2,
-                                        color='DarkSlateGrey')),
-                            showlegend=False
-                        )
-                    )
-                    break
-
-        # add possible train5 samples for comparison
-        if self.train_sample5:
-            for i, trace in enumerate(traces):
-                if self.train_sample5 in trace['text']:
-                    index = trace['text'].index(self.train_sample5)
-                    fig.add_trace(
-                        go.Scatter(
-                            x=[trace['x'][index]],
-                            y=[trace['y'][index]],
-                            hovertext=[trace['text'][index]],
-                            # name='Analyzed sample',
-                            mode='markers',
-                            hoverinfo='x+y+text',
-                            marker=dict(size=8, color=CLUSTER_COLORS[i],
-                                        line=dict(width=2,
-                                        color='DarkSlateGrey')),
-                            showlegend=False
-                        )
-                    )
-                    break
+                        break
 
         fig.update_layout(
             height=height or 500,

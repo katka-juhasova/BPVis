@@ -130,7 +130,9 @@ app.layout = html.Div([
             ),
             html.Button(
                 id='network-button',
-                children=['View full network architecture with activations'],
+                children=[
+                    'View/hide full network architecture with activations'
+                ],
                 style={
                     'position': 'absolute',
                     'top': '1220px',
@@ -205,13 +207,14 @@ app.layout = html.Div([
                 config={
                     'displayModeBar': False
                 },
-                figure=layout.get_empty_figure(height=500)
+                figure=layout.get_empty_figure(height=900)
             )
         ],
         style={
             'display': 'none',
             'height': '930px',
-            'padding-top': '10px'
+            'padding-top': '10px',
+            'margin-right': '10px'
         },
         className='row',
     ),
@@ -593,37 +596,37 @@ def update_clusters(n_clicks1, value1, n_clicks2, n_clicks3, n_clicks4,
         # handle train1 sample highlight
         if n_clicks2 > 0:
             if value3 == '':
-                clusters.train_sample1 = None
+                clusters.train_samples[0] = None
             else:
-                clusters.train_sample1 = value3
+                clusters.train_samples[0] = value3
 
         # handle train2 sample highlight
         if n_clicks3 > 0:
             if value4 == '':
-                clusters.train_sample2 = None
+                clusters.train_samples[1] = None
             else:
-                clusters.train_sample2 = value4
+                clusters.train_samples[1] = value4
 
         # handle train3 sample highlight
         if n_clicks4 > 0:
             if value5 == '':
-                clusters.train_sample3 = None
+                clusters.train_samples[2] = None
             else:
-                clusters.train_sample3 = value5
+                clusters.train_samples[2] = value5
 
         # handle train4 sample highlight
         if n_clicks5 > 0:
             if value6 == '':
-                clusters.train_sample4 = None
+                clusters.train_samples[3] = None
             else:
-                clusters.train_sample4 = value6
+                clusters.train_samples[3] = value6
 
         # handle train5 sample highlight
         if n_clicks6 > 0:
             if value7 == '':
-                clusters.train_sample5 = None
+                clusters.train_samples[4] = None
             else:
-                clusters.train_sample5 = value7
+                clusters.train_samples[4] = value7
 
         if n_clicks1 == click_counter:
             return clusters.get_figure(algorithm=value1)
@@ -920,7 +923,7 @@ def update_train1_content(n_clicks, value1, value2):
     [Input('module-input-button', 'n_clicks')],
     [State('module-input', 'value')]
 )
-def update_sample_seesoft(n_clicks, value):
+def update_network(n_clicks, value):
     global sample
 
     if n_clicks > 0:
@@ -931,7 +934,28 @@ def update_sample_seesoft(n_clicks, value):
         return local_network.get_figure()
 
     else:
-        return layout.get_empty_figure(height=500)
+        return layout.get_empty_figure(height=900)
+
+
+@app.callback(
+    Output('network-div', 'style'),
+    [Input('network-button', 'n_clicks')]
+)
+def show_network(n_clicks):
+    if not n_clicks or n_clicks % 2 == 0:
+        return {
+            'display': 'none',
+            'height': '930px',
+            'padding-top': '10px',
+            'margin-right': '10px'
+        }
+    else:
+        return {
+            'display': 'block',
+            'height': '930px',
+            'padding-top': '10px',
+            'margin-right': '10px'
+        }
 
 
 app.clientside_callback(
