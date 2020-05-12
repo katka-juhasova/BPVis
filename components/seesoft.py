@@ -235,7 +235,6 @@ class SeeSoft:
                 column += 1
 
         image.save(self.bin_img, format='PNG')
-        # image.save('shit.png', format='PNG')
 
     def __add_traces(self, fig):
         # NOTE: first line from the file has the highest y value in the graph

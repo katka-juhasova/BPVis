@@ -13,6 +13,7 @@ from components.scatterplot import ScatterPlot
 from components.tree import Tree
 from components.clusters import Clusters
 from components.prediction import Prediction
+from components.network import Network
 import time
 
 DIMENSIONS = 10
@@ -97,6 +98,14 @@ app.layout = html.Div([
                     'padding': '10px',
                 }
             ),
+            html.Img(
+                src=layout.get_legend_image(),
+                style={
+                    'position': 'absolute',
+                    'top': '1000px',
+                    'left': '180px'
+                }
+            ),
             html.H6(
                 'Prediction',
                 style={
@@ -118,6 +127,17 @@ app.layout = html.Div([
                     'top': '1100px',
                     'margin-left': '10px'
                 }
+            ),
+            html.Button(
+                id='network-button',
+                children=['View full network architecture with activations'],
+                style={
+                    'position': 'absolute',
+                    'top': '1220px',
+                    'left': '150px',
+                    'margin-left': '10px'
+                },
+                className='link-button'
             ),
             html.Div(
                 id='input-diagrams',
@@ -175,6 +195,25 @@ app.layout = html.Div([
             ),
         ],
         className='row'
+    ),
+    html.Div(
+        id='network-div',
+        children=[
+            html.H6('Network architecture with activations'),
+            dcc.Graph(
+                id='sample-network',
+                config={
+                    'displayModeBar': False
+                },
+                figure=layout.get_empty_figure(height=500)
+            )
+        ],
+        style={
+            'display': 'none',
+            'height': '930px',
+            'padding-top': '10px'
+        },
+        className='row',
     ),
     html.Div([
         html.H4('Data comparing')],
@@ -820,6 +859,25 @@ def update_train1_content(n_clicks, value1, value2):
 
     else:
         return layout.get_empty_figure(height=650)
+
+
+@app.callback(
+    Output('sample-network', 'figure'),
+    [Input('module-input-button', 'n_clicks')],
+    [State('module-input', 'value')]
+)
+def update_sample_seesoft(n_clicks, value):
+    global sample
+
+    if n_clicks > 0:
+        while not sample:
+            time.sleep(1.)
+
+        local_network = Network(sample=sample)
+        return local_network.get_figure()
+
+    else:
+        return layout.get_empty_figure(height=500)
 
 
 app.clientside_callback(

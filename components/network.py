@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 log.addHandler(logging.StreamHandler())
 
-MARGIN_TOP = 30
+MARGIN_TOP = 10
 MARGIN_LEFT = 10
 MARGIN_RIGHT = 10
 MARGIN_BOTTOM = 10
@@ -62,6 +62,7 @@ class Network:
                     'color': 'grey',
                     'width': 1
                 },
+                hoverinfo='none',
                 fill='toself',
                 showlegend=False
             )
@@ -208,9 +209,6 @@ class Network:
 
         fig.update_layout(
             template='plotly_white',
-            title={'text': 'Neural network architecture with activations',
-                   'x': 0.5, 'xanchor': 'center',
-                   'y': 0.999, 'yanchor': 'top'},
             width=(MARGIN_RIGHT + MARGIN_LEFT
                    + CELL_SIZE * LAYERS_LAYOUT_WIDTH
                    + 4 * CELL_SIZE * ARROW_SIZE),
@@ -245,12 +243,12 @@ class Network:
 
         return fig
 
-    def view(self, dash_id: str, columns: str):
+    def view(self, dash_id: str, columns=None):
         return dcc.Graph(
             id=dash_id,
             config={
                 'displayModeBar': False
             },
             figure=self.get_figure(),
-            className=COLUMNS[columns]
+            # className=COLUMNS[columns]
         )
