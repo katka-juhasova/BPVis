@@ -562,19 +562,73 @@ def update_input_tree(n_clicks, value):
 @app.callback(
     Output('clusters-content', 'figure'),
     [Input('module-input-button', 'n_clicks'),
-     Input('cluster-radio', 'value')],
-    [State('module-input', 'value')]
+     Input('cluster-radio', 'value'),
+     Input('train1-yes-button', 'n_clicks'),
+     Input('train2-yes-button', 'n_clicks'),
+     Input('train3-yes-button', 'n_clicks'),
+     Input('train4-yes-button', 'n_clicks'),
+     Input('train5-yes-button', 'n_clicks')],
+    [State('module-input', 'value'),
+     State('train1-input', 'value'),
+     State('train2-input', 'value'),
+     State('train3-input', 'value'),
+     State('train4-input', 'value'),
+     State('train5-input', 'value')]
 )
-def update_clusters(n_clicks, value1, value2):
+def update_clusters(n_clicks1, value1, n_clicks2, n_clicks3, n_clicks4,
+                    n_clicks5, n_clicks6, value2, value3,  value4,  value5,
+                    value6,  value7):
     global click_counter
     global sample
     global clusters
 
-    if n_clicks > 0:
-        if n_clicks == click_counter:
+    # n_clicks1 = man submit button
+    # n_clicks2 = submit train1
+    # value1 = pca/tsne
+    # value2 = analyzed module name
+    # value3 = train1 name
+    # etc.
+
+    if n_clicks1 > 0:
+        # handle train1 sample highlight
+        if n_clicks2 > 0:
+            if value3 == '':
+                clusters.train_sample1 = None
+            else:
+                clusters.train_sample1 = value3
+
+        # handle train2 sample highlight
+        if n_clicks3 > 0:
+            if value4 == '':
+                clusters.train_sample2 = None
+            else:
+                clusters.train_sample2 = value4
+
+        # handle train3 sample highlight
+        if n_clicks4 > 0:
+            if value5 == '':
+                clusters.train_sample3 = None
+            else:
+                clusters.train_sample3 = value5
+
+        # handle train4 sample highlight
+        if n_clicks5 > 0:
+            if value6 == '':
+                clusters.train_sample4 = None
+            else:
+                clusters.train_sample4 = value6
+
+        # handle train5 sample highlight
+        if n_clicks6 > 0:
+            if value7 == '':
+                clusters.train_sample5 = None
+            else:
+                clusters.train_sample5 = value7
+
+        if n_clicks1 == click_counter:
             return clusters.get_figure(algorithm=value1)
 
-        click_counter = n_clicks
+        click_counter = n_clicks1
         sample = Sample(path='data/' + value2, model=model)
         clusters.add_sample(sample)
         return clusters.get_figure(algorithm=value1)
