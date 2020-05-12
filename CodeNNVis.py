@@ -17,11 +17,10 @@ import time
 
 DIMENSIONS = 10
 
-model_path = (os.path.dirname(os.path.realpath(__file__))
-              + '/network/clustering_model_10.h5')
+here = os.path.dirname(os.path.realpath(__file__))
+model_path = here + '/network/clustering_model_10.h5'
 model = load_model(model_path,
                    custom_objects={'ClusteringLayer': ClusteringLayer})
-
 luacode = None
 seesoft = None
 scatterplot = None
@@ -30,6 +29,7 @@ sample = None
 click_counter = 0
 clusters = Clusters()
 prediction = None
+
 
 app = dash.Dash(__name__)
 
@@ -219,16 +219,35 @@ app.layout = html.Div([
                 style={'width': '230px', 'float': 'left',
                        'margin-right': '20px'}
             ),
-            dcc.Dropdown(
-                id='train1-dropdown',
-                options=[
-                    {'label': 'New York City', 'value': 'NYC'},
-                    {'label': 'Montreal', 'value': 'MTL'},
-                    {'label': 'San Francisco', 'value': 'SF'}
-                ],
-                style={'width': '230px', 'float': 'left',
-                       'margin-right': '20px'}
+            dcc.Input(
+                id='train1-input',
+                value='data/...',
+                style={'width': '100px'}
             ),
+            html.Button(
+                'yes',
+                id='train1-yes-button',
+                n_clicks=0,
+                # style={'margin-left': '10px'},
+                className='button-primary'
+            ),
+            html.Button(
+                'no',
+                id='train1-no-button',
+                n_clicks=0,
+                # style={'margin-left': '10px'},
+                className='button-primary'
+            ),
+            # dcc.Dropdown(
+            #     id='train1-dropdown',
+            #     options=[
+            #         {'label': 'New York City', 'value': 'NYC'},
+            #         {'label': 'Montreal', 'value': 'MTL'},
+            #         {'label': 'San Francisco', 'value': 'SF'}
+            #     ],
+            #     style={'width': '230px', 'float': 'left',
+            #            'margin-right': '20px'}
+            # ),
             dcc.Dropdown(
                 id='train2-dropdown',
                 options=[
@@ -273,9 +292,172 @@ app.layout = html.Div([
         className='row'
     ),
     html.Div(
-        children=[],
+        children=[
+            dcc.Graph(
+                id='sample-prediction',
+                figure=layout.get_empty_figure(height=100),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'height': '100px',
+                    'float': 'left',
+                    'width': '230px',
+                    'padding': '10px'
+                }
+            ),
+            dcc.Graph(
+                id='train1-prediction',
+                figure=layout.get_empty_figure(height=100),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'height': '100px',
+                    'float': 'left',
+                    'width': '230px',
+                    'padding': '10px'
+                }
+            ),
+            dcc.Graph(
+                id='train2-prediction',
+                figure=layout.get_empty_figure(height=100),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'height': '100px',
+                    'float': 'left',
+                    'width': '230px',
+                    'padding': '10px'
+                }
+            ),
+            dcc.Graph(
+                id='train3-prediction',
+                figure=layout.get_empty_figure(height=100),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'height': '100px',
+                    'float': 'left',
+                    'width': '230px',
+                    'padding': '10px'
+                }
+            ),
+            dcc.Graph(
+                id='train4-prediction',
+                figure=layout.get_empty_figure(height=100),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'height': '100px',
+                    'float': 'left',
+                    'width': '230px',
+                    'padding': '10px'
+                }
+            ),
+            dcc.Graph(
+                id='train5-prediction',
+                figure=layout.get_empty_figure(height=100),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'height': '100px',
+                    'float': 'left',
+                    'width': '230px',
+                    'padding': '10px'
+                }
+            ),
+        ],
         className='row'
-    )
+    ),
+    html.Div(
+        children=[
+            dcc.Graph(
+                id='sample-content',
+                figure=layout.get_empty_figure(height=650),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'max-height': '650px',
+                    'float': 'left',
+                    'width': '230px',
+                    'padding': '10px',
+                }
+            ),
+            dcc.Graph(
+                id='train1-content',
+                figure=layout.get_empty_figure(height=650),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'max-height': '650px',
+                    'float': 'left',
+                    'width': '230px',
+                    'padding': '10px',
+                }
+            ),
+            dcc.Graph(
+                id='train2-content',
+                figure=layout.get_empty_figure(height=650),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'max-height': '650px',
+                    'float': 'left',
+                    'width': '230px',
+                    'padding': '10px',
+                }
+            ),
+            dcc.Graph(
+                id='train3-content',
+                figure=layout.get_empty_figure(height=650),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'max-height': '650px',
+                    'float': 'left',
+                    'width': '230px',
+                    'padding': '10px',
+                }
+            ),
+            dcc.Graph(
+                id='train4-content',
+                figure=layout.get_empty_figure(height=650),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'max-height': '650px',
+                    'float': 'left',
+                    'width': '230px',
+                    'padding': '10px',
+                }
+            ),
+            dcc.Graph(
+                id='train5-content',
+                figure=layout.get_empty_figure(height=650),
+                config={
+                    'displayModeBar': False
+                },
+                style={
+                    'max-height': '650px',
+                    'float': 'left',
+                    'width': '230px',
+                    'padding': '10px',
+                }
+            ),
+        ],
+        className='row'
+    ),
+    html.Pre([], style={'height': '50px'}),
 ],
     className='ten columns offset-by-one'
 )
@@ -291,7 +473,7 @@ def update_input_luacode(n_clicks, value):
 
     if n_clicks > 0:
         luacode = LuaCode(path=value)
-        return luacode.view(dash_id='lua-code-content')
+        return luacode.view(dash_id='luacode-content')
 
     else:
         return layout.get_empty_div(750)
@@ -391,12 +573,145 @@ def update_input_tree(n_clicks, value):
         return layout.get_empty_figure(height=120)
 
 
+@app.callback(
+    Output('sample-prediction', 'figure'),
+    [Input('module-input-button', 'n_clicks')],
+    [State('module-input', 'value')]
+)
+def update_sample_prediction(n_clicks, value):
+    global prediction
+
+    if n_clicks > 0:
+        while not prediction:
+            time.sleep(1.)
+
+        return prediction.get_figure(small=True)
+
+    else:
+        return layout.get_empty_figure(height=100)
+
+
+@app.callback(
+    Output('sample-content', 'figure'),
+    [Input('module-input-button', 'n_clicks'),
+     Input('compare-radio', 'value')],
+    [State('module-input', 'value')]
+)
+def update_sample_seesoft(n_clicks, value1, value2):
+    global seesoft
+    global tree
+
+    if n_clicks > 0:
+        if value1 == 'code':
+            while not seesoft:
+                time.sleep(1.)
+            return seesoft.get_figure()
+
+        else:
+            while not tree:
+                time.sleep(1.)
+            return tree.get_figure()
+
+    else:
+        return layout.get_empty_figure(height=650)
+
+
+# @app.callback(
+#     Output('train1-prediction', 'figure'),
+#     [Input('module-input-button', 'n_clicks')],
+#     [State('module-input', 'value')]
+# )
+# def update_train1_prediction(n_clicks, value):
+#     global prediction
+#
+#     if n_clicks > 0:
+#         while not prediction:
+#             time.sleep(1.)
+#
+#         return prediction.get_figure(small=True)
+#
+#     else:
+#         return layout.get_empty_figure(height=100)
+#
+#
+# @app.callback(
+#     Output('train2-prediction', 'figure'),
+#     [Input('module-input-button', 'n_clicks')],
+#     [State('module-input', 'value')]
+# )
+# def update_train2_prediction(n_clicks, value):
+#     global prediction
+#
+#     if n_clicks > 0:
+#         while not prediction:
+#             time.sleep(1.)
+#
+#         return prediction.get_figure(small=True)
+#
+#     else:
+#         return layout.get_empty_figure(height=100)
+#
+#
+# @app.callback(
+#     Output('train3-prediction', 'figure'),
+#     [Input('module-input-button', 'n_clicks')],
+#     [State('module-input', 'value')]
+# )
+# def update_train3_prediction(n_clicks, value):
+#     global prediction
+#
+#     if n_clicks > 0:
+#         while not prediction:
+#             time.sleep(1.)
+#
+#         return prediction.get_figure(small=True)
+#
+#     else:
+#         return layout.get_empty_figure(height=100)
+#
+#
+# @app.callback(
+#     Output('train4-prediction', 'figure'),
+#     [Input('module-input-button', 'n_clicks')],
+#     [State('module-input', 'value')]
+# )
+# def update_train4_prediction(n_clicks, value):
+#     global prediction
+#
+#     if n_clicks > 0:
+#         while not prediction:
+#             time.sleep(1.)
+#
+#         return prediction.get_figure(small=True)
+#
+#     else:
+#         return layout.get_empty_figure(height=100)
+#
+#
+# @app.callback(
+#     Output('train5-prediction', 'figure'),
+#     [Input('module-input-button', 'n_clicks')],
+#     [State('module-input', 'value')]
+# )
+# def update_train5_prediction(n_clicks, value):
+#     global prediction
+#
+#     if n_clicks > 0:
+#         while not prediction:
+#             time.sleep(1.)
+#
+#         return prediction.get_figure(small=True)
+#
+#     else:
+#         return layout.get_empty_figure(height=100)
+
+
 app.clientside_callback(
     '''
     function scroll_lua_code_left(clickData) {
         if (clickData) {
-            var element = document.getElementById("lua-code-content");
-            var element_text_id = "lua-code-content" + clickData.points[0].text;
+            var element = document.getElementById("luacode-content");
+            var element_text_id = "luacode-content" + clickData.points[0].text;
             var element_text = document.getElementById(element_text_id);
             var color = element_text.style.backgroundColor;
             var bounding = element.getBoundingClientRect();

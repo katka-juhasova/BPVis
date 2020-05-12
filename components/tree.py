@@ -140,14 +140,24 @@ class Tree:
                     showticklabels=False,
                     )
 
-        fig.update_layout(
-            template='plotly_white',
-            # title='Input AST structure',
-            xaxis=axis,
-            yaxis=axis,
-            showlegend=False,
-            margin={'l': 40, 'r': 40, 'b': 10, 't': 0}
-        )
+        if horizontal:
+            fig.update_layout(
+                template='plotly_white',
+                # title='Input AST structure',
+                xaxis=axis,
+                yaxis=axis,
+                showlegend=False,
+                margin={'l': 40, 'r': 40, 'b': 10, 't': 0}
+            )
+        else:
+            fig.update_layout(
+                template='plotly_white',
+                # title='Input AST structure',
+                xaxis=axis,
+                yaxis=axis,
+                showlegend=False,
+                margin={'l': 10, 'r': 10, 'b': 0, 't': 0}
+            )
 
         return fig
 
