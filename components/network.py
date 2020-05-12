@@ -21,10 +21,10 @@ MIDDLE_Y = 107
 INPUT_WIDTH = 3
 LSTM1_WIDTH = 128
 # LSTM2_WIDTH = 64
-LSTM2_WIDTH = 5
+LSTM2_WIDTH = 3
 # change these 2 numbers in case of different output layer
 # OUTPUT_WIDTH = 10
-OUTPUT_WIDTH = 5
+OUTPUT_WIDTH = 3
 # LAYERS_LAYOUT_WIDTH = 379
 # 40 is space for arrows
 LAYERS_LAYOUT_WIDTH = (4 * INPUT_WIDTH + 2 * LSTM1_WIDTH
@@ -79,31 +79,24 @@ class Network:
 
             if len(shape) < 3:
 
-                # whole space of the heat map must be filled,
-                # so sections above and bellow the actual layer
-                # are filled with zeros
-                full_layer = [
-                    [0 for _ in range(len(current_layer))] for _ in
-                    range(MAX_Y)
-                ]
-                full_layer[MIDDLE_Y] = current_layer
-
-                x = [i for i in range(len(current_layer))]
+                activations = [0 for _ in range(MAX_Y)]
                 y = [i for i in range(MAX_Y)]
+                x = [0 for _ in range(MAX_Y)]
+                text = [None for _ in range(MAX_Y)]
+                current_layer.reverse()
 
-                text = [
-                    [None for _ in range(len(current_layer))]
-                    for _ in range(MAX_Y)
-                ]
-
-                for i, value in enumerate(current_layer):
-                    text[MIDDLE_Y][i] = (
-                        'x: {}<br>value: {}'.format(i, round(value, 5))
-                    )
+                index = 11 if layer == 3 else 92
+                for i, activation in enumerate(current_layer):
+                    activations[index] = activation
+                    activations[index + 1] = activation
+                    activations[index + 2] = activation
+                    text[index + 1] = 'y: {}<br>value: {}'.format(
+                        len(current_layer) - 1 - i, activation)
+                    index += 3
 
                 fig.add_trace(
                     go.Heatmap(
-                        z=full_layer,
+                        z=activations,
                         x=x,
                         y=y,
                         zmin=-1,
