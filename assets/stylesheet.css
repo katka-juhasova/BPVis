@@ -154,9 +154,9 @@ blockquote {
 /* Links
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 a {
-  color: #1EAEDB; }
+  color: #0275d8; }
 a:hover {
-  color: #0FA0CE; }
+  color: #0169c2; }
 
 
 /* Buttons
@@ -202,8 +202,8 @@ input[type="submit"].button-primary,
 input[type="reset"].button-primary,
 input[type="button"].button-primary {
   color: #FFF;
-  background-color: #33C3F0;
-  border-color: #33C3F0; }
+  background-color: #0275d8;
+  border-color: #0275d8; }
 .button.button-primary:hover,
 button.button-primary:hover,
 input[type="submit"].button-primary:hover,
@@ -215,9 +215,34 @@ input[type="submit"].button-primary:focus,
 input[type="reset"].button-primary:focus,
 input[type="button"].button-primary:focus {
   color: #FFF;
-  background-color: #1EAEDB;
-  border-color: #1EAEDB; }
+  background-color: #0169c2;
+  border-color: #0169c2; }
 
+.yes-button {
+  color: #FFF;
+  background-color: #0275d8;
+  display: inline-block;
+  height: 38px;
+  padding: 0 13px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: .1rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: 4px;
+  border: 1px solid #0275d8;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.yes-button:hover,
+.yes-button:focus {
+  background-color: #0169c2;
+  color: #FFF;
+}
 
 /* Forms
 –––––––––––––––––––––––––––––––––––––––––––––––––– */

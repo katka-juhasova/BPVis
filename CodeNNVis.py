@@ -23,6 +23,7 @@ model = load_model(model_path,
                    custom_objects={'ClusteringLayer': ClusteringLayer})
 luacode = None
 seesoft = None
+train1_seesoft = None
 scatterplot = None
 tree = None
 sample = None
@@ -49,7 +50,7 @@ app.layout = html.Div([
     html.Div([
         dcc.Input(
             id='module-input',
-            value='data/...',
+            placeholder='Enter JSON file name',
             style={'width': '300px'}
         ),
         html.Button(
@@ -221,73 +222,64 @@ app.layout = html.Div([
             ),
             dcc.Input(
                 id='train1-input',
-                value='data/...',
-                style={'width': '100px'}
+                placeholder='Sample #1',
+                style={'width': '185px', 'margin-left': '10px'}
             ),
             html.Button(
-                'yes',
+                '✓',
                 id='train1-yes-button',
                 n_clicks=0,
-                # style={'margin-left': '10px'},
-                className='button-primary'
+                style={'margin-left': '5px', 'margin-rignt': '10px'},
+                className='yes-button'
+            ),
+            dcc.Input(
+                id='train2-input',
+                placeholder='Sample #2',
+                style={'width': '185px', 'margin-left': '23px'}
             ),
             html.Button(
-                'no',
-                id='train1-no-button',
+                '✓',
+                id='train2-yes-button',
                 n_clicks=0,
-                # style={'margin-left': '10px'},
-                className='button-primary'
+                style={'margin-left': '5px', 'margin-rignt': '10px'},
+                className='yes-button'
             ),
-            # dcc.Dropdown(
-            #     id='train1-dropdown',
-            #     options=[
-            #         {'label': 'New York City', 'value': 'NYC'},
-            #         {'label': 'Montreal', 'value': 'MTL'},
-            #         {'label': 'San Francisco', 'value': 'SF'}
-            #     ],
-            #     style={'width': '230px', 'float': 'left',
-            #            'margin-right': '20px'}
-            # ),
-            dcc.Dropdown(
-                id='train2-dropdown',
-                options=[
-                    {'label': 'New York City', 'value': 'NYC'},
-                    {'label': 'Montreal', 'value': 'MTL'},
-                    {'label': 'San Francisco', 'value': 'SF'}
-                ],
-                style={'width': '230px', 'float': 'left',
-                       'margin-right': '20px'}
+            dcc.Input(
+                id='train3-input',
+                placeholder='Sample #3',
+                style={'width': '185px', 'margin-left': '22px'}
             ),
-            dcc.Dropdown(
-                id='train3-dropdown',
-                options=[
-                    {'label': 'New York City', 'value': 'NYC'},
-                    {'label': 'Montreal', 'value': 'MTL'},
-                    {'label': 'San Francisco', 'value': 'SF'}
-                ],
-                style={'width': '230px', 'float': 'left',
-                       'margin-right': '20px'}
+            html.Button(
+                '✓',
+                id='train3-yes-button',
+                n_clicks=0,
+                style={'margin-left': '5px', 'margin-rignt': '10px'},
+                className='yes-button'
             ),
-            dcc.Dropdown(
-                id='train4-dropdown',
-                options=[
-                    {'label': 'New York City', 'value': 'NYC'},
-                    {'label': 'Montreal', 'value': 'MTL'},
-                    {'label': 'San Francisco', 'value': 'SF'}
-                ],
-                style={'width': '230px', 'float': 'left',
-                       'margin-right': '20px'}
+            dcc.Input(
+                id='train4-input',
+                placeholder='Sample #4',
+                style={'width': '185px', 'margin-left': '22px'}
             ),
-            dcc.Dropdown(
-                id='train5-dropdown',
-                options=[
-                    {'label': 'New York City', 'value': 'NYC'},
-                    {'label': 'Montreal', 'value': 'MTL'},
-                    {'label': 'San Francisco', 'value': 'SF'}
-                ],
-                style={'width': '230px', 'float': 'left',
-                       'margin-right': '20px'}
+            html.Button(
+                '✓',
+                id='train4-yes-button',
+                n_clicks=0,
+                style={'margin-left': '5px', 'margin-rignt': '10px'},
+                className='yes-button'
             ),
+            dcc.Input(
+                id='train5-input',
+                placeholder='Sample #5',
+                style={'width': '185px', 'margin-left': '22px'}
+            ),
+            html.Button(
+                '✓',
+                id='train5-yes-button',
+                n_clicks=0,
+                style={'margin-left': '5px'},
+                className='yes-button'
+            )
         ],
         className='row'
     ),
@@ -472,7 +464,7 @@ def update_input_luacode(n_clicks, value):
     global luacode
 
     if n_clicks > 0:
-        luacode = LuaCode(path=value)
+        luacode = LuaCode(path='data/' + value)
         return luacode.view(dash_id='luacode-content')
 
     else:
@@ -488,7 +480,7 @@ def update_input_seesoft(n_clicks, value):
     global seesoft
 
     if n_clicks > 0:
-        seesoft = SeeSoft(path=value, comments=True)
+        seesoft = SeeSoft(path='data/' + value, comments=True)
         seesoft.draw()
         return seesoft.get_figure()
 
@@ -505,7 +497,7 @@ def update_input_scatterplot(n_clicks, value):
     global scatterplot
 
     if n_clicks > 0:
-        scatterplot = ScatterPlot(path=value)
+        scatterplot = ScatterPlot(path='data/' + value)
         return scatterplot.get_figure(show_legend=True, show_text=True)
 
     else:
@@ -521,7 +513,7 @@ def update_input_tree(n_clicks, value):
     global tree
 
     if n_clicks > 0:
-        tree = Tree(path=value)
+        tree = Tree(path='data/' + value)
         return tree.get_figure(horizontal=True)
 
     else:
@@ -544,8 +536,7 @@ def update_clusters(n_clicks, value1, value2):
             return clusters.get_figure(algorithm=value1)
 
         click_counter = n_clicks
-        print(value2, value2)
-        sample = Sample(path=value2, model=model)
+        sample = Sample(path='data/' + value2, model=model)
         clusters.add_sample(sample)
         return clusters.get_figure(algorithm=value1)
 
@@ -558,7 +549,7 @@ def update_clusters(n_clicks, value1, value2):
     [Input('module-input-button', 'n_clicks')],
     [State('module-input', 'value')]
 )
-def update_input_tree(n_clicks, value):
+def update_input_prediction(n_clicks, value):
     global prediction
     global sample
 
@@ -605,7 +596,7 @@ def update_sample_seesoft(n_clicks, value1, value2):
         if value1 == 'code':
             while not seesoft:
                 time.sleep(1.)
-            return seesoft.get_figure()
+            return seesoft.get_figure(small=True)
 
         else:
             while not tree:
@@ -616,24 +607,49 @@ def update_sample_seesoft(n_clicks, value1, value2):
         return layout.get_empty_figure(height=650)
 
 
-# @app.callback(
-#     Output('train1-prediction', 'figure'),
-#     [Input('module-input-button', 'n_clicks')],
-#     [State('module-input', 'value')]
-# )
-# def update_train1_prediction(n_clicks, value):
-#     global prediction
-#
-#     if n_clicks > 0:
-#         while not prediction:
-#             time.sleep(1.)
-#
-#         return prediction.get_figure(small=True)
-#
-#     else:
-#         return layout.get_empty_figure(height=100)
-#
-#
+@app.callback(
+    Output('train1-prediction', 'figure'),
+    [Input('train1-yes-button', 'n_clicks')],
+    [State('train1-input', 'value')]
+)
+def update_train1_prediction(n_clicks, value):
+    global model
+    if value == '':
+        return layout.get_empty_figure(height=100)
+
+    if n_clicks > 0:
+        local_sample = Sample(path='data/' + value, model=model)
+        local_prediction = Prediction(sample=local_sample)
+        return local_prediction.get_figure(small=True)
+
+    else:
+        return layout.get_empty_figure(height=100)
+
+
+@app.callback(
+    Output('train1-content', 'figure'),
+    [Input('train1-yes-button', 'n_clicks'),
+     Input('compare-radio', 'value')],
+    [State('train1-input', 'value')]
+)
+def update_train1_content(n_clicks, value1, value2):
+    if value2 == '':
+        return layout.get_empty_figure(height=650)
+
+    if n_clicks > 0:
+        if value1 == 'code':
+            local_seesoft = SeeSoft(path='data/' + value2, comments=True)
+            local_seesoft.draw()
+            return local_seesoft.get_figure(small=True)
+
+        else:
+            local_tree = Tree(path='data/' + value2)
+            return local_tree.get_figure()
+
+    else:
+        return layout.get_empty_figure(height=650)
+
+
 # @app.callback(
 #     Output('train2-prediction', 'figure'),
 #     [Input('module-input-button', 'n_clicks')],

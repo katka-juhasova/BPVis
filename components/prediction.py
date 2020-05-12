@@ -1,8 +1,8 @@
 import logging
+import pandas as pd
 from sample import Sample
 import plotly.graph_objects as go
 from constant import WHITE_TO_BLUE
-from constant import COLUMNS
 import dash_core_components as dcc
 
 log = logging.getLogger(__name__)
@@ -38,7 +38,6 @@ class Prediction:
 
         if small:
             fig.update_layout(
-                # width=400,
                 height=100,
                 xaxis={'tickangle': 45},
                 yaxis={'visible': False},
@@ -47,7 +46,6 @@ class Prediction:
 
         else:
             fig.update_layout(
-                # width=400,
                 height=height or 120,
                 xaxis={'tickangle': 45},
                 yaxis={'visible': False},

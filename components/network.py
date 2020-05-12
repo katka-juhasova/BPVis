@@ -23,7 +23,7 @@ INPUT_WIDTH = 3
 LSTM1_WIDTH = 128
 LSTM2_WIDTH = 64
 # change these 2 numbers in case of different output layer
-OUTPUT_WIDTH = 7
+OUTPUT_WIDTH = 10
 LAYERS_LAYOUT_WIDTH = 379
 
 

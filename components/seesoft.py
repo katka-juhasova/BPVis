@@ -19,6 +19,9 @@ MARGIN_SIZE = 20
 MAX_VIEW_WIDTH = 200
 MIN_VIEW_HEIGHT = 200
 MAX_VIEW_HEIGHT = 750
+MAX_SMALL_VIEW_WIDTH = 230
+MIN_SMALL_VIEW_HEIGHT = 200
+MAX_SMALL_VIEW_HEIGHT = 650
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -232,7 +235,7 @@ class SeeSoft:
                 column += 1
 
         image.save(self.bin_img, format='PNG')
-        # image.save(self.img_path)
+        # image.save('shit.png', format='PNG')
 
     def __add_traces(self, fig):
         # NOTE: first line from the file has the highest y value in the graph
@@ -324,6 +327,25 @@ class SeeSoft:
             )
 
     # count sizes for the seesoft view and keep the ratio
+    def count_small_width_and_height(self, width: int or str,
+                                     height: int or str):
+        # if either value is string (e.g. '80vh'), no calculation is involved
+        # if both are set there's no need for any calculation
+        if type(width) is str or type(height) is str:
+            return width, height
+        if width and height:
+            return width, height
+        else:
+            width = MAX_SMALL_VIEW_WIDTH
+            height = (width / self.img_width) * self.img_height
+            if height > MAX_SMALL_VIEW_HEIGHT:
+                height = MAX_SMALL_VIEW_HEIGHT
+            elif height < MIN_SMALL_VIEW_HEIGHT:
+                height = MIN_SMALL_VIEW_HEIGHT
+
+        return width, height
+
+    # count sizes for the seesoft view and keep the ratio
     def count_width_and_height(self, width: int or str, height: int or str):
         # if either value is string (e.g. '80vh'), no calculation is involved
         # if both are set there's no need for any calculation
@@ -341,9 +363,12 @@ class SeeSoft:
 
         return width, height
 
-    def get_figure(self, height_scale=None,
+    def get_figure(self, height_scale=None, small=False,
                    width=None, height=None) -> go.Figure:
-        width, height = self.count_width_and_height(width, height)
+        if small:
+            width, height = self.count_small_width_and_height(width, height)
+        else:
+            width, height = self.count_width_and_height(width, height)
 
         fig = go.Figure()
 
@@ -402,7 +427,9 @@ class SeeSoft:
             margin={'l': 0, 'r': 0, 't': 0, 'b': 0, 'autoexpand': False}
         )
 
-        self.__add_traces(fig)
+        if not small:
+            self.__add_traces(fig)
+
         return fig
 
     def view(self, dash_id: str, columns=None, width=None, height=None):
