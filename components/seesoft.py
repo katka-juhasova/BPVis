@@ -8,6 +8,7 @@ from constant import COLORS
 from constant import LUA_LINE_HEIGHT
 import plotly.graph_objects as go
 import base64
+from io import BytesIO
 import dash_core_components as dcc
 
 
@@ -15,7 +16,11 @@ BYTE_WIDTH = 5
 BYTE_HEIGHT = 10
 MARGIN_SIZE = 20
 MAX_VIEW_WIDTH = 200
-MAX_VIEW_HEIGHT = 760
+MIN_VIEW_HEIGHT = 200
+MAX_VIEW_HEIGHT = 750
+MAX_SMALL_VIEW_WIDTH = 230
+MIN_SMALL_VIEW_HEIGHT = 200
+MAX_SMALL_VIEW_HEIGHT = 650
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -23,27 +28,35 @@ log.addHandler(logging.StreamHandler())
 
 
 class SeeSoft:
-    def __init__(self, path=None, url=None, comments=True):
-        if all(arg is None for arg in {path, url}):
-            raise ValueError('Expected either path or url argument')
-
-        if path:
-            with open(path) as f:
-                self.data = json.load(f)
+    def __init__(self, path=None, url=None, data=None, img_path=None,
+                 comments=True):
+        if data:
+            self.data = data
         else:
-            log.debug('Loading data file from {}'.format(url))
-            with urllib.request.urlopen(url) as url_data:
-                self.data = json.loads(url_data.read().decode())
+            if all(arg is None for arg in {path, url}):
+                raise ValueError('Expected either path or url argument')
 
-        self.img_path = 'image.png'
-        self.img_width = 0
-        self.img_height = 0
+            if path:
+                with open(path) as f:
+                    self.data = json.load(f)
+            else:
+                log.debug('Loading data file from {}'.format(url))
+                with urllib.request.urlopen(url) as url_data:
+                    self.data = json.loads(url_data.read().decode())
+
         self.byte_width = BYTE_WIDTH
         self.byte_height = BYTE_HEIGHT
         self.margin_size = MARGIN_SIZE
         self.comments = comments
         self.source_code = self.__read_source_code()
         self.tag_table = [dict() for _ in range(len(self.source_code))]
+        self.bin_img = BytesIO()
+
+        self.__build_tag_table()
+        self.img_width = ((self.__max_line() * self.byte_width)
+                          + 2 * self.margin_size)
+        self.img_height = ((self.__lines_count() * self.byte_height)
+                           + 2 * self.margin_size)
 
     def __read_source_code(self) -> str:
         # if there's path provided read form it, otherwise read from url
@@ -106,7 +119,8 @@ class SeeSoft:
                         and i - 1 >= 0
                         and i + 1 < len(self.tag_table)
                         and self.tag_table[i - 1]['container'] == 'comment'
-                        and self.tag_table[i + 1]['container'] == 'comment'
+                        and (self.tag_table[i + 1]['container'] == 'comment'
+                             or self.tag_table[i + 1]['char'].isspace())
                 ):
                     byte['container'] = 'comment'
 
@@ -169,19 +183,7 @@ class SeeSoft:
 
         return count
 
-    def draw(self, byte_width=None, byte_height=None,
-             margin_size=None, img_path=None):
-        self.byte_width = byte_width or BYTE_WIDTH
-        self.byte_height = byte_height or BYTE_HEIGHT
-        self.margin_size = margin_size or MARGIN_SIZE
-        self.img_path = img_path or self.img_path
-
-        self.__build_tag_table()
-        self.img_width = ((self.__max_line() * self.byte_width)
-                          + 2 * self.margin_size)
-        self.img_height = ((self.__lines_count() * self.byte_height)
-                           + 2 * self.margin_size)
-
+    def draw(self):
         image = Image.new('RGB', (self.img_width, self.img_height),
                           color=COLORS['empty'])
         draw = ImageDraw.Draw(image)
@@ -215,7 +217,7 @@ class SeeSoft:
 
                 column += 1
 
-        image.save(self.img_path)
+        image.save(self.bin_img, format='PNG')
 
     def __add_traces(self, fig):
         # NOTE: first line from the file has the highest y value in the graph
@@ -307,6 +309,25 @@ class SeeSoft:
             )
 
     # count sizes for the seesoft view and keep the ratio
+    def count_small_width_and_height(self, width: int or str,
+                                     height: int or str):
+        # if either value is string (e.g. '80vh'), no calculation is involved
+        # if both are set there's no need for any calculation
+        if type(width) is str or type(height) is str:
+            return width, height
+        if width and height:
+            return width, height
+        else:
+            width = MAX_SMALL_VIEW_WIDTH
+            height = (width / self.img_width) * self.img_height
+            if height > MAX_SMALL_VIEW_HEIGHT:
+                height = MAX_SMALL_VIEW_HEIGHT
+            elif height < MIN_SMALL_VIEW_HEIGHT:
+                height = MIN_SMALL_VIEW_HEIGHT
+
+        return width, height
+
+    # count sizes for the seesoft view and keep the ratio
     def count_width_and_height(self, width: int or str, height: int or str):
         # if either value is string (e.g. '80vh'), no calculation is involved
         # if both are set there's no need for any calculation
@@ -314,24 +335,26 @@ class SeeSoft:
             return width, height
         if width and height:
             return width, height
-        elif width and not height:
-            height = (width / self.img_width) * self.img_height
-        elif not width and height:
-            width = (height / self.img_height) * self.img_width
         else:
-            width = min(self.img_width, MAX_VIEW_WIDTH)
+            width = MAX_VIEW_WIDTH
             height = (width / self.img_width) * self.img_height
             if height > MAX_VIEW_HEIGHT:
                 height = MAX_VIEW_HEIGHT
-                width = (height / self.img_height) * self.img_width
+            elif height < MIN_VIEW_HEIGHT:
+                height = MIN_VIEW_HEIGHT
 
         return width, height
 
-    def get_figure(self):
+    def get_figure(self, small=False,
+                   width=None, height=None) -> go.Figure:
+        if small:
+            width, height = self.count_small_width_and_height(width, height)
+        else:
+            width, height = self.count_width_and_height(width, height)
+
         fig = go.Figure()
 
-        with open(self.img_path, 'rb') as img_file:
-            encoded_string = base64.b64encode(img_file.read()).decode()
+        encoded_string = base64.b64encode(self.bin_img.getvalue()).decode()
         encoded_image = 'data:image/png;base64,' + encoded_string
 
         # add invisible scatter trace
@@ -379,14 +402,17 @@ class SeeSoft:
 
         # configure other layout
         fig.update_layout(
+            width=width,
+            height=height,
             margin={'l': 0, 'r': 0, 't': 0, 'b': 0, 'autoexpand': False}
         )
 
-        self.__add_traces(fig)
+        if not small:
+            self.__add_traces(fig)
+
         return fig
 
     def view(self, dash_id: str, width=None, height=None):
-        width, height = self.count_width_and_height(width, height)
 
         return dcc.Graph(
             id=dash_id,
@@ -397,6 +423,6 @@ class SeeSoft:
             style={
                 'width': width,
                 'height': height,
-                'max-height': '80vh'
+                'max-height': '750px'
             }
         )

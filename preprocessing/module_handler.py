@@ -43,11 +43,15 @@ class ModuleHandler:
     def __add_children_to_tree(self, node: dict):
         for child in node['children']:
             self.tree[str(node['master_index'])].append(
-                str(child['master_index'])
-            )
-            self.tree[str(child['master_index'])] = list(
-                str(node['master_index'])
-            )
+                str(child['master_index']))
+
+            if str(child['master_index']) in self.tree:
+                self.tree[str(child['master_index'])].append(
+                    str(node['master_index']))
+            else:
+                self.tree[str(child['master_index'])] = list()
+                self.tree[str(child['master_index'])].append(
+                    str(node['master_index']))
             if 'children' in child:
                 self.__add_children_to_tree(child)
 

@@ -4,7 +4,6 @@ import urllib
 import chardet
 from typing import List
 from constant import COLORS
-from constant import COLUMNS
 from constant import LUA_LINE_HEIGHT
 import dash_html_components as html
 
@@ -15,17 +14,20 @@ log.addHandler(logging.StreamHandler())
 
 
 class LuaCode:
-    def __init__(self, path=None, url=None):
-        if all(arg is None for arg in {path, url}):
-            raise ValueError('Expected either path or url argument')
-
-        if path:
-            with open(path) as f:
-                self.data = json.load(f)
+    def __init__(self, path=None, url=None, data=None):
+        if data:
+            self.data = data
         else:
-            log.debug('Loading data file from {}'.format(url))
-            with urllib.request.urlopen(url) as url_data:
-                self.data = json.loads(url_data.read().decode())
+            if all(arg is None for arg in {path, url}):
+                raise ValueError('Expected either path or url argument')
+
+            if path:
+                with open(path) as f:
+                    self.data = json.load(f)
+            else:
+                log.debug('Loading data file from {}'.format(url))
+                with urllib.request.urlopen(url) as url_data:
+                    self.data = json.loads(url_data.read().decode())
 
         self.source_code = self.__read_source_code()
         self.tag_table = [dict() for _ in range(len(self.source_code))]
@@ -92,7 +94,8 @@ class LuaCode:
                     and i - 1 >= 0
                     and i + 1 < len(self.tag_table)
                     and self.tag_table[i - 1]['container'] == 'comment'
-                    and self.tag_table[i + 1]['container'] == 'comment'
+                    and (self.tag_table[i + 1]['container'] == 'comment'
+                         or self.tag_table[i + 1]['char'].isspace())
             ):
                 byte['container'] = 'comment'
 
@@ -128,6 +131,9 @@ class LuaCode:
                 )
 
     def get_children(self, parent_id: str) -> List:
+        self.__build_tag_table()
+        self.__build_color_text_table()
+
         children = list()
         child_id = 1
         for section in self.color_text_table:
@@ -154,9 +160,7 @@ class LuaCode:
 
     # children may contain pure string element, html.Br() or html.Span element
     # with corresponding color background
-    def view(self, dash_id: str, columns: str):
-        self.__build_tag_table()
-        self.__build_color_text_table()
+    def view(self, dash_id: str):
         children = self.get_children(dash_id)
 
         return html.Pre(
@@ -169,8 +173,7 @@ class LuaCode:
                 'font-size': '10px',
                 'line-height': LUA_LINE_HEIGHT,
                 'padding': '20px',
-                'max-height': '80vh',
+                'height': '730px',
                 'overflow': 'auto'
-            },
-            className=COLUMNS[columns]
+            }
         )

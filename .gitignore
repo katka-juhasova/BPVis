@@ -4,4 +4,6 @@ components/__pycache__/
 data/
 modules/
 assets/*.png
-components/seesoft_update.py
+venv
+script.py
+network/*.csv

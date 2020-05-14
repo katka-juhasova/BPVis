@@ -154,9 +154,9 @@ blockquote {
 /* Links
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 a {
-  color: #1EAEDB; }
+  color: #007bff; }
 a:hover {
-  color: #0FA0CE; }
+  color: #0056b3; }
 
 
 /* Buttons
@@ -202,8 +202,8 @@ input[type="submit"].button-primary,
 input[type="reset"].button-primary,
 input[type="button"].button-primary {
   color: #FFF;
-  background-color: #33C3F0;
-  border-color: #33C3F0; }
+  background-color: #007bff;
+  border-color: #007bff; }
 .button.button-primary:hover,
 button.button-primary:hover,
 input[type="submit"].button-primary:hover,
@@ -215,9 +215,71 @@ input[type="submit"].button-primary:focus,
 input[type="reset"].button-primary:focus,
 input[type="button"].button-primary:focus {
   color: #FFF;
-  background-color: #1EAEDB;
-  border-color: #1EAEDB; }
+  background-color: #0056b3;
+  border-color: #0056b3; }
 
+.yes-button {
+  color: #FFF;
+  background-color: #007bff;
+  display: inline-block;
+  height: 38px;
+  padding: 0 13px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: .1rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: 4px;
+  border: 1px solid #007bff;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.yes-button:hover,
+.yes-button:focus {
+  background-color: #0056b3;
+  color: #FFF;
+}
+
+.link-button{
+  border-color: transparent;
+  text-transform: none;
+  color:#007bff;
+  text-decoration:none;
+  display: inline-block;
+  height: 28px;
+  padding: 0 13px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 38px;
+  letter-spacing: .1rem;
+  white-space: nowrap;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: "Open Sans", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.link-button:hover{
+  color:#0056b3;
+  border-color: transparent;
+  text-decoration:underline
+}
+.link-button.focus,
+.link-button:focus{
+  border-color: transparent;
+  text-decoration:underline;
+  box-shadow:none
+}
+
+.link-button.disabled,
+.link-button:disabled{
+  color:#6c757d;
+  border-color: transparent;
+  pointer-events:none
+}
 
 /* Forms
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
@@ -264,7 +326,7 @@ input[type="url"]:focus,
 input[type="password"]:focus,
 textarea:focus,
 select:focus {
-  border: 1px solid #33C3F0;
+  border: 1px solid #0056b3;
   outline: 0; }
 label,
 legend {
@@ -402,7 +464,7 @@ there.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 @keyframes require_highlight {
     from {background-color: #FF6347;}
-    to {background-color: #FFAD7A;}
+    to {background-color: #f8ac61;}
 }
 
 .require_animate {
@@ -411,7 +473,7 @@ there.
 
 @keyframes variable_highlight {
   from {background-color: #FF6347;}
-  to {background-color: #75EB87;}
+  to {background-color: #a9d0a5;}
 }
 
 .variable_animate {
@@ -420,7 +482,7 @@ there.
 
 @keyframes function_highlight {
   from {background-color: #FF6347;}
-  to {background-color: #9ECBFF;}
+  to {background-color: #b2c6dc;}
 }
 
 .function_animate {
@@ -430,7 +492,7 @@ there.
 @keyframes interface_highlight {
   /*from {background-color: #D400F0;}*/
   from {background-color: #FF6347;}
-  to {background-color: #E58DF0;}
+  to {background-color: #c9a1bd;}
 }
 
 .interface_animate {
@@ -439,7 +501,7 @@ there.
 
 @keyframes other_highlight {
   from {background-color: #FF6347;}
-  to {background-color: #FFEC91;}
+  to {background-color: #f4df89;}
 }
 
 .other_animate {
@@ -448,7 +510,7 @@ there.
 
 @keyframes comment_highlight {
   from {background-color: #FF6347;}
-  to {background-color: #E5E5E5;}
+  to {background-color: #eaeaea;}
 }
 
 .comment_animate {

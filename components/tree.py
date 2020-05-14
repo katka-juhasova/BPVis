@@ -3,8 +3,7 @@ import json
 import urllib
 from igraph import Graph
 import plotly.graph_objects as go
-from constant import COLORS
-from constant import COLUMNS
+from constant import DIAGRAM_COLORS as COLORS
 import dash_core_components as dcc
 
 
@@ -14,17 +13,20 @@ log.addHandler(logging.StreamHandler())
 
 
 class Tree:
-    def __init__(self, path=None, url=None):
-        if all(arg is None for arg in {path, url}):
-            raise ValueError('Expected either path or url argument')
-
-        if path:
-            with open(path) as f:
-                self.data = json.load(f)
+    def __init__(self, path=None, url=None, data=None):
+        if data:
+            self.data = data
         else:
-            log.debug('Loading data file from {}'.format(url))
-            with urllib.request.urlopen(url) as url_data:
-                self.data = json.loads(url_data.read().decode())
+            if all(arg is None for arg in {path, url}):
+                raise ValueError('Expected either path or url argument')
+
+            if path:
+                with open(path) as f:
+                    self.data = json.load(f)
+            else:
+                log.debug('Loading data file from {}'.format(url))
+                with urllib.request.urlopen(url) as url_data:
+                    self.data = json.loads(url_data.read().decode())
 
         # all edges between nodes
         self.edges = list()
@@ -44,7 +46,7 @@ class Tree:
             if 'children' in child:
                 self.__add_child_edges(child)
 
-    def get_figure(self):
+    def get_figure(self, horizontal=False) -> go.Figure:
         # nodes from .json plus root node
         nodes_count = self.data['nodes_count'] + 1
 
@@ -80,13 +82,21 @@ class Tree:
             edges_x += [2 * max_y - positions[edge[0]][1],
                         2 * max_y - positions[edge[1]][1], None]
 
-        # mirror the graph in both directions so that the edges are oriented
-        # form left to right and nodes in order from the smallest to
-        # the largest
-        nodes_x = [-x for x in nodes_x]
-        nodes_y = [-y for y in nodes_y]
-        edges_x = list(map(lambda x: -x if x else x, edges_x))
-        edges_y = list(map(lambda y: -y if y else y, edges_y))
+        if horizontal:
+            # just swap axis x and y for horizontal display of the tree
+            nodes_x = [x for x in nodes_x]
+            nodes_y = [y for y in nodes_y]
+            nodes_x, nodes_y = nodes_y, nodes_x
+            edges_x, edges_y = edges_y, edges_x
+
+        else:
+            # mirror the graph in both directions so that the edges
+            # are oriented form left to right and nodes in order from
+            # the smallest to the largest
+            nodes_x = [-x for x in nodes_x]
+            nodes_y = [-y for y in nodes_y]
+            edges_x = list(map(lambda x: -x if x else x, edges_x))
+            edges_y = list(map(lambda y: -y if y else y, edges_y))
 
         fig = go.Figure()
 
@@ -129,23 +139,31 @@ class Tree:
                     showticklabels=False,
                     )
 
-        fig.update_layout(
-            template='plotly_white',
-            title='Input tree',
-            xaxis=axis,
-            yaxis=axis,
-            showlegend=False,
-            margin={'l': 40, 'r': 40, 'b': 10, 't': 40}
-        )
+        if horizontal:
+            fig.update_layout(
+                template='plotly_white',
+                xaxis=axis,
+                yaxis=axis,
+                showlegend=False,
+                margin={'l': 40, 'r': 40, 'b': 10, 't': 0}
+            )
+        else:
+            fig.update_layout(
+                template='plotly_white',
+                height=650,
+                xaxis=axis,
+                yaxis=axis,
+                showlegend=False,
+                margin={'l': 10, 'r': 10, 'b': 0, 't': 0}
+            )
 
         return fig
 
-    def view(self, dash_id: str, columns: str, height=None):
+    def view(self, dash_id: str, horizontal=False, height=None):
         return dcc.Graph(
             id=dash_id,
-            figure=self.get_figure(),
+            figure=self.get_figure(horizontal),
             style={
-                'height': height or '60vh'
-            },
-            className=COLUMNS[columns]
+                'height': height or '250px'
+            }
         )

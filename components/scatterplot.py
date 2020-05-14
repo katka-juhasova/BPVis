@@ -2,8 +2,7 @@ import logging
 import json
 import urllib
 import chardet
-from constant import COLORS
-from constant import COLUMNS
+from constant import DIAGRAM_COLORS as COLORS
 import plotly.graph_objects as go
 import dash_core_components as dcc
 
@@ -14,18 +13,22 @@ log.addHandler(logging.StreamHandler())
 
 
 class ScatterPlot:
-    def __init__(self, path=None, url=None):
-        if all(arg is None for arg in {path, url}):
-            raise ValueError('Expected either path or url argument')
-
-        if path:
-            with open(path) as f:
-                self.data = json.load(f)
+    def __init__(self, path=None, url=None, data=None):
+        if data:
+            self.data = data
 
         else:
-            log.debug('Loading data file from {}'.format(url))
-            with urllib.request.urlopen(url) as url_data:
-                self.data = json.loads(url_data.read().decode())
+            if all(arg is None for arg in {path, url}):
+                raise ValueError('Expected either path or url argument')
+
+            if path:
+                with open(path) as f:
+                    self.data = json.load(f)
+
+            else:
+                log.debug('Loading data file from {}'.format(url))
+                with urllib.request.urlopen(url) as url_data:
+                    self.data = json.loads(url_data.read().decode())
 
         self.source_code = self.__read_source_code()
         self.traces = {
@@ -77,7 +80,7 @@ class ScatterPlot:
 
         return raw_data.decode('utf-8')
 
-    def __add_node_to_trace(self, node):
+    def __add_node_to_trace(self, node: dict):
         self.traces[node['container']]['x'].append(node['master_index'])
         self.traces[node['container']]['y'].append(node['container'])
         self.traces[node['container']]['text'].append(
@@ -87,11 +90,19 @@ class ScatterPlot:
             ).replace('\n', '<br>')
         )
 
+        # hover text may be too long so it needs to be limited to max 10 lines
+        if self.traces[node['container']]['text'][-1].count('<br>') > 10:
+            text = self.traces[node['container']]['text'][-1]
+            text = text.split('<br>', 10)
+            text[-1] = '...'
+            text = '<br>'.join(text)
+            self.traces[node['container']]['text'][-1] = text
+
         if 'children' in node:
             for child in node['children']:
                 self.__add_node_to_trace(child)
 
-    def __add_traces(self, fig, show_text):
+    def __add_traces(self, fig, show_text: bool):
         for node in self.data['nodes']:
             self.__add_node_to_trace(node)
 
@@ -116,36 +127,29 @@ class ScatterPlot:
                 )
             )
 
-    def get_figure(self, show_legend=False, show_text=False):
+    def get_figure(self, show_legend=False, show_text=False) -> go.Figure:
         fig = go.Figure()
         self.__add_traces(fig, show_text)
 
-        # consider adding some interaction with lua code or seesoft
-        # maybe in seesoft the markers might appear after highlighting point
-        # in scatterplot and then the user can click and view corresponding
-        # part in seesoft
-
         fig.update_layout(
             template='plotly_white',
-            title='Input nodes order',
             xaxis={
-                'title': 'Order in source code',
                 'rangemode': 'tozero'
             },
             yaxis={'title': 'Container'},
-            margin={'l': 40, 'r': 40, 'b': 40, 't': 40},
-            showlegend=show_legend
+            margin={'l': 40, 'r': 20, 'b': 40, 't': 0},
+            showlegend=show_legend,
+            legend_orientation="h"
         )
 
         return fig
 
-    def view(self, dash_id: str, columns: str, height=None,
+    def view(self, dash_id: str, height=None,
              show_legend=False, show_text=False):
         return dcc.Graph(
             id=dash_id,
             figure=self.get_figure(show_legend, show_text),
             style={
-                'height': height or '30vh'
-            },
-            className=COLUMNS[columns]
+                'height': height or '220px'
+            }
         )
