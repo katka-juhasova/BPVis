@@ -4,7 +4,6 @@ import urllib
 from igraph import Graph
 import plotly.graph_objects as go
 from constant import DIAGRAM_COLORS as COLORS
-from constant import COLUMNS
 import dash_core_components as dcc
 
 
@@ -143,7 +142,6 @@ class Tree:
         if horizontal:
             fig.update_layout(
                 template='plotly_white',
-                # title='Input AST structure',
                 xaxis=axis,
                 yaxis=axis,
                 showlegend=False,
@@ -153,7 +151,6 @@ class Tree:
             fig.update_layout(
                 template='plotly_white',
                 height=650,
-                # title='Input AST structure',
                 xaxis=axis,
                 yaxis=axis,
                 showlegend=False,
@@ -162,12 +159,11 @@ class Tree:
 
         return fig
 
-    def view(self, dash_id: str, horizontal=False, columns=None, height=None):
+    def view(self, dash_id: str, horizontal=False, height=None):
         return dcc.Graph(
             id=dash_id,
             figure=self.get_figure(horizontal),
             style={
                 'height': height or '250px'
-            },
-            # className=COLUMNS[columns]
+            }
         )

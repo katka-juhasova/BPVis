@@ -1,5 +1,4 @@
 import logging
-import pandas as pd
 from sample import Sample
 import plotly.graph_objects as go
 from constant import WHITE_TO_BLUE
@@ -54,9 +53,8 @@ class Prediction:
 
         return fig
 
-    def view(self, dash_id: str, columns=None):
+    def view(self, dash_id: str):
         return dcc.Graph(
             id=dash_id,
-            figure=self.get_figure(),
-            # className=COLUMNS[columns]
+            figure=self.get_figure()
         )

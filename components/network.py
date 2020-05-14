@@ -20,12 +20,9 @@ MAX_Y = 215
 MIDDLE_Y = 107
 INPUT_WIDTH = 3
 LSTM1_WIDTH = 128
-# LSTM2_WIDTH = 64
 LSTM2_WIDTH = 3
 # change these 2 numbers in case of different output layer
-# OUTPUT_WIDTH = 10
 OUTPUT_WIDTH = 3
-# LAYERS_LAYOUT_WIDTH = 379
 # 40 is space for arrows
 LAYERS_LAYOUT_WIDTH = (4 * INPUT_WIDTH + 2 * LSTM1_WIDTH
                        + LSTM2_WIDTH + OUTPUT_WIDTH + 40)
@@ -240,12 +237,11 @@ class Network:
 
         return fig
 
-    def view(self, dash_id: str, columns=None):
+    def view(self, dash_id: str):
         return dcc.Graph(
             id=dash_id,
             config={
                 'displayModeBar': False
             },
-            figure=self.get_figure(),
-            # className=COLUMNS[columns]
+            figure=self.get_figure()
         )

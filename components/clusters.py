@@ -22,10 +22,6 @@ CSV_PATH = (os.path.dirname(os.path.realpath(__file__))
 class Clusters:
     def __init__(self, sample=None):
         self.train_samples = [None for _ in range(TRAIN_SAMPLES_NUM)]
-        # self.train_sample2 = None
-        # self.train_sample3 = None
-        # self.train_sample4 = None
-        # self.train_sample5 = None
         self.train_data = self.__load_train_data()
 
         if sample:
@@ -196,7 +192,6 @@ class Clusters:
                                 x=[trace['x'][index]],
                                 y=[trace['y'][index]],
                                 hovertext=[trace['text'][index]],
-                                # name='Analyzed sample',
                                 mode='markers',
                                 hoverinfo='x+y+text',
                                 marker=dict(size=8, color=CLUSTER_COLORS[i],

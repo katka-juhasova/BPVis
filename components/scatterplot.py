@@ -3,7 +3,6 @@ import json
 import urllib
 import chardet
 from constant import DIAGRAM_COLORS as COLORS
-from constant import COLUMNS
 import plotly.graph_objects as go
 import dash_core_components as dcc
 
@@ -132,14 +131,8 @@ class ScatterPlot:
         fig = go.Figure()
         self.__add_traces(fig, show_text)
 
-        # consider adding some interaction with lua code or seesoft
-        # maybe in seesoft the markers might appear after highlighting point
-        # in scatterplot and then the user can click and view corresponding
-        # part in seesoft
-
         fig.update_layout(
             template='plotly_white',
-            # title='Input nodes order',
             xaxis={
                 'rangemode': 'tozero'
             },
@@ -151,13 +144,12 @@ class ScatterPlot:
 
         return fig
 
-    def view(self, dash_id: str, columns=None, height=None,
+    def view(self, dash_id: str, height=None,
              show_legend=False, show_text=False):
         return dcc.Graph(
             id=dash_id,
             figure=self.get_figure(show_legend, show_text),
             style={
                 'height': height or '220px'
-            },
-            # className=COLUMNS[columns]
+            }
         )

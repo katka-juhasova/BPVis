@@ -94,8 +94,6 @@ def build_input_from_json(json_path: str) -> np.ndarray:
 
     # normalise data, get mean and std from training, here its hardcoded
     log.debug('Normalising data for JSON file "{}"'.format(json_path))
-    # masked_data_mean = -120.57979590730959
-    # masked_data_std = 1115300671.9887397
     masked_data_mean = 21.11153407758736
     masked_data_std = 1157761522.5453846
 
@@ -113,7 +111,6 @@ def module_pipeline(json_path: str) -> int:
     data = build_input_from_json(json_path)
 
     # load model and generate label
-    # model_path = model_path
     model = load_model(model_path,
                        custom_objects={'ClusteringLayer': ClusteringLayer})
 
@@ -127,7 +124,6 @@ def module_pipeline(json_path: str) -> int:
 
 # pipeline for predicting the whole dataset
 def dataset_pipeline() -> np.ndarray:
-    # model_path = model_path
     model = load_model(model_path,
                        custom_objects={'ClusteringLayer': ClusteringLayer})
 
@@ -146,7 +142,6 @@ def dataset_pipeline() -> np.ndarray:
 # if the module is provided get activations for module, otherwise for
 # whole dataset
 def dataset_activations(layer=None) -> (List[str], dict):
-    # model_path = model_path
     model = load_model(model_path,
                        custom_objects={'ClusteringLayer': ClusteringLayer})
 
@@ -193,7 +188,6 @@ def module_activations(json_path: str, model=None, layer=None) -> dict:
     data = build_input_from_json(json_path)
 
     # load model and generate label
-    # model_path = model_path
     model = (model or
              load_model(model_path, custom_objects={
                                     'ClusteringLayer': ClusteringLayer})

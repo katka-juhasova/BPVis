@@ -4,7 +4,6 @@ import urllib
 import chardet
 from typing import List
 from constant import COLORS
-from constant import COLUMNS
 from constant import LUA_LINE_HEIGHT
 import dash_html_components as html
 
@@ -161,9 +160,7 @@ class LuaCode:
 
     # children may contain pure string element, html.Br() or html.Span element
     # with corresponding color background
-    def view(self, dash_id: str, columns=None):
-        # self.__build_tag_table()
-        # self.__build_color_text_table()
+    def view(self, dash_id: str):
         children = self.get_children(dash_id)
 
         return html.Pre(
@@ -178,6 +175,5 @@ class LuaCode:
                 'padding': '20px',
                 'height': '730px',
                 'overflow': 'auto'
-            },
-            # className=COLUMNS[columns]
+            }
         )

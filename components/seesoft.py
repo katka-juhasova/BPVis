@@ -5,7 +5,6 @@ import chardet
 from PIL import Image
 from PIL import ImageDraw
 from constant import COLORS
-from constant import COLUMNS
 from constant import LUA_LINE_HEIGHT
 import plotly.graph_objects as go
 import base64
@@ -45,16 +44,12 @@ class SeeSoft:
                 with urllib.request.urlopen(url) as url_data:
                     self.data = json.loads(url_data.read().decode())
 
-        # self.img_width = 0
-        # self.img_height = 0
         self.byte_width = BYTE_WIDTH
         self.byte_height = BYTE_HEIGHT
         self.margin_size = MARGIN_SIZE
         self.comments = comments
         self.source_code = self.__read_source_code()
         self.tag_table = [dict() for _ in range(len(self.source_code))]
-
-        self.img_path = img_path or 'image.png'
         self.bin_img = BytesIO()
 
         self.__build_tag_table()
@@ -188,19 +183,7 @@ class SeeSoft:
 
         return count
 
-    def draw(self, byte_width=None, byte_height=None,
-             margin_size=None, img_path=None):
-        # self.byte_width = byte_width or BYTE_WIDTH
-        # self.byte_height = byte_height or BYTE_HEIGHT
-        # self.margin_size = margin_size or MARGIN_SIZE
-        # self.img_path = img_path or self.img_path
-        #
-        # self.__build_tag_table()
-        # self.img_width = ((self.__max_line() * self.byte_width)
-        #                   + 2 * self.margin_size)
-        # self.img_height = ((self.__lines_count() * self.byte_height)
-        #                    + 2 * self.margin_size)
-
+    def draw(self):
         image = Image.new('RGB', (self.img_width, self.img_height),
                           color=COLORS['empty'])
         draw = ImageDraw.Draw(image)
@@ -362,7 +345,7 @@ class SeeSoft:
 
         return width, height
 
-    def get_figure(self, height_scale=None, small=False,
+    def get_figure(self, small=False,
                    width=None, height=None) -> go.Figure:
         if small:
             width, height = self.count_small_width_and_height(width, height)
@@ -371,8 +354,6 @@ class SeeSoft:
 
         fig = go.Figure()
 
-        # with open('assets/seesoft.png', 'rb') as img_file:
-        #     encoded_string = base64.b64encode(img_file.read()).decode()
         encoded_string = base64.b64encode(self.bin_img.getvalue()).decode()
         encoded_image = 'data:image/png;base64,' + encoded_string
 
@@ -431,8 +412,7 @@ class SeeSoft:
 
         return fig
 
-    def view(self, dash_id: str, columns=None, width=None, height=None):
-        # width, height = self.count_width_and_height(width, height)
+    def view(self, dash_id: str, width=None, height=None):
 
         return dcc.Graph(
             id=dash_id,
@@ -444,6 +424,5 @@ class SeeSoft:
                 'width': width,
                 'height': height,
                 'max-height': '750px'
-            },
-            # className=COLUMNS[columns]
+            }
         )
