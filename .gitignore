@@ -3,7 +3,5 @@ __pycache__/
 components/__pycache__/
 data/
 modules/
-assets/*.png
 venv
 script.py
-network/*.csv
