@@ -1,4 +1,5 @@
 import os
+from constant import MODEL_NAME
 from preprocessing.module_handler import ModuleHandler
 from keras.models import load_model
 from keras.models import Model
@@ -11,8 +12,8 @@ import csv
 import json
 
 MAX_CONTEXTS = 430
-model_path = (os.path.dirname(os.path.realpath(__file__))
-              + '/clustering_model_10.h5')
+here = os.path.dirname(os.path.realpath(__file__))
+model_path = '{}/{}'.format(here, MODEL_NAME)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 log = logging.getLogger(__name__)

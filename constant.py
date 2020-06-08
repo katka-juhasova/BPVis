@@ -1,3 +1,4 @@
+# column names
 COLUMNS = {
     '1': 'one column',
     '2': 'two columns',
@@ -14,6 +15,8 @@ COLUMNS = {
 }
 
 # NOTE: in case of changes, colors have to be changed also in stylesheet.css
+# colors for each type of Lua statement
+# used on luacode.py and seesoft.py
 COLORS = {
     'require': '#f8ac61',
     'variable': '#a9d0a5',
@@ -27,6 +30,7 @@ COLORS = {
     None: None
 }
 
+# colors for Lua statements in diagrams (a bit darker)
 DIAGRAM_COLORS = {
     'require': '#F58518',
     'variable': '#54A24B',
@@ -40,8 +44,11 @@ DIAGRAM_COLORS = {
     None: None
 }
 
+# line height for div created in luacode.py
 LUA_LINE_HEIGHT = 15
 
+# colors from the same palette as DIAGRAM_COLORS
+# used in clusters.py
 CLUSTER_COLORS = [
     '#4C78A8',
     '#54A24B',
@@ -55,20 +62,7 @@ CLUSTER_COLORS = [
     '#BAB0AC'
 ]
 
-# WHITE_TO_BLUE = [
-#     [0, '#ffffff'],
-#     [0.15, '#edf1f6'],
-#     [0.25, '#dbe4ed'],
-#     [0.35, '#c9d6e4'],
-#     [0.45, '#b7c9dc'],
-#     [0.55, '#a5bbd3'],
-#     [0.65, '#93aeca'],
-#     [0.75, '#81a0c2'],
-#     [0.85, '#6f93b9'],
-#     [0.95, '#5d85b0'],
-#     [1, '#4c78a8']
-# ]
-
+# color scale for prediction.py
 WHITE_TO_BLUE = [
     [0, '#ffffff'],
     [0.25, '#dbe4ed'],
@@ -78,7 +72,7 @@ WHITE_TO_BLUE = [
     [1, '#4c78a8']
 ]
 
-
+# color scale for network.py
 RED_TO_BLUE = [
     [0, '#e45756'],
     [0.05, '#E66766'],
@@ -102,3 +96,6 @@ RED_TO_BLUE = [
     [0.95, '#5d85b0'],
     [1, '#4c78a8']
 ]
+
+# name of the NN model, the file can be found in the directory 'network'
+MODEL_NAME = 'clustering_model_10.h5'
