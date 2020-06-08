@@ -517,7 +517,7 @@ def load_sample(n_clicks, value):
 
     if n_clicks > 0:
         seesoft, prediction, tree = None, None, None
-        sample = Sample(path='data/' + value, model=model)
+        sample = Sample(path='BP-data/data/' + value, model=model)
         return n_clicks
 
     return ''
@@ -707,18 +707,12 @@ def update_clusters(children, value1, n_clicks2, n_clicks3, n_clicks4,
 @app.callback(
     Output('prediction-content', 'figure'),
     [Input('sample-name-hidden-div', 'children')]
-    # [Input('module-input-button', 'n_clicks')],
-    # [State('module-input', 'value')]
 )
-# def update_input_prediction(n_clicks, value):
 def update_input_prediction(children):
     global prediction
     global sample
 
-    # if n_clicks > 0:
     if children != '':
-        # while not sample:
-        #     time.sleep(0.5)
 
         prediction = Prediction(sample=sample)
         return prediction.get_figure()
@@ -730,13 +724,10 @@ def update_input_prediction(children):
 @app.callback(
     Output('sample-prediction', 'figure'),
     [Input('sample-name-hidden-div', 'children')]
-    # [Input('module-input-button', 'n_clicks')],
-    # [State('module-input', 'value')]
 )
 def update_sample_prediction(children):
     global prediction
 
-    # if n_clicks > 0:
     if children != '':
         while not prediction:
             time.sleep(0.5)
@@ -759,7 +750,6 @@ def update_sample_seesoft(children, value):
     global seesoft
     global tree
 
-    # if n_clicks > 0:
     if children != '':
         if value == 'code':
             while not seesoft:
@@ -786,7 +776,7 @@ def update_train1_prediction(n_clicks, value):
         return layout.get_empty_figure(height=100)
 
     if n_clicks > 0:
-        local_sample = Sample(path='data/' + value, model=model)
+        local_sample = Sample(path='BP-data/data/' + value, model=model)
         local_prediction = Prediction(sample=local_sample)
         return local_prediction.get_figure(small=True)
 
@@ -806,12 +796,13 @@ def update_train1_content(n_clicks, value1, value2):
 
     if n_clicks > 0:
         if value1 == 'code':
-            local_seesoft = SeeSoft(path='data/' + value2, comments=True)
+            local_seesoft = SeeSoft(path='BP-data/data/' + value2,
+                                    comments=True)
             local_seesoft.draw()
             return local_seesoft.get_figure(small=True)
 
         else:
-            local_tree = Tree(path='data/' + value2)
+            local_tree = Tree(path='BP-data/data/' + value2)
             return local_tree.get_figure()
 
     else:
@@ -829,7 +820,7 @@ def update_train2_prediction(n_clicks, value):
         return layout.get_empty_figure(height=100)
 
     if n_clicks > 0:
-        local_sample = Sample(path='data/' + value, model=model)
+        local_sample = Sample(path='BP-data/data/' + value, model=model)
         local_prediction = Prediction(sample=local_sample)
         return local_prediction.get_figure(small=True)
 
@@ -849,12 +840,13 @@ def update_train2_content(n_clicks, value1, value2):
 
     if n_clicks > 0:
         if value1 == 'code':
-            local_seesoft = SeeSoft(path='data/' + value2, comments=True)
+            local_seesoft = SeeSoft(path='BP-data/data/' + value2,
+                                    comments=True)
             local_seesoft.draw()
             return local_seesoft.get_figure(small=True)
 
         else:
-            local_tree = Tree(path='data/' + value2)
+            local_tree = Tree(path='BP-data/data/' + value2)
             return local_tree.get_figure()
 
     else:
@@ -872,7 +864,7 @@ def update_train3_prediction(n_clicks, value):
         return layout.get_empty_figure(height=100)
 
     if n_clicks > 0:
-        local_sample = Sample(path='data/' + value, model=model)
+        local_sample = Sample(path='BP-data/data/' + value, model=model)
         local_prediction = Prediction(sample=local_sample)
         return local_prediction.get_figure(small=True)
 
@@ -892,12 +884,13 @@ def update_train3_content(n_clicks, value1, value2):
 
     if n_clicks > 0:
         if value1 == 'code':
-            local_seesoft = SeeSoft(path='data/' + value2, comments=True)
+            local_seesoft = SeeSoft(path='BP-data/data/' + value2,
+                                    comments=True)
             local_seesoft.draw()
             return local_seesoft.get_figure(small=True)
 
         else:
-            local_tree = Tree(path='data/' + value2)
+            local_tree = Tree(path='BP-data/data/' + value2)
             return local_tree.get_figure()
 
     else:
@@ -915,7 +908,7 @@ def update_train4_prediction(n_clicks, value):
         return layout.get_empty_figure(height=100)
 
     if n_clicks > 0:
-        local_sample = Sample(path='data/' + value, model=model)
+        local_sample = Sample(path='BP-data/data/' + value, model=model)
         local_prediction = Prediction(sample=local_sample)
         return local_prediction.get_figure(small=True)
 
@@ -935,12 +928,13 @@ def update_train4_content(n_clicks, value1, value2):
 
     if n_clicks > 0:
         if value1 == 'code':
-            local_seesoft = SeeSoft(path='data/' + value2, comments=True)
+            local_seesoft = SeeSoft(path='BP-data/data/' + value2,
+                                    comments=True)
             local_seesoft.draw()
             return local_seesoft.get_figure(small=True)
 
         else:
-            local_tree = Tree(path='data/' + value2)
+            local_tree = Tree(path='BP-data/data/' + value2)
             return local_tree.get_figure()
 
     else:
@@ -958,7 +952,7 @@ def update_train5_prediction(n_clicks, value):
         return layout.get_empty_figure(height=100)
 
     if n_clicks > 0:
-        local_sample = Sample(path='data/' + value, model=model)
+        local_sample = Sample(path='BP-data/data/' + value, model=model)
         local_prediction = Prediction(sample=local_sample)
         return local_prediction.get_figure(small=True)
 
@@ -978,12 +972,13 @@ def update_train5_content(n_clicks, value1, value2):
 
     if n_clicks > 0:
         if value1 == 'code':
-            local_seesoft = SeeSoft(path='data/' + value2, comments=True)
+            local_seesoft = SeeSoft(path='BP-data/data/' + value2,
+                                    comments=True)
             local_seesoft.draw()
             return local_seesoft.get_figure(small=True)
 
         else:
-            local_tree = Tree(path='data/' + value2)
+            local_tree = Tree(path='BP-data/data/' + value2)
             return local_tree.get_figure()
 
     else:

@@ -227,10 +227,8 @@ def module_activations(json_path: str, model=None, layer=None) -> dict:
 # 1st dimension separated by space and 2nd dimension by '|'
 # activations from each layer are stored in separate files
 def save_train_data_activations():
-    path = os.path.dirname(os.path.realpath(__file__)) + '/../data'
+    path = os.path.dirname(os.path.realpath(__file__)) + '/../BP-data/data'
     data_files = list()
-
-    print(path)
 
     # r=root, d=directories, f=files
     # list all json files
@@ -249,12 +247,12 @@ def save_train_data_activations():
             json_data = json.load(f)
 
         name = json_data['path']
-        name = name.replace('modules/', '')
+        name = name.replace('BP-data/modules/', '')
         name = name[:-4]
 
         try:
             index = module_names.index(name)
-            data_names[index] = data_file.replace('{}/../data/'.format(
+            data_names[index] = data_file.replace('{}/../BP-data/data/'.format(
                 os.path.dirname(os.path.realpath(__file__))), '')
         except ValueError:
             pass
