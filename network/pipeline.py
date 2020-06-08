@@ -226,7 +226,7 @@ def module_activations(json_path: str, model=None, layer=None) -> dict:
 # module path, json path and activations from all layers
 # 1st dimension separated by space and 2nd dimension by '|'
 # activations from each layer are stored in separate files
-def save_train_data_activations():
+def save_train_data_activations(output_dir=None):
     path = os.path.dirname(os.path.realpath(__file__)) + '/../BP-data/data'
     data_files = list()
 
@@ -270,8 +270,9 @@ def save_train_data_activations():
         csv_header = ['data path', 'module path', 'label',
                       'layer{}'.format(layer)]
 
-        with open('train_data_activations_layer{}.csv'.format(layer),
-                  'w', newline='') as file:
+        output_file = '{}train_data_activations_layer{}.csv'.format(
+            output_dir or '', layer)
+        with open(output_file, 'w', newline='') as file:
             # write column names
             writer = csv.writer(file)
             writer.writerow(csv_header)
