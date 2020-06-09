@@ -525,20 +525,13 @@ def load_sample(n_clicks, value):
 
 @app.callback(
     Output('luacode-div', 'children'),
-    # [Input('module-input-button', 'n_clicks')],
     [Input('sample-name-hidden-div', 'children')]
-    # [State('module-input', 'value')]
 )
-# def update_input_luacode(n_clicks, value):
 def update_input_luacode(children):
     global luacode
     global sample
 
-    # if n_clicks > 0:
     if children != '':
-        # while not sample:
-        #     time.sleep(0.5)
-
         luacode = LuaCode(data=sample.data)
         return luacode.view(dash_id='luacode-content')
 
@@ -548,20 +541,13 @@ def update_input_luacode(children):
 
 @app.callback(
     Output('seesoft-content', 'figure'),
-    # [Input('module-input-button', 'n_clicks')],
     [Input('sample-name-hidden-div', 'children')]
-    # [State('module-input', 'value')]
 )
-# def update_input_seesoft(children, value):
 def update_input_seesoft(children):
     global seesoft
     global sample
 
-    # if n_clicks > 0:
     if children != '':
-        # while not sample:
-        #     time.sleep(0.5)
-
         seesoft = SeeSoft(data=sample.data, comments=True)
         seesoft.draw()
         return seesoft.get_figure()
@@ -572,20 +558,13 @@ def update_input_seesoft(children):
 
 @app.callback(
     Output('scatterplot-content', 'figure'),
-    # [Input('module-input-button', 'n_clicks')],
     [Input('sample-name-hidden-div', 'children')]
-    # [State('module-input', 'value')]
 )
-# def update_input_scatterplot(n_clicks, value):
 def update_input_scatterplot(children):
     global scatterplot
     global sample
 
-    # if n_clicks > 0:
     if children != '':
-        # while not sample:
-        #     time.sleep(0.5)
-
         scatterplot = ScatterPlot(data=sample.data)
         return scatterplot.get_figure(show_legend=True, show_text=True)
 
@@ -596,19 +575,12 @@ def update_input_scatterplot(children):
 @app.callback(
     Output('tree-content', 'figure'),
     [Input('sample-name-hidden-div', 'children')]
-    # [Input('module-input-button', 'n_clicks')],
-    # [State('module-input', 'value')]
 )
-# def update_input_tree(n_clicks, value):
 def update_input_tree(children):
     global tree
-    # global model
     global sample
 
-    # if n_clicks > 0:
     if children != '':
-
-        # sample = Sample(path='data/' + value, model=model)
         tree = Tree(data=sample.data)
         return tree.get_figure(horizontal=True)
 
@@ -619,24 +591,18 @@ def update_input_tree(children):
 @app.callback(
     Output('clusters-content', 'figure'),
     [Input('sample-name-hidden-div', 'children'),
-     # Input('module-input-button', 'n_clicks'),
      Input('cluster-radio', 'value'),
      Input('train1-yes-button', 'n_clicks'),
      Input('train2-yes-button', 'n_clicks'),
      Input('train3-yes-button', 'n_clicks'),
      Input('train4-yes-button', 'n_clicks'),
      Input('train5-yes-button', 'n_clicks')],
-    [
-     # State('module-input', 'value'),
-     State('train1-input', 'value'),
+    [State('train1-input', 'value'),
      State('train2-input', 'value'),
      State('train3-input', 'value'),
      State('train4-input', 'value'),
      State('train5-input', 'value')]
 )
-# def update_clusters(n_clicks1, value1, n_clicks2, n_clicks3, n_clicks4,
-#                     n_clicks5, n_clicks6, value2, value3,  value4,  value5,
-#                     value6,  value7):
 def update_clusters(children, value1, n_clicks2, n_clicks3, n_clicks4,
                     n_clicks5, n_clicks6, value2, value3, value4, value5,
                     value6):
@@ -644,14 +610,6 @@ def update_clusters(children, value1, n_clicks2, n_clicks3, n_clicks4,
     global sample
     global clusters
 
-    # n_clicks1 = man submit button
-    # n_clicks2 = submit train1
-    # value1 = pca/tsne
-    # value2 = analyzed module name
-    # value3 = train1 name
-    # etc.
-
-    # if n_clicks1 > 0:
     if children != '':
         # handle train1 sample highlight
         if n_clicks2 > 0:
@@ -688,14 +646,10 @@ def update_clusters(children, value1, n_clicks2, n_clicks3, n_clicks4,
             else:
                 clusters.train_samples[4] = value6
 
-        # if n_clicks1 == click_counter:
         if int(children) == click_counter:
             return clusters.get_figure(algorithm=value1)
 
-        # click_counter = n_clicks1
         click_counter = int(children)
-        # while not sample:
-        #     time.sleep(0.5)
 
         clusters.add_sample(sample)
         return clusters.get_figure(algorithm=value1)
@@ -713,7 +667,6 @@ def update_input_prediction(children):
     global sample
 
     if children != '':
-
         prediction = Prediction(sample=sample)
         return prediction.get_figure()
 
@@ -741,11 +694,8 @@ def update_sample_prediction(children):
 @app.callback(
     Output('sample-content', 'figure'),
     [Input('sample-name-hidden-div', 'children'),
-     # Input('module-input-button', 'n_clicks'),
      Input('compare-radio', 'value')]
-    # [State('module-input', 'value')]
 )
-# def update_sample_seesoft(n_clicks, value1, value2):
 def update_sample_seesoft(children, value):
     global seesoft
     global tree
@@ -988,17 +938,11 @@ def update_train5_content(n_clicks, value1, value2):
 @app.callback(
     Output('sample-network', 'figure'),
     [Input('sample-name-hidden-div', 'children')]
-    # [Input('module-input-button', 'n_clicks')],
-    # [State('module-input', 'value')]
 )
 def update_network(children):
     global sample
 
-    # if n_clicks > 0:
     if children != '':
-        # while not sample:
-        #     time.sleep(0.5)
-
         local_network = Network(sample=sample)
         return local_network.get_figure()
 
