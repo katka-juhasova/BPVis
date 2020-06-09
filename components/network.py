@@ -87,7 +87,11 @@ class Network:
                     activations[index] = activation
                     activations[index + 1] = activation
                     activations[index + 2] = activation
+                    text[index] = 'y: {}<br>value: {}'.format(
+                        len(current_layer) - 1 - i, activation)
                     text[index + 1] = 'y: {}<br>value: {}'.format(
+                        len(current_layer) - 1 - i, activation)
+                    text[index + 2] = 'y: {}<br>value: {}'.format(
                         len(current_layer) - 1 - i, activation)
                     index += 3
 

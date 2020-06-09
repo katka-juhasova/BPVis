@@ -1,4 +1,5 @@
 import os
+from constant import MODEL_NAME
 from preprocessing.module_handler import ModuleHandler
 from keras.models import load_model
 from keras.models import Model
@@ -11,8 +12,8 @@ import csv
 import json
 
 MAX_CONTEXTS = 430
-model_path = (os.path.dirname(os.path.realpath(__file__))
-              + '/clustering_model_10.h5')
+here = os.path.dirname(os.path.realpath(__file__))
+model_path = '{}/{}'.format(here, MODEL_NAME)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 log = logging.getLogger(__name__)
@@ -225,11 +226,9 @@ def module_activations(json_path: str, model=None, layer=None) -> dict:
 # module path, json path and activations from all layers
 # 1st dimension separated by space and 2nd dimension by '|'
 # activations from each layer are stored in separate files
-def save_train_data_activations():
-    path = os.path.dirname(os.path.realpath(__file__)) + '/../data'
+def save_train_data_activations(output_dir=None):
+    path = os.path.dirname(os.path.realpath(__file__)) + '/../BP-data/data'
     data_files = list()
-
-    print(path)
 
     # r=root, d=directories, f=files
     # list all json files
@@ -248,12 +247,12 @@ def save_train_data_activations():
             json_data = json.load(f)
 
         name = json_data['path']
-        name = name.replace('modules/', '')
+        name = name.replace('BP-data/modules/', '')
         name = name[:-4]
 
         try:
             index = module_names.index(name)
-            data_names[index] = data_file.replace('{}/../data/'.format(
+            data_names[index] = data_file.replace('{}/../BP-data/data/'.format(
                 os.path.dirname(os.path.realpath(__file__))), '')
         except ValueError:
             pass
@@ -271,8 +270,9 @@ def save_train_data_activations():
         csv_header = ['data path', 'module path', 'label',
                       'layer{}'.format(layer)]
 
-        with open('train_data_activations_layer{}.csv'.format(layer),
-                  'w', newline='') as file:
+        output_file = '{}train_data_activations_layer{}.csv'.format(
+            output_dir or '', layer)
+        with open(output_file, 'w', newline='') as file:
             # write column names
             writer = csv.writer(file)
             writer.writerow(csv_header)

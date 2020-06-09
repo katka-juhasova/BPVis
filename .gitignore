@@ -1,9 +1,7 @@
 .idea
 __pycache__/
 components/__pycache__/
-data/
-modules/
-assets/*.png
+network/__pycache__/
+preprocessing/__pycache__/
 venv
-script.py
 network/*.csv
