@@ -9,8 +9,7 @@ Interactive visualization tool for deep neural network.
 - Create directories `data` and `modules` in cloned CodeNNVis repository.
 Repository tree should look now like this:
 
-
-    BPVis
+    CodeNNVis
         ├── assets
         ├── CodeNNVis.py
         ├── components
