@@ -1,4 +1,4 @@
-# column names
+# column names conversions
 COLUMNS = {
     '1': 'one column',
     '2': 'two columns',

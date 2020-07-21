@@ -4,4 +4,8 @@ components/__pycache__/
 network/__pycache__/
 preprocessing/__pycache__/
 venv
-network/*.csv
+network/train_data_activations_layer0.csv
+network/train_data_activations_layer1.csv
+network/train_data_activations_layer2.csv
+network/train_data_activations_layer3.csv
+network/train_data_activations_layer4.csv
