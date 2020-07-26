@@ -1,3 +1,9 @@
+"""
+    Interface layout and interactions for the visualization tool CodeNNVis.
+    NOTE: while the graphs are not generated, there are grey placeholders
+    instead.
+"""
+
 import os
 import dash
 import dash_html_components as html
@@ -17,17 +23,19 @@ from components.prediction import Prediction
 from components.network import Network
 import time
 
-DIMENSIONS = 10
 
 here = os.path.dirname(os.path.realpath(__file__))
 model_path = '{}/network/{}'.format(here, MODEL_NAME)
 model = load_model(model_path,
                    custom_objects={'ClusteringLayer': ClusteringLayer})
+
+# global variables for visualization components
 luacode = None
 seesoft = None
 scatterplot = None
 tree = None
 sample = None
+# counter for the main SUBMIT button
 click_counter = 0
 clusters = Clusters()
 prediction = None
@@ -36,6 +44,7 @@ prediction = None
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
+    # title
     html.Div([
         html.H3(
             children='CodeNNVis',
@@ -43,6 +52,7 @@ app.layout = html.Div([
         )],
         className="row"
     ),
+    # section for submitting the path to the JSON file which shall be processed
     html.Div([
         'Source code sample to be analyzed: '],
         style={'margin-bottom': '10px'},
@@ -63,18 +73,23 @@ app.layout = html.Div([
         )],
         className='row'
     ),
+    # hidden divs for interactions which shouldn't have any affect on
+    # the interface
     html.Div(id='hidden-div',
              style={'display': 'none'}),
     html.Div(id='sample-name-hidden-div',
              children='',
              style={'display': 'none'}),
+    # heading
     html.Div([
         html.H4('Source code visualization')],
         style={'margin-top': '20px'},
         className='row'
     ),
+    # large div for source code visualization
     html.Div(
         children=[
+            # colorful original lua source code
             html.Div(
                 id='luacode-div',
                 children=[
@@ -88,6 +103,7 @@ app.layout = html.Div([
                     'padding-right': '10px',
                 }
             ),
+            # minimized colorful representation of source code
             dcc.Graph(
                 id='seesoft-content',
                 figure=layout.get_empty_figure(height=750),
@@ -101,6 +117,7 @@ app.layout = html.Div([
                     'padding': '10px',
                 }
             ),
+            # legend for both source code visualizations
             html.Img(
                 src=layout.get_legend_image(),
                 style={
@@ -109,6 +126,7 @@ app.layout = html.Div([
                     'left': '180px'
                 }
             ),
+            # heading
             html.H6(
                 'Prediction',
                 style={
@@ -117,6 +135,7 @@ app.layout = html.Div([
                     'margin-left': '10px'
                 }
             ),
+            # categorical heat map for prediction
             dcc.Graph(
                 id='prediction-content',
                 figure=layout.get_empty_figure(height=200),
@@ -131,6 +150,7 @@ app.layout = html.Div([
                     'margin-left': '10px'
                 }
             ),
+            # button to display or hide activations from all layers
             html.Button(
                 id='network-button',
                 children=[
@@ -144,10 +164,12 @@ app.layout = html.Div([
                 },
                 className='link-button'
             ),
+            # div for diagrams on the right side
             html.Div(
                 id='input-diagrams',
                 children=[
                     html.H6('AST nodes order'),
+                    # scatterplot visualization
                     dcc.Graph(
                         id='scatterplot-content',
                         figure=layout.get_empty_figure(height=200),
@@ -159,6 +181,7 @@ app.layout = html.Div([
                         }
                     ),
                     html.H6('Input AST structure'),
+                    # AST visualization
                     dcc.Graph(
                         id='tree-content',
                         figure=layout.get_empty_figure(height=250),
@@ -170,6 +193,8 @@ app.layout = html.Div([
                         }
                     ),
                     html.H6('Cluster diagram'),
+                    # radio buttons to select either PCA or t-SNE reduction of
+                    # dimensionality
                     dcc.RadioItems(
                         id='cluster-radio',
                         options=[
@@ -179,6 +204,7 @@ app.layout = html.Div([
                         value='pca',
                         labelStyle={'display': 'inline-block'}
                     ),
+                    # cluster diagram with training data and processed sample
                     dcc.Graph(
                         id='clusters-content',
                         figure=layout.get_empty_figure(height=500),
@@ -201,10 +227,13 @@ app.layout = html.Div([
         ],
         className='row'
     ),
+    # div with activations on all layers which
+    # shall be hidden and displayed after button press
     html.Div(
         id='network-div',
         children=[
             html.H6('Network architecture with activations'),
+            # activations visualization
             dcc.Graph(
                 id='sample-network',
                 config={
@@ -224,11 +253,14 @@ app.layout = html.Div([
         },
         className='row',
     ),
+    # heading for the last section (comparing of multiple samples)
     html.Div([
         html.H4('Data comparing')],
         style={'margin-top': '20px'},
         className='row'
     ),
+    # radio buttons to select either AST or coloured code for comparison of
+    # multiple samples
     dcc.RadioItems(
         id='compare-radio',
         options=[
@@ -238,6 +270,7 @@ app.layout = html.Div([
         value='ast',
         labelStyle={'display': 'inline-block'}
     ),
+    # headings for samples from training data
     html.Div(
         children=[
             html.Div('Analyzed sample', style={'width': '230px',
@@ -261,6 +294,7 @@ app.layout = html.Div([
         ],
         className='row'
     ),
+    # section to submit paths to the samples which shall be compared
     html.Div(
         children=[
             html.Pre(
@@ -331,6 +365,7 @@ app.layout = html.Div([
         ],
         className='row'
     ),
+    # section for comparison of the predictions of training samples
     html.Div(
         children=[
             dcc.Graph(
@@ -414,6 +449,7 @@ app.layout = html.Div([
         ],
         className='row'
     ),
+    # section for visualization and comparison of the training samples
     html.Div(
         children=[
             dcc.Graph(
@@ -503,6 +539,7 @@ app.layout = html.Div([
 )
 
 
+# load new sample after submission of new JSON file
 @app.callback(
     Output('sample-name-hidden-div', 'children'),
     [Input('module-input-button', 'n_clicks')],
@@ -523,6 +560,7 @@ def load_sample(n_clicks, value):
     return ''
 
 
+# create new LuaCode visualization for given JSON file
 @app.callback(
     Output('luacode-div', 'children'),
     [Input('sample-name-hidden-div', 'children')]
@@ -539,6 +577,7 @@ def update_input_luacode(children):
         return layout.get_empty_div(750)
 
 
+# create new SeeSoft visualization for given JSON file
 @app.callback(
     Output('seesoft-content', 'figure'),
     [Input('sample-name-hidden-div', 'children')]
@@ -556,6 +595,7 @@ def update_input_seesoft(children):
         return layout.get_empty_figure(height=750)
 
 
+# create new ScatterPlot visualization for given JSON file
 @app.callback(
     Output('scatterplot-content', 'figure'),
     [Input('sample-name-hidden-div', 'children')]
@@ -572,6 +612,7 @@ def update_input_scatterplot(children):
         return layout.get_empty_figure(height=200)
 
 
+# create new AST visualization for given JSON file
 @app.callback(
     Output('tree-content', 'figure'),
     [Input('sample-name-hidden-div', 'children')]
@@ -588,6 +629,8 @@ def update_input_tree(children):
         return layout.get_empty_figure(height=250)
 
 
+# create new cluster diagram for given JSON file or update current diagram
+# (highlight specific train sample or switch between PCA and t-SNE)
 @app.callback(
     Output('clusters-content', 'figure'),
     [Input('sample-name-hidden-div', 'children'),
@@ -646,6 +689,8 @@ def update_clusters(children, value1, n_clicks2, n_clicks3, n_clicks4,
             else:
                 clusters.train_samples[4] = value6
 
+        # click counter used so that the cluster diagram is only updated when
+        # the new JSON file is chosen
         if int(children) == click_counter:
             return clusters.get_figure(algorithm=value1)
 
@@ -658,6 +703,7 @@ def update_clusters(children, value1, n_clicks2, n_clicks3, n_clicks4,
         return layout.get_empty_figure(height=500)
 
 
+# create new Prediction visualization for given JSON file
 @app.callback(
     Output('prediction-content', 'figure'),
     [Input('sample-name-hidden-div', 'children')]
@@ -674,6 +720,8 @@ def update_input_prediction(children):
         return layout.get_empty_figure(height=120)
 
 
+# for the sample comparison create the same Prediction visualization for
+# given JSON file as was used in the upper part
 @app.callback(
     Output('sample-prediction', 'figure'),
     [Input('sample-name-hidden-div', 'children')]
@@ -691,12 +739,14 @@ def update_sample_prediction(children):
         return layout.get_empty_figure(height=100)
 
 
+# for the sample comparison create the same SeeSoft or AST visualization as was
+# used in the upper part
 @app.callback(
     Output('sample-content', 'figure'),
     [Input('sample-name-hidden-div', 'children'),
      Input('compare-radio', 'value')]
 )
-def update_sample_seesoft(children, value):
+def update_sample_content(children, value):
     global seesoft
     global tree
 
@@ -715,6 +765,7 @@ def update_sample_seesoft(children, value):
         return layout.get_empty_figure(height=650)
 
 
+# update Prediction visualization for train sample no. 1
 @app.callback(
     Output('train1-prediction', 'figure'),
     [Input('train1-yes-button', 'n_clicks')],
@@ -734,6 +785,7 @@ def update_train1_prediction(n_clicks, value):
         return layout.get_empty_figure(height=100)
 
 
+# update SeeSoft or Prediction visualization for train sample no. 1
 @app.callback(
     Output('train1-content', 'figure'),
     [Input('train1-yes-button', 'n_clicks'),
@@ -759,6 +811,7 @@ def update_train1_content(n_clicks, value1, value2):
         return layout.get_empty_figure(height=650)
 
 
+# update Prediction visualization for train sample no. 2
 @app.callback(
     Output('train2-prediction', 'figure'),
     [Input('train2-yes-button', 'n_clicks')],
@@ -778,6 +831,7 @@ def update_train2_prediction(n_clicks, value):
         return layout.get_empty_figure(height=100)
 
 
+# update SeeSoft or Prediction visualization for train sample no. 2
 @app.callback(
     Output('train2-content', 'figure'),
     [Input('train2-yes-button', 'n_clicks'),
@@ -803,6 +857,7 @@ def update_train2_content(n_clicks, value1, value2):
         return layout.get_empty_figure(height=650)
 
 
+# update Prediction visualization for train sample no. 3
 @app.callback(
     Output('train3-prediction', 'figure'),
     [Input('train3-yes-button', 'n_clicks')],
@@ -822,6 +877,7 @@ def update_train3_prediction(n_clicks, value):
         return layout.get_empty_figure(height=100)
 
 
+# update SeeSoft or Prediction visualization for train sample no. 3
 @app.callback(
     Output('train3-content', 'figure'),
     [Input('train3-yes-button', 'n_clicks'),
@@ -847,6 +903,7 @@ def update_train3_content(n_clicks, value1, value2):
         return layout.get_empty_figure(height=650)
 
 
+# update Prediction visualization for train sample no. 4
 @app.callback(
     Output('train4-prediction', 'figure'),
     [Input('train4-yes-button', 'n_clicks')],
@@ -866,6 +923,7 @@ def update_train4_prediction(n_clicks, value):
         return layout.get_empty_figure(height=100)
 
 
+# update SeeSoft or Prediction visualization for train sample no. 4
 @app.callback(
     Output('train4-content', 'figure'),
     [Input('train4-yes-button', 'n_clicks'),
@@ -891,6 +949,7 @@ def update_train4_content(n_clicks, value1, value2):
         return layout.get_empty_figure(height=650)
 
 
+# update Prediction visualization for train sample no. 5
 @app.callback(
     Output('train5-prediction', 'figure'),
     [Input('train5-yes-button', 'n_clicks')],
@@ -910,6 +969,7 @@ def update_train5_prediction(n_clicks, value):
         return layout.get_empty_figure(height=100)
 
 
+# update SeeSoft or Prediction visualization for train sample no. 5
 @app.callback(
     Output('train5-content', 'figure'),
     [Input('train5-yes-button', 'n_clicks'),
@@ -935,6 +995,7 @@ def update_train5_content(n_clicks, value1, value2):
         return layout.get_empty_figure(height=650)
 
 
+# update Network activations visualization
 @app.callback(
     Output('sample-network', 'figure'),
     [Input('sample-name-hidden-div', 'children')]
@@ -950,6 +1011,7 @@ def update_network(children):
         return layout.get_empty_figure(height=900)
 
 
+# show/hide Network visualization
 @app.callback(
     Output('network-div', 'style'),
     [Input('network-button', 'n_clicks')]
@@ -971,6 +1033,9 @@ def show_network(n_clicks):
         }
 
 
+# handle interaction between LuaCode and SeeSoft components
+# highlight statements in LuaCode after click on SeeSoft
+# scroll LuaCode according to the clicked statement
 app.clientside_callback(
     '''
     function scroll_lua_code_left(clickData) {
