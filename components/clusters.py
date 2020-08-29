@@ -20,7 +20,51 @@ CSV_PATH = (os.path.dirname(os.path.realpath(__file__))
 
 
 class Clusters:
+    """
+    Class for cluster visualization of all train data together with currently
+    analyzed sample and possibly 5 more highlighted train samples.
+
+    Attributes
+    ----------
+    train_samples : list of str
+        list of max 5 JSON samples, e.g. '30log/AST1.json'
+    train_data : pd.dataFrame
+        train data predictions (last layer activations + label) loaded from
+        network/train_data_activations_layer4.csv
+    sample_data : pd.dataFrame
+        activations from the last layer and prediction for currently analyzed
+        sample
+    tsne_traces : list of dict
+        list of dict for every possible label (result of prediction), each
+        dict contains t-SNE coordinates of train data samples which were
+        labeled with the corresponding label
+    tsne_sample_trace : dict
+        x and y coordinates of currently analyzed sample in diagram using t-SNE
+        algorithm for reduction of dimensionality
+    pca_traces : list of dict
+        list of dict for every possible label (result of prediction), each
+        dict contains PCA coordinates of train data samples which were
+        labeled with the corresponding label
+    pca_sample_trace : dict
+        x and y coordinates of currently analyzed sample in diagram using PCA
+        for reduction of dimensionality
+    """
+
     def __init__(self, sample=None):
+        """
+        Reads train data activations and predictions from
+        network/train_data_activations_layer4.csv. If the sample is provided,
+        prediction data and activations are assigned to sample_data as well as
+        coordinates are determined for training data and currently analyzed
+        sample using both t-SNE and PCA for dimensionality reduction.
+
+        Parameters
+        ----------
+        sample : Sample or None, optional
+            instance of Sample representing currently analysed sample contained
+            in JSON file (default is None)
+        """
+
         self.train_samples = [None for _ in range(TRAIN_SAMPLES_NUM)]
         self.train_data = self.__load_train_data()
 
@@ -45,6 +89,23 @@ class Clusters:
 
     @staticmethod
     def __load_sample_data(sample: Sample) -> pd.DataFrame:
+        """
+        Uses data from provided sample to get activations from last layer
+        and the prediction (label).
+
+        Parameters
+        ----------
+        sample : Sample
+            instance of Sample representing currently analysed sample contained
+            in JSON file
+
+        Returns
+        -------
+        pd.dataFrame
+            a dataFrame containing activations from last layer and prediction
+            (label) for the provided sample
+        """
+#     TODO: finish
         df = pd.DataFrame()
         df['label'] = sample.label
         last_layer = list(sample.activations.keys())[-1]
@@ -56,7 +117,19 @@ class Clusters:
 
     @staticmethod
     def __load_train_data() -> pd.DataFrame:
+        """
+        Reads and pre-processes train data activations and predictions from
+        network/train_data_activations_layer4.csv
+
+        Returns
+        -------
+        pd.dataFrame
+            a dataFrame containing activations from last layer and prediction
+            (label) for the train data
+        """
+
         df = pd.read_csv(CSV_PATH)
+        df = df.dropna()
         layer = [l for l in df.columns if 'layer' in l][0]
         dimensions = str(df[layer][0]).split(' ')
         dimensions = ['d{}'.format(d) for d in range(len(dimensions))]
@@ -66,6 +139,21 @@ class Clusters:
         return df
 
     def __prepare_pca_traces(self):
+        """
+        Performs dimensionality reduction of train data + analyzed sample using
+        PCA (Principal Component Analysis).
+
+        Returns
+        -------
+        list of dict
+            list of dict for every possible label (result of prediction), each
+            dict contains PCA coordinates of train data samples which were
+            labeled with the corresponding label
+        dict
+            x and y coordinates of currently analyzed sample in diagram using
+            PCA for reduction of dimensionality
+        """
+
         labels = self.train_data['label'].tolist()
         data_files = self.train_data['data path'].tolist()
         data = self.train_data.drop(
@@ -101,6 +189,21 @@ class Clusters:
         return traces, sample_trace
 
     def __prepare_tsne_traces(self):
+        """
+        Performs dimensionality reduction of train data + analyzed sample using
+        t-SNE (t-distributed stochastic neighbor embedding).
+
+        Returns
+        -------
+        list of dict
+            list of dict for every possible label (result of prediction), each
+            dict contains t-SNE coordinates of train data samples which were
+            labeled with the corresponding label
+        dict
+            x and y coordinates of currently analyzed sample in diagram using
+            t-SNE algorithm for reduction of dimensionality
+        """
+
         labels = self.train_data['label'].tolist()
         data_files = self.train_data['data path'].tolist()
         data = self.train_data.drop(
@@ -135,6 +238,20 @@ class Clusters:
         return traces, sample_trace
 
     def add_sample(self, sample: Sample):
+        """
+        If a sample wasn't provided when the Clusters instance was created,
+        the sample can be added by this method. Data from provided sample are
+        used to get activations from last layer and the prediction (label).
+        Moreover, coordinates are determined for training data and currently
+        analyzed sample using both t-SNE and PCA for dimensionality reduction.
+
+        Parameters
+        ----------
+        sample : Sample
+            instance of Sample representing currently analysed sample contained
+            in JSON file
+        """
+
         self.sample_data = self.__load_sample_data(sample)
         log.debug('Performing fit_transform for T-SNE...')
         self.tsne_traces, self.tsne_sample_trace = self.__prepare_tsne_traces()
@@ -143,6 +260,24 @@ class Clusters:
         log.debug('Successfully finished fit_transform...')
 
     def get_figure(self, algorithm: str, height=None) -> go.Figure:
+        """
+        Creates cluster diagram with coordinates calculated by given algorithm.
+        It's optional to set the height of diagram in pixels.
+
+        Parameters
+        ----------
+        algorithm : str
+            'pca' or 'tsne', this parameter determines which coordinates
+            should be used for dimensionality reduction
+        height : int or None, optional
+            height of diagram in pixels (default is None)
+
+        Returns
+        --------
+        go.Figure
+            go.Figure instance of cluster diagram
+        """
+
         if algorithm == 'pca':
             traces = self.pca_traces
             sample_trace = self.pca_sample_trace
@@ -213,6 +348,29 @@ class Clusters:
         return fig
 
     def view(self, dash_id: str, columns: str, algorithm: str, height=None):
+        """
+        Creates dcc.Graph object which contains cluster diagram with
+        coordinates calculated by given algorithm. It's optional to set
+        the height of diagram in pixels.
+
+        Parameters
+        ----------
+        dash_id : str
+            id of the dcc.Graph component
+        columns : str
+            relative width of diagram, e.g. '6'
+        algorithm : str
+            'pca' or 'tsne', this parameter determines which coordinates
+            should be used for dimensionality reduction
+        height : int or None, optional
+            height of diagram in pixels (default is None)
+
+        Returns
+        --------
+        dcc.Graph
+            dcc.Graph instance of cluster diagram
+        """
+
         return dcc.Graph(
             id=dash_id,
             figure=self.get_figure(algorithm, height),
