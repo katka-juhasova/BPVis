@@ -587,7 +587,7 @@ def update_input_seesoft(children):
     global sample
 
     if children != '':
-        seesoft = SeeSoft(data=sample.data, comments=True)
+        seesoft = SeeSoft(data=sample.data)
         seesoft.draw()
         return seesoft.get_figure()
 

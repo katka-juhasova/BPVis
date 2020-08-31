@@ -28,8 +28,58 @@ log.addHandler(logging.StreamHandler())
 
 
 class SeeSoft:
-    def __init__(self, path=None, url=None, data=None, img_path=None,
-                 comments=True):
+    """
+    Class for visualization of the small colorful representation of
+    the original source code. Sections are highlighted according to the type
+    of statement that they represent (require, variable, function, etc.).
+
+    Attributes
+    ----------
+    data : dict
+        pre-processed data read from the JSON file
+    byte_width : int
+        width of one byte (char) in pixels
+    byte_height : int
+        height of one byte (char) in pixels
+    margin_size : int
+        size (in pixels) of margins on all 4 sides in the final image
+    source_code : str
+        read original source code, structure of which is represented in
+        the attribute data
+    tag_table : list of dict
+        dict for each character from the source code, each dict consists of
+        the character and the type of the statement (require, variable etc.)
+    bin_img :
+        binary representation of the small colorful image of the original
+        source code
+    img_width : int
+        total image width in pixels
+    img_height : int
+        total image height in pixels
+    """
+
+    def __init__(self, path=None, url=None, data=None):
+        """
+        According to the parameters given, the preprocessed data are read
+        from .json file (parameter path) or from the given url or
+        simply copied from the given parameter data. If none of
+        the parameters is provided, the function raises an error. Furthermore,
+        the original source code is read, tag_table is built and all
+        the other attributes are initialized.
+
+
+        Parameters
+        ----------
+        path :  str or None, optional
+            path to the JSON file, which contains preprocessed .lua source code
+            (default is None)
+        url : str or None, optional
+            url of the JSON file, which contains preprocessed .lua source code
+            (default is None)
+        data : dict or None, optional
+            preprocessed data already read from .json file
+        """
+
         if data:
             self.data = data
         else:
@@ -47,7 +97,6 @@ class SeeSoft:
         self.byte_width = BYTE_WIDTH
         self.byte_height = BYTE_HEIGHT
         self.margin_size = MARGIN_SIZE
-        self.comments = comments
         self.source_code = self.__read_source_code()
         self.tag_table = [dict() for _ in range(len(self.source_code))]
         self.bin_img = BytesIO()
@@ -59,6 +108,16 @@ class SeeSoft:
                            + 2 * self.margin_size)
 
     def __read_source_code(self) -> str:
+        """
+        Reads and returns lua source code from path or url from the data.
+
+        Returns
+        --------
+        str
+            original lua source code which was preprocessed and stored in
+            .json file
+        """
+
         # if there's path provided read form it, otherwise read from url
         if self.data['path']:
             raw_data = open(self.data['path'], 'rb').read()
@@ -74,9 +133,19 @@ class SeeSoft:
 
         return raw_data.decode('utf-8')
 
-    # builds tag table so that every character from source file has color
-    # assigned according to the container from json file
     def __add_color(self, node: dict):
+        """
+        Add color to the tag_table for each character included in the currently
+        processed node. Colors are assigned according to the container type of
+        the node.
+
+        Parameters
+        ----------
+        node : dict
+            information about the node such as type of container (statement),
+            order in the source code, number of the children etc.
+        """
+
         position = node['position'] - 1
         for i in range(position, position + node['characters_count']):
             self.tag_table[i]['container'] = node['container']
@@ -87,6 +156,11 @@ class SeeSoft:
                     self.__add_color(child)
 
     def __build_tag_table(self):
+        """
+        Builds tag_table so that every character from source file has color
+        assigned according to the container type from json file.
+        """
+
         # assign container to each character form source code
         for node in self.data['nodes']:
             self.__add_color(node)
@@ -105,47 +179,23 @@ class SeeSoft:
             filter(lambda b: b['char'] != '\r', self.tag_table)
         )
 
-        if self.comments:
-            # add comments and other code segments which don't belong to any
-            # container to 'comment' container
-            for byte in self.tag_table:
-                if not byte['container'] and not byte['char'].isspace():
-                    byte['container'] = 'comment'
+        # add comments and other code segments which don't belong to any
+        # container to 'comment' container
+        for byte in self.tag_table:
+            if not byte['container'] and not byte['char'].isspace():
+                byte['container'] = 'comment'
 
-            # make spaces in comments colorful instead of white
-            for i, byte in enumerate(self.tag_table):
-                if (
-                        byte['char'] == ' '
-                        and i - 1 >= 0
-                        and i + 1 < len(self.tag_table)
-                        and self.tag_table[i - 1]['container'] == 'comment'
-                        and (self.tag_table[i + 1]['container'] == 'comment'
-                             or self.tag_table[i + 1]['char'].isspace())
-                ):
-                    byte['container'] = 'comment'
-
-        else:
-            # delete comments and code segments without container
-            self.tag_table = list(
-                filter(lambda b: b['container'] or b['char'] == '\n',
-                       self.tag_table)
-            )
-
-            # remove empty lines from te beginning of the file where there
-            # might have been comments
-            while self.tag_table[0]['char'].isspace():
-                del self.tag_table[0]
-
-            # reduce empty lines sequence to <= 2
-            i = 0
-            while i < len(self.tag_table) - 3:
-                if (self.tag_table[i]['char'] == '\n'
-                        and self.tag_table[i + 1]['char'] == '\n'
-                        and self.tag_table[i + 2]['char'] == '\n'
-                        and self.tag_table[i + 3]['char'] == '\n'):
-                    del self.tag_table[i]
-                else:
-                    i += 1
+        # make spaces in comments colorful instead of white
+        for i, byte in enumerate(self.tag_table):
+            if (
+                    byte['char'] == ' '
+                    and i - 1 >= 0
+                    and i + 1 < len(self.tag_table)
+                    and self.tag_table[i - 1]['container'] == 'comment'
+                    and (self.tag_table[i + 1]['container'] == 'comment'
+                         or self.tag_table[i + 1]['char'].isspace())
+            ):
+                byte['container'] = 'comment'
 
         # handle white spaces in the beginning of the line
         # it's about keeping tabs white in the final image
@@ -159,6 +209,16 @@ class SeeSoft:
                     j += 1
 
     def __max_line(self) -> int:
+        """
+        Counts the length (in characters) of the longest line of
+        the lua source code.
+
+        Returns
+        -------
+        int
+            length of the longest line of the lua source code
+        """
+
         max_len = 0
         local_len = 0
 
@@ -175,6 +235,15 @@ class SeeSoft:
         return max_len
 
     def __lines_count(self) -> int:
+        """
+        Counts the number of lines of the lua source code.
+
+        Returns
+        -------
+        int
+            number of lines of the lua source code
+        """
+
         count = 1
 
         for byte in self.tag_table:
@@ -184,6 +253,11 @@ class SeeSoft:
         return count
 
     def draw(self):
+        """
+        Creates the image representation of the source code. The image is
+        stored in self.bin_image.
+        """
+
         image = Image.new('RGB', (self.img_width, self.img_height),
                           color=COLORS['empty'])
         draw = ImageDraw.Draw(image)
@@ -220,6 +294,18 @@ class SeeSoft:
         image.save(self.bin_img, format='PNG')
 
     def __add_traces(self, fig):
+        """
+        Adds invisible traces to the graph for each statement. These traces
+        shall be later used for easier navigation through the luacode
+        visualization.
+
+        Parameters
+        ----------
+        fig : go.Figure
+            instance of go.Figure where the traces are added and where
+            the image stored in self.bin_image is set as background
+        """
+
         # NOTE: first line from the file has the highest y value in the graph
         row = self.__lines_count() - self.margin_size / self.byte_height + 1
         column = 0
@@ -308,9 +394,26 @@ class SeeSoft:
                 )
             )
 
-    # count sizes for the seesoft view and keep the ratio
     def count_small_width_and_height(self, width: int or str,
                                      height: int or str):
+        """
+        Counts sizes for the seesoft view while preserving the ratio. This
+        calculation is used, when the limits are set by MAX_SMALL_VIEW_HEIGHT,
+        MIN_SMALL_VIEW_HEIGHT and MAX_SMALL_VIEW_WIDTH.
+
+        Parameters
+        ----------
+        width : int or str
+            pre-set width of the view
+        height : int or str
+            pre-set height of the view
+
+        Returns
+        -------
+        int or str, int or str
+            width and height of the view (in pixels or as a string)
+        """
+
         # if either value is string (e.g. '80vh'), no calculation is involved
         # if both are set there's no need for any calculation
         if type(width) is str or type(height) is str:
@@ -327,8 +430,25 @@ class SeeSoft:
 
         return width, height
 
-    # count sizes for the seesoft view and keep the ratio
     def count_width_and_height(self, width: int or str, height: int or str):
+        """
+        Counts sizes for the seesoft view while preserving the ratio. This
+        calculation is used, when the limits are set by MAX_VIEW_HEIGHT,
+        MIN_VIEW_HEIGHT and MAX_VIEW_WIDTH.
+
+        Parameters
+        ----------
+        width : int or str
+            pre-set width of the view
+        height : int or str
+            pre-set height of the view
+
+        Returns
+        -------
+        int or str, int or str
+            width and height of the view (in pixels or as a string)
+        """
+
         # if either value is string (e.g. '80vh'), no calculation is involved
         # if both are set there's no need for any calculation
         if type(width) is str or type(height) is str:
@@ -347,6 +467,28 @@ class SeeSoft:
 
     def get_figure(self, small=False,
                    width=None, height=None) -> go.Figure:
+        """
+        Creates diagram for colorful representation of the source code. It's
+        optional to choose smaller version of the diagram or to pre-set
+        the width and height.
+
+        Parameters
+        ----------
+        small : bool, optional
+            determines the size of the diagram, if True, the size limits are
+            set by MAX_SMALL_VIEW_HEIGHT, MIN_SMALL_VIEW_HEIGHT and
+            MAX_SMALL_VIEW_WIDTH (default is None)
+        width : int or str or None, optional
+            pre-set width of the diagram (default is None)
+        height : int or str or None, optional
+            pre-set height of the diagram (default is None)
+
+        Return
+        ------
+        go.Figure
+             go.Figure instance of colorful representation of the source code
+        """
+
         if small:
             width, height = self.count_small_width_and_height(width, height)
         else:
@@ -413,6 +555,26 @@ class SeeSoft:
         return fig
 
     def view(self, dash_id: str, width=None, height=None):
+        """
+        Creates dcc.Graph object which contains the colorful representation of
+        the lua source code. It's optional to set the width and the height of
+        the diagram in pixels.
+
+        Parameters
+        ----------
+        dash_id : str
+            id of the dcc.Graph component
+        width : int or None, optional
+            width of diagram in pixels (default is None)
+        height : int or None, optional
+            height of diagram in pixels (default is None)
+
+        Return
+        --------
+        dcc.Graph
+            dcc.Graph instance of the colorful representation of the lua source
+            code
+        """
 
         return dcc.Graph(
             id=dash_id,

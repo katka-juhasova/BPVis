@@ -40,7 +40,8 @@ class LuaCode:
         from .json file (parameter path) or from the given url or
         simply copied from the given parameter data. If none of
         the parameters is provided, the function raises an error. Furthermore,
-        tag_table and color_text_table are initialized.
+        the original source code is read and tag_table and color_text_table
+        are initialized.
 
         Parameters
         ----------
