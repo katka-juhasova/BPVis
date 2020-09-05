@@ -29,10 +29,44 @@ LAYERS_LAYOUT_WIDTH = (4 * INPUT_WIDTH + 2 * LSTM1_WIDTH
 
 
 class Network:
+    """
+    Class for visualization of activations on the layers of the neural
+    network. Colors shades (from red to blue) are assigned to the activations
+    according to their values, therefore the final visualization consists
+    of 5 distinct heatmaps (one for each layer).
+
+    Attributes
+    ----------
+    sample : Sample
+        Sample instance containing everything needed for visualization of
+        the activations
+    """
+
     def __init__(self, sample: Sample):
+        """
+        Copies content of parameter sample to the attribute sample.
+
+        Parameters
+        ----------
+        sample : Sample
+            contains everything needed for visualization of sample including
+            the information about activations on the layers
+        """
+
         self.sample = sample
 
     def get_figure(self):
+        """
+        Creates the figure containing the visualization of the activations on
+        the layers of the neural network.
+
+        Returns
+        -------
+        go.Figure
+            go.Figure instance containing the visualization of
+            the activations on the layers of the neural network
+        """
+
         # all layers and arrows are subplots in one large figure
         fig = make_subplots(
             rows=1,
@@ -242,6 +276,22 @@ class Network:
         return fig
 
     def view(self, dash_id: str):
+        """
+        Creates dcc.Graph object which contains heatmap representing
+        the activations on the layers of the neural network.
+
+        Parameters
+        ----------
+        dash_id : str
+            id of the dcc.Graph component
+
+        Returns
+        -------
+        dcc.Graph
+            dcc.Graph instance of containing the visualization of
+            the activations on the layers of the neural network
+        """
+
         return dcc.Graph(
             id=dash_id,
             config={
