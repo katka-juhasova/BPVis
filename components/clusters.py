@@ -105,7 +105,7 @@ class Clusters:
             a dataFrame containing activations from last layer and prediction
             (label) for the provided sample
         """
-#     TODO: finish
+
         df = pd.DataFrame()
         df['label'] = sample.label
         last_layer = list(sample.activations.keys())[-1]
