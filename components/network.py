@@ -32,14 +32,23 @@ class Network:
     """
     Class for visualization of activations on the layers of the neural
     network. Colors shades (from red to blue) are assigned to the activations
-    according to their values, therefore the final visualization consists
-    of 5 distinct heatmaps (one for each layer).
+    according to their values. The final visualization consists of 5 distinct
+    heatmaps (one for each layer).
 
     Attributes
     ----------
     sample : Sample
         Sample instance containing everything needed for visualization of
         the activations
+
+    Methods
+    -------
+    get_figure()
+        Returns go.Figure instance containing the visualization of
+        the activations on the layers of the neural network.
+    view(dash_id)
+        Returns dcc.Graph instance containing the visualization of
+        the activations on the layers of the neural network.
     """
 
     def __init__(self, sample: Sample):
@@ -57,8 +66,8 @@ class Network:
 
     def get_figure(self):
         """
-        Creates the figure containing the visualization of the activations on
-        the layers of the neural network.
+        Creates and returns the figure containing the visualization of
+        the activations on the layers of the neural network.
 
         Returns
         -------
@@ -277,8 +286,8 @@ class Network:
 
     def view(self, dash_id: str):
         """
-        Creates dcc.Graph object which contains heatmap representing
-        the activations on the layers of the neural network.
+        Creates and returns dcc.Graph object which contains the visualization
+        of the activations on the layers of the neural network.
 
         Parameters
         ----------
@@ -288,7 +297,7 @@ class Network:
         Returns
         -------
         dcc.Graph
-            dcc.Graph instance of containing the visualization of
+            dcc.Graph instance containing the visualization of
             the activations on the layers of the neural network
         """
 

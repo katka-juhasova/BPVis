@@ -42,7 +42,7 @@ class SeeSoft:
     byte_height : int
         height of one byte (char) in pixels
     margin_size : int
-        size (in pixels) of margins on all 4 sides in the final image
+        size (in pixels) of margins
     source_code : str
         read original source code, structure of which is represented in
         the attribute data
@@ -56,28 +56,47 @@ class SeeSoft:
         total image width in pixels
     img_height : int
         total image height in pixels
+
+    Methods
+    -------
+    draw()
+        Creates the image representation of the source code. The image is
+        stored in the attribute bin_image.
+    count_small_width_and_height(width, height)
+        Counts and returns width and height of the seesoft figure while
+        preserving the ratio. This calculation uses MAX_SMALL_VIEW_HEIGHT,
+        MIN_SMALL_VIEW_HEIGHT and MAX_SMALL_VIEW_WIDTH as limits.
+    count_width_and_height(width, height)
+        Counts and returns width and height of the seesoft figure while
+        preserving the ratio. This calculation uses MAX_VIEW_HEIGHT,
+        MIN_VIEW_HEIGHT and MAX_VIEW_WIDTH as limits.
+    get_figure(small=False, width=None, height=None)
+        Returns go.Figure instance containing the colorful image representation
+        of the LUA source code.
+    view(dash_id, width=None, height=None)
+        Returns dcc.Graph instance containing the colorful image representation
+        of the LUA source code.
     """
 
     def __init__(self, path=None, url=None, data=None):
         """
         According to the parameters given, the preprocessed data are read
-        from .json file (parameter path) or from the given url or
+        from JSON file (parameter path) or from the given url or
         simply copied from the given parameter data. If none of
         the parameters is provided, the function raises an error. Furthermore,
         the original source code is read, tag_table is built and all
         the other attributes are initialized.
 
-
         Parameters
         ----------
-        path :  str or None, optional
-            path to the JSON file, which contains preprocessed .lua source code
+        path : str or None, optional
+            path to the JSON file, which contains preprocessed LUA source code
             (default is None)
         url : str or None, optional
-            url of the JSON file, which contains preprocessed .lua source code
+            url of the JSON file, which contains preprocessed LUA source code
             (default is None)
         data : dict or None, optional
-            preprocessed data already read from .json file
+            preprocessed data already read from JSON file
         """
 
         if data:
@@ -109,13 +128,13 @@ class SeeSoft:
 
     def __read_source_code(self) -> str:
         """
-        Reads and returns lua source code from path or url from the data.
+        Reads and returns LUA source code from path or url given in the data.
 
         Returns
         --------
         str
-            original lua source code which was preprocessed and stored in
-            .json file
+            original LUA source code which was preprocessed and stored in
+            JSON file
         """
 
         # if there's path provided read form it, otherwise read from url
@@ -135,15 +154,14 @@ class SeeSoft:
 
     def __add_color(self, node: dict):
         """
-        Add color to the tag_table for each character included in the currently
-        processed node. Colors are assigned according to the container type of
-        the node.
+        Adds color to the tag_table for each character included in the given
+        node. Colors are assigned according to the container type of the node.
 
         Parameters
         ----------
         node : dict
-            information about the node such as type of container (statement),
-            order in the source code, number of the children etc.
+            information about the node such as type of container (type of
+            statement), order in the source code, number of the children etc.
         """
 
         position = node['position'] - 1
@@ -158,7 +176,7 @@ class SeeSoft:
     def __build_tag_table(self):
         """
         Builds tag_table so that every character from source file has color
-        assigned according to the container type from json file.
+        assigned according to the container type.
         """
 
         # assign container to each character form source code
@@ -210,13 +228,13 @@ class SeeSoft:
 
     def __max_line(self) -> int:
         """
-        Counts the length (in characters) of the longest line of
-        the lua source code.
+        Counts the length (in characters) of the longest line of the LUA
+        source code.
 
         Returns
         -------
         int
-            length of the longest line of the lua source code
+            length of the longest line of the LUA source code
         """
 
         max_len = 0
@@ -236,12 +254,12 @@ class SeeSoft:
 
     def __lines_count(self) -> int:
         """
-        Counts the number of lines of the lua source code.
+        Counts the number of lines of the LUA source code.
 
         Returns
         -------
         int
-            number of lines of the lua source code
+            number of lines of the LUA source code
         """
 
         count = 1
@@ -303,7 +321,7 @@ class SeeSoft:
         ----------
         fig : go.Figure
             instance of go.Figure where the traces are added and where
-            the image stored in self.bin_image is set as background
+            the image stored in self.bin_image shall be set as background
         """
 
         # NOTE: first line from the file has the highest y value in the graph
@@ -397,9 +415,9 @@ class SeeSoft:
     def count_small_width_and_height(self, width: int or str,
                                      height: int or str):
         """
-        Counts sizes for the seesoft view while preserving the ratio. This
-        calculation is used, when the limits are set by MAX_SMALL_VIEW_HEIGHT,
-        MIN_SMALL_VIEW_HEIGHT and MAX_SMALL_VIEW_WIDTH.
+        Counts width and height of the seesoft figure while preserving
+        the ratio. This calculation uses MAX_SMALL_VIEW_HEIGHT,
+        MIN_SMALL_VIEW_HEIGHT and MAX_SMALL_VIEW_WIDTH as limits.
 
         Parameters
         ----------
@@ -411,7 +429,7 @@ class SeeSoft:
         Returns
         -------
         int or str, int or str
-            width and height of the view (in pixels or as a string)
+            width and height of the figure (in pixels or as a string)
         """
 
         # if either value is string (e.g. '80vh'), no calculation is involved
@@ -432,9 +450,9 @@ class SeeSoft:
 
     def count_width_and_height(self, width: int or str, height: int or str):
         """
-        Counts sizes for the seesoft view while preserving the ratio. This
-        calculation is used, when the limits are set by MAX_VIEW_HEIGHT,
-        MIN_VIEW_HEIGHT and MAX_VIEW_WIDTH.
+        Counts width and height of the seesoft figure while preserving
+        the ratio. This calculation uses MAX_VIEW_HEIGHT, MIN_VIEW_HEIGHT and
+        MAX_VIEW_WIDTH as limits.
 
         Parameters
         ----------
@@ -465,28 +483,28 @@ class SeeSoft:
 
         return width, height
 
-    def get_figure(self, small=False,
-                   width=None, height=None) -> go.Figure:
+    def get_figure(self, small=False, width=None, height=None) -> go.Figure:
         """
-        Creates diagram for colorful representation of the source code. It's
-        optional to choose smaller version of the diagram or to pre-set
-        the width and height.
+        Returns figure containing the colorful image representation of the
+        source code. It's optional to choose smaller version of the figure or
+        to pre-set the width and height.
 
         Parameters
         ----------
         small : bool, optional
-            determines the size of the diagram, if True, the size limits are
+            determines the size of the figure, if True, the size limits are
             set by MAX_SMALL_VIEW_HEIGHT, MIN_SMALL_VIEW_HEIGHT and
             MAX_SMALL_VIEW_WIDTH (default is None)
         width : int or str or None, optional
-            pre-set width of the diagram (default is None)
+            pre-set width of the figure (default is None)
         height : int or str or None, optional
-            pre-set height of the diagram (default is None)
+            pre-set height of the figure (default is None)
 
         Return
         ------
         go.Figure
-             go.Figure instance of colorful representation of the source code
+             go.Figure instance containing the colorful representation of
+             the source code
         """
 
         if small:
@@ -556,24 +574,24 @@ class SeeSoft:
 
     def view(self, dash_id: str, width=None, height=None):
         """
-        Creates dcc.Graph object which contains the colorful representation of
-        the lua source code. It's optional to set the width and the height of
-        the diagram in pixels.
+        Returns dcc.Graph object which contains the colorful image
+        representation of the LUA source code. It's optional to set the width
+        and the height of the graph in pixels.
 
         Parameters
         ----------
         dash_id : str
             id of the dcc.Graph component
         width : int or None, optional
-            width of diagram in pixels (default is None)
+            width of graph in pixels (default is None)
         height : int or None, optional
-            height of diagram in pixels (default is None)
+            height of graph in pixels (default is None)
 
         Return
         --------
         dcc.Graph
-            dcc.Graph instance of the colorful representation of the lua source
-            code
+            dcc.Graph instance containing the colorful image representation of
+            the LUA source code
         """
 
         return dcc.Graph(

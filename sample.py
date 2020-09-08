@@ -11,7 +11,7 @@ log.addHandler(logging.StreamHandler())
 
 class Sample:
     """
-    Class containing everything needed for visualization of sample.
+    Class containing everything needed for visualization of the sample.
 
     Attributes
     ----------
@@ -27,18 +27,18 @@ class Sample:
         """
         Reads JSON file either from the provided path or url, therefore one of
         these values has to be not None. If path to the NN model is provided,
-        then tho model it's loaded as well.
+        then the model is loaded as well.
 
         Parameters
         ----------
-        path :  str or None, optional
-            path to the JSON file, which contains preprocessed .lua source code
+        path : str or None, optional
+            path to the JSON file which contains preprocessed LUA source code
             (default is None)
         url : str or None, optional
-            url of the JSON file, which contains preprocessed .lua source code
+            url of the JSON file which contains preprocessed LUA source code
             (default is None)
         model : str or None, optional
-            path to trained NN model (default is None)
+            path to the trained NN model (default is None)
         """
 
         if all(arg is None for arg in {path, url}):

@@ -32,12 +32,21 @@ class LuaCode:
     color_text_table : list of dict
         each dict consists of string (statement or part of the statement)
         and the color assigned accordingly to the type of the statement
+
+    Methods
+    -------
+    get_children(parent_id):
+        Returns list of html.Span objects which can be later used as children
+        for html.Pre component.
+    view(dash_id)
+        Returns html.Pre object which contains the colorful representation of
+        the original source code.
     """
 
     def __init__(self, path=None, url=None, data=None):
         """
         According to the parameters given, the preprocessed data are read
-        from .json file (parameter path) or from the given url or
+        from JSON file (parameter path) or from the given url or
         simply copied from the given parameter data. If none of
         the parameters is provided, the function raises an error. Furthermore,
         the original source code is read and tag_table and color_text_table
@@ -45,14 +54,14 @@ class LuaCode:
 
         Parameters
         ----------
-        path :  str or None, optional
-            path to the JSON file, which contains preprocessed .lua source code
+        path : str or None, optional
+            path to the JSON file, which contains preprocessed LUA source code
             (default is None)
         url : str or None, optional
-            url of the JSON file, which contains preprocessed .lua source code
+            url of the JSON file, which contains preprocessed LUA source code
             (default is None)
         data : dict or None, optional
-            preprocessed data already read from .json file
+            preprocessed data already read from JSON file
         """
 
         if data:
@@ -75,13 +84,13 @@ class LuaCode:
 
     def __read_source_code(self) -> str:
         """
-        Reads and returns lua source code from path or url from the data.
+        Reads and returns LUA source code from path or url from the data.
 
         Returns
         --------
         str
-            original lua source code which was preprocessed and stored in
-            .json file
+            original LUA source code which was preprocessed and stored in
+            JSON file
         """
 
         # if there's path provided read form it, otherwise read from url
@@ -101,15 +110,14 @@ class LuaCode:
 
     def __add_color(self, node: dict):
         """
-        Add color to the tag_table for each character included in the currently
-        processed node. Colors are assigned according to the container type of
-        the node.
+        Adds color to the tag_table for each character included in the given
+        node. Colors are assigned according to the container type of the node.
 
         Parameters
         ----------
         node : dict
-            information about the node such as type of container (statement),
-            order in the source code, number of the children etc.
+            information about the node such as type of container (type of
+            statement), order in the source code, number of the children etc.
         """
 
         position = node['position'] - 1
@@ -123,8 +131,8 @@ class LuaCode:
 
     def __build_tag_table(self):
         """
-        Builds tag_table so that every character from source file has color
-        assigned according to the container type from json file.
+        Builds tag_table so that every character of the source code has color
+        assigned according to their container type.
         """
 
         # assign container to each character form source code
@@ -176,8 +184,9 @@ class LuaCode:
 
     def __build_color_text_table(self):
         """
-        Builds list of directories (color_text_table) based on tag_table, where
-        each element consists of hex color and text (not just char anymore).
+        Builds list of dict (color_text_table) based on tag_table, where
+        each element consists of hex color and text (not just char anymore)
+        as the adjoining characters with the same container type are merged.
         """
 
         self.color_text_table.append(
@@ -199,14 +208,14 @@ class LuaCode:
 
     def get_children(self, parent_id: str) -> List:
         """
-        Builds tag_table and color_text_table. Then creates list of html.Span
-        objects which can be later used as children for html.Pre element.
+        Builds tag_table and color_text_table. Then returns list of html.Span
+        objects which can be later used as children for html.Pre component.
 
         Parameters
         ----------
         parent_id : str
-            id of the parent element (e.g. html.Pre) so that the html.Span
-            elements can have ids determined by the parent id (parent id + int)
+            id of the parent component (e.g. html.Pre component) so that the
+            html.Span elements can have ids derived from the parent id
 
         Returns
         -------
@@ -245,7 +254,7 @@ class LuaCode:
     # with corresponding color background
     def view(self, dash_id: str):
         """
-        Creates html.Pre object which contains the colorful representation of
+        Returns html.Pre object which contains the colorful representation of
         the original source code.
 
         Parameters

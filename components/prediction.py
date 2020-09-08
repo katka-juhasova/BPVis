@@ -21,6 +21,15 @@ class Prediction:
         (prediction of the neural network)
     output_layer : list
         activations from the last layer of the neural network
+
+    Methods
+    -------
+    get_figure(height=None, small=False)
+        Returns go.Figure instance of the categorical heatmap representing
+        the prediction of the neural network.
+    view(dash_id)
+        Returns dcc.Graph instance of the categorical heatmap representing
+        the prediction of the neural network.
     """
 
     def __init__(self, sample: Sample):
@@ -43,21 +52,22 @@ class Prediction:
 
     def get_figure(self, height=None, small=False):
         """
-        Creates the figure containing the categorical heatmap representing
-        the prediction of the neural network.
+        Returns the figure containing the categorical heatmap representing
+        the prediction of the neural network. It's optional to set the size
+        of the figure.
 
         Parameters
         ----------
         height : int or None, optional
-            height of the diagram in pixels (default is None)
+            height of the figure in pixels (default is None)
         small : bool, optional
-            determines the size of the diagram, if True, the size is
+            determines the size of the figure, if True, the size is
             significantly smaller than the default size (default is False)
 
         Returns
         -------
         go.Figure
-            go.Figure instance of categorical heatmap representing
+            go.Figure instance of the categorical heatmap representing
             the prediction of the neural network
         """
 
@@ -98,7 +108,7 @@ class Prediction:
 
     def view(self, dash_id: str):
         """
-        Creates dcc.Graph object which contains the categorical heatmap
+        Returns dcc.Graph object which contains the categorical heatmap
         representing the prediction of the neural network.
 
         Parameters

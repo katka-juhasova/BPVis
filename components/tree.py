@@ -29,26 +29,35 @@ class Tree:
     text : list
         list of the texts (parts of the source code) which are contained within
         the nodes
+
+    Methods
+    -------
+    get_figure(horizontal=False)
+        Returns go.Figure instance containing the tree diagram representing
+        the AST of the source code.
+    view(dash_id, horizontal=False, height=None)
+        Returns dcc.Graph instance containing the tree diagram representing
+        the AST of the source code.
     """
 
     def __init__(self, path=None, url=None, data=None):
         """
         According to the parameters given, the preprocessed data are read
-        from .json file (parameter path) or from the given url or
+        from JSON file (parameter path) or from the given url or
         simply copied from the given parameter data. If none of
         the parameters is provided, the function raises an error. Furthermore,
         other attributes are initialized.
 
         Parameters
         ----------
-        path :  str or None, optional
-            path to the JSON file, which contains preprocessed .lua source code
+        path : str or None, optional
+            path to the JSON file, which contains preprocessed LUA source code
             (default is None)
         url : str or None, optional
-            url of the JSON file, which contains preprocessed .lua source code
+            url of the JSON file, which contains preprocessed LUA source code
             (default is None)
         data : dict or None, optional
-            preprocessed data already read from .json file
+            preprocessed data already read from JSON file
         """
 
         if data:
@@ -82,7 +91,7 @@ class Tree:
         ----------
         node : dict
             node read from the JSON file containing all the properties such as
-            container tpe, children etc.
+            container type, children etc.
         """
 
         for child in node['children']:
@@ -96,7 +105,7 @@ class Tree:
 
     def get_figure(self, horizontal=False) -> go.Figure:
         """
-        Creates a figure containing tree diagram representing the AST of
+        Returns a figure containing tree diagram representing the AST of
         the source code.
 
         Parameters
@@ -108,7 +117,8 @@ class Tree:
         Returns
         -------
         go.Figure
-             go.Figure instance containing the AST of the source code
+            go.Figure instance containing the tree diagram representing
+            the AST of the source code
         """
 
         # nodes from .json plus root node
@@ -225,8 +235,8 @@ class Tree:
 
     def view(self, dash_id: str, horizontal=False, height=None):
         """
-        Creates dcc.Graph object which contains tree diagram representing
-        the AST of the source code. It's optional to set the height of diagram
+        Returns dcc.Graph object containing the tree diagram representing the
+        AST of the source code. It's optional to set the height of diagram
         in pixels.
 
         Parameters
@@ -242,8 +252,8 @@ class Tree:
         Returns
         -------
         dcc.Graph
-            dcc.Graph instance of tree diagram representing the AST of
-            the source code
+            dcc.Graph instance containing the tree diagram representing the
+            AST of the source code
         """
 
         return dcc.Graph(

@@ -48,6 +48,21 @@ class Clusters:
     pca_sample_trace : dict
         x and y coordinates of currently analyzed sample in diagram using PCA
         for reduction of dimensionality
+
+    Methods
+    -------
+    add_sample(sample)
+        If a sample wasn't provided when the Clusters instance was created,
+        the sample can be added by this method. The activations from the last
+        layer and the prediction (label) is read from the sample and
+        the coordinates are calculated for training data and currently
+        analyzed sample using both t-SNE and PCA for dimensionality reduction.
+    get_figure(algorithm, height=None)
+        Returns go.Figure instance of cluster diagram with coordinates
+        calculated by given algorithm.
+    view(dash_id, columns, algorithm, height=None)
+        Returns dcc.Graph object which contains cluster diagram with
+        coordinates calculated by given algorithm.
     """
 
     def __init__(self, sample=None):
@@ -55,13 +70,13 @@ class Clusters:
         Reads train data activations and predictions from
         network/train_data_activations_layer4.csv. If the sample is provided,
         prediction data and activations are assigned to sample_data as well as
-        coordinates are determined for training data and currently analyzed
+        coordinates are calculated for training data and currently analyzed
         sample using both t-SNE and PCA for dimensionality reduction.
 
         Parameters
         ----------
         sample : Sample or None, optional
-            instance of Sample representing currently analysed sample contained
+            Sample instance representing currently analysed sample contained
             in JSON file (default is None)
         """
 
@@ -90,20 +105,21 @@ class Clusters:
     @staticmethod
     def __load_sample_data(sample: Sample) -> pd.DataFrame:
         """
-        Uses data from provided sample to get activations from last layer
-        and the prediction (label).
+        Returns data frame containing activations from the last layer and
+        the prediction (label). The data from provided sample is used to get
+        all the information necessary.
 
         Parameters
         ----------
         sample : Sample
-            instance of Sample representing currently analysed sample contained
+            Sample instance representing currently analysed sample contained
             in JSON file
 
         Returns
         -------
         pd.dataFrame
-            a dataFrame containing activations from last layer and prediction
-            (label) for the provided sample
+            data frame containing activations from the last layer and
+            the prediction (label) for the provided sample
         """
 
         df = pd.DataFrame()
@@ -119,13 +135,13 @@ class Clusters:
     def __load_train_data() -> pd.DataFrame:
         """
         Reads and pre-processes train data activations and predictions from
-        network/train_data_activations_layer4.csv
+        network/train_data_activations_layer4.csv.
 
         Returns
         -------
         pd.dataFrame
-            a dataFrame containing activations from last layer and prediction
-            (label) for the train data
+            data frame containing activations from the last layer and
+            the prediction (label) for the train data
         """
 
         df = pd.read_csv(CSV_PATH)
@@ -248,7 +264,7 @@ class Clusters:
         Parameters
         ----------
         sample : Sample
-            instance of Sample representing currently analysed sample contained
+            Sample instance representing currently analysed sample contained
             in JSON file
         """
 
@@ -261,7 +277,7 @@ class Clusters:
 
     def get_figure(self, algorithm: str, height=None) -> go.Figure:
         """
-        Creates cluster diagram with coordinates calculated by given algorithm.
+        Returns cluster diagram with coordinates calculated by given algorithm.
         It's optional to set the height of diagram in pixels.
 
         Parameters
@@ -349,7 +365,7 @@ class Clusters:
 
     def view(self, dash_id: str, columns: str, algorithm: str, height=None):
         """
-        Creates dcc.Graph object which contains cluster diagram with
+        Returns dcc.Graph object which contains cluster diagram with
         coordinates calculated by given algorithm. It's optional to set
         the height of diagram in pixels.
 
