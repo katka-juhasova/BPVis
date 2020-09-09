@@ -57,3 +57,4 @@ The cluster diagram supports 2 methods for dimensionality reduction. The legend 
 Hover info in this diagram contains various information including the path of the samples. 
 Whichever of these JSON paths can be entered as a sample path in the part for comparison of multiple samples. JSON paths can be entered repeatedly.
 The comparison of multiple samples and their predictions can be done either by AST visualization or by colorful representation of the source code.
+The samples that are being compared are also highlighted in the cluster diagram.
