@@ -42,23 +42,18 @@ python3 init_script.py
 
 ## Using the visualization tool CodeNNVis
 
-Now that everything is installed, simply run the CodeNNVis app. For Linux run `python3 CodeNNVis.py` from this repository. 
-App shall be then running on http://127.0.0.1:8050/.
+When everything is installed, simply run the CodeNNVis app. For Linux run `python3 CodeNNVis.py` from the root repository. 
+The app shall be then running on http://127.0.0.1:8050/.
 
-To start the analysis of the desired sample, enter its relative JSON file path (from the data directory) into the text box, e.g. for visualization of file `CodeNNVis/data/30log/AST1.json` write just `30log/AST1.json`.
+To start the analysis of the desired sample, enter its JSON file path from the data directory into the text box, e.g. for visualization of file `CodeNNVis/data/30log/AST1.json` write just `30log/AST1.json`.
+Then press the submit button and wait for all the diagrams to load. The cluster diagram takes the longest to load due to the complex calculations necessary for the dimensionality reduction.
 
-Then press the submit button and wait for all the diagrams to load. The cluster diagram takes the longest due to the complex calculations necessary for the dimensionality reduction.
-
-The components support multiple option for interaction.
-
-- scrollovatelny ofarbeny realny kod
-- zahustena farebna reprezentacia kodu, ktora ide pouzit na navigaciu vo velkom, staci kliknut 
-na cast a originalny cod a scrollne na tu cast
-- tree a scatter plot offer various hover info a po kliknuti na traces v lgend mozu byt skryte alebo opatovne zobrazene
-- prediction poskytuje tiez hover info, ta zaobrazuje last layer activations, for activations on all of the layers
-click the option to view/hide nieco co je za tym
-- cluster diagram supports 2 methods for reduction of dimensionality, po kliknuti na traces v lgend mozu byt skryte alebo opatovne zobrazene
-- whichever JSON path from cluster diagram can be enetered do policok v porovnavacej casti
-- comparison of multiple samples and their predictions can be done either by AST vizualization or by colorful representation of the source code
-- JSON paths can be entered repeatadly
-
+The components offer multiple interaction options.
+The small colorful representation of the source code can be used to easily navigate through the original Lua code on the left side.
+Both the tree diagram and the scatter plot offer various hover info and the legend can be used to hide/show desired traces.
+The visualization of the prediction only displays activations from the last layer 
+and activations from all of the layers can be shown/hidden after clicking on the option bellow the prediction.
+The cluster diagram supports 2 methods for dimensionality reduction. The legend can be again used to determine which clusters should be visible.
+Hover info in this diagram contains various information including the path of the samples. 
+Whichever of these JSON paths can be entered as a sample path in the part for comparison of multiple samples. JSON paths can be entered repeatedly.
+The comparison of multiple samples and their predictions can be done either by AST visualization or by colorful representation of the source code.
