@@ -13,7 +13,53 @@ log.addHandler(logging.StreamHandler())
 
 
 class Tree:
+    """
+    Class for visualization of the AST structure of the source code.
+
+    Attributes
+    ----------
+    data : dict
+        pre-processed data read from the JSON file
+    edges : list
+        list of edges of the AST
+    colors : list
+        list of colors as they are assigned to each node of the tree, colors
+        are assigned according to the type of statement that the nodes
+        represent (require, variable, function, interface, other)
+    text : list
+        list of the texts (parts of the source code) which are contained within
+        the nodes
+
+    Methods
+    -------
+    get_figure(horizontal=False)
+        Returns go.Figure instance containing the tree diagram representing
+        the AST of the source code.
+    view(dash_id, horizontal=False, height=None)
+        Returns dcc.Graph instance containing the tree diagram representing
+        the AST of the source code.
+    """
+
     def __init__(self, path=None, url=None, data=None):
+        """
+        According to the parameters given, the preprocessed data are read
+        from JSON file (parameter path) or from the given url or
+        simply copied from the given parameter data. If none of
+        the parameters is provided, the function raises an error. Furthermore,
+        other attributes are initialized.
+
+        Parameters
+        ----------
+        path : str or None, optional
+            path to the JSON file, which contains preprocessed LUA source code
+            (default is None)
+        url : str or None, optional
+            url of the JSON file, which contains preprocessed LUA source code
+            (default is None)
+        data : dict or None, optional
+            preprocessed data already read from JSON file
+        """
+
         if data:
             self.data = data
         else:
@@ -37,6 +83,17 @@ class Tree:
         self.text = ['root'] + ['' for _ in range(self.data['nodes_count'])]
 
     def __add_child_edges(self, node: dict):
+        """
+        Builds attributes edges, colors and text so that the tree diagram can
+        be created later.
+
+        Parameters
+        ----------
+        node : dict
+            node read from the JSON file containing all the properties such as
+            container type, children etc.
+        """
+
         for child in node['children']:
             self.edges.append((node['master_index'], child['master_index']))
             self.colors[child['master_index']] = COLORS[child['container']]
@@ -47,6 +104,23 @@ class Tree:
                 self.__add_child_edges(child)
 
     def get_figure(self, horizontal=False) -> go.Figure:
+        """
+        Returns a figure containing tree diagram representing the AST of
+        the source code.
+
+        Parameters
+        ----------
+        horizontal : bool, optional
+            determines, whether the tree should be oriented horizontally or
+            vertically (default is False)
+
+        Returns
+        -------
+        go.Figure
+            go.Figure instance containing the tree diagram representing
+            the AST of the source code
+        """
+
         # nodes from .json plus root node
         nodes_count = self.data['nodes_count'] + 1
 
@@ -160,6 +234,28 @@ class Tree:
         return fig
 
     def view(self, dash_id: str, horizontal=False, height=None):
+        """
+        Returns dcc.Graph object containing the tree diagram representing the
+        AST of the source code. It's optional to set the height of diagram
+        in pixels.
+
+        Parameters
+        ----------
+        dash_id : str
+            id of the dcc.Graph component
+        horizontal : bool, optional
+            determines, whether the tree should be oriented horizontally or
+            vertically (default is False)
+        height : int or None
+            height of the diagram (default is None)
+
+        Returns
+        -------
+        dcc.Graph
+            dcc.Graph instance containing the tree diagram representing the
+            AST of the source code
+        """
+
         return dcc.Graph(
             id=dash_id,
             figure=self.get_figure(horizontal),

@@ -13,7 +13,52 @@ log.addHandler(logging.StreamHandler())
 
 
 class ScatterPlot:
+    """
+    Class for visualization of the nodes from AST structure of the source code
+    without actually capturing the tree structure. Linear-like organisation of
+    the nodes creates a scatterplot.
+
+    Attributes
+    ----------
+    data : dict
+        pre-processed data read from the JSON file
+    source_code : str
+        read original source code, structure of which is represented in
+        the attribute data
+    traces : dict of dict
+        all the nodes and their properties (x, y, text and color) organised
+        into dict so that each type of statement is represented by its
+        separate trace
+
+    Methods
+    -------
+    get_figure(show_legend=False, show_text=False)
+        Returns go.Figure instance containing the scatterplot.
+    view(dash_id, height=None, show_legend=False, show_text=False)
+        Returns dcc.Graph instance containing the scatterplot.
+    """
+
     def __init__(self, path=None, url=None, data=None):
+        """
+        According to the parameters given, the preprocessed data are read
+        from JSON file (parameter path) or from the given url or
+        simply copied from the given parameter data. If none of
+        the parameters is provided, the function raises an error. Furthermore,
+        the original source code is read and the attribute traces is
+        initialized.
+
+        Parameters
+        ----------
+        path : str or None, optional
+            path to the JSON file, which contains preprocessed LUA source code
+            (default is None)
+        url : str or None, optional
+            url of the JSON file, which contains preprocessed LUA source code
+            (default is None)
+        data : dict or None, optional
+            preprocessed data already read from JSON file
+        """
+
         if data:
             self.data = data
 
@@ -65,6 +110,16 @@ class ScatterPlot:
         }
 
     def __read_source_code(self) -> str:
+        """
+        Reads and returns LUA source code from path or url from the data.
+
+        Returns
+        --------
+        str
+            original LUA source code which was preprocessed and stored in
+            JSON file
+        """
+
         # if there's path provided read form it, otherwise read from url
         if self.data['path']:
             raw_data = open(self.data['path'], 'rb').read()
@@ -81,6 +136,16 @@ class ScatterPlot:
         return raw_data.decode('utf-8')
 
     def __add_node_to_trace(self, node: dict):
+        """
+        Builds attribute traces so that the scatterplot can be created later.
+
+        Parameters
+        ----------
+        node : dict
+            node read from the JSON file containing all the properties such as
+            container type, children etc.
+        """
+
         self.traces[node['container']]['x'].append(node['master_index'])
         self.traces[node['container']]['y'].append(node['container'])
         self.traces[node['container']]['text'].append(
@@ -103,6 +168,18 @@ class ScatterPlot:
                 self.__add_node_to_trace(child)
 
     def __add_traces(self, fig, show_text: bool):
+        """
+        Adds traces from the attribute traces to the figure.
+
+        Parameters
+        ----------
+        fig : go.Figure
+            go.Figure instance where the scatterplot should be drawn
+        show_text : bool
+            determines whether the hover info should contain the text (section
+            of the source code)
+        """
+
         for node in self.data['nodes']:
             self.__add_node_to_trace(node)
 
@@ -128,6 +205,26 @@ class ScatterPlot:
             )
 
     def get_figure(self, show_legend=False, show_text=False) -> go.Figure:
+        """
+        Returns a figure containing scatterplot. The scatterplot consists of
+        the nodes from AST structure of the source code without actually
+        capturing the tree structure.
+
+        Parameters
+        ----------
+        show_legend : bool, optional
+            determines whether the legend should by displayed
+            (default is False)
+        show_text : bool, optional
+            determines whether the hover info should contain the text (section
+            of the source code) (default is False)
+
+        Returns
+        -------
+        go.Figure
+            go.Figure instance containing the scatterplot
+        """
+
         fig = go.Figure()
         self.__add_traces(fig, show_text)
 
@@ -144,8 +241,33 @@ class ScatterPlot:
 
         return fig
 
-    def view(self, dash_id: str, height=None,
-             show_legend=False, show_text=False):
+    def view(self, dash_id: str, height=None, show_legend=False,
+             show_text=False):
+        """
+        Creates dcc.Graph object which contains the scatterplot.
+        The scatterplot consists of the nodes from AST structure of the source
+        code without actually capturing the tree structure. It's optional to
+        set the height of the graph in pixels.
+
+        Parameters
+        ----------
+        dash_id : str
+            id of the dcc.Graph component
+        height : int or None
+            height of the graph (default is None)
+        show_legend : bool, optional
+            determines whether the legend should by displayed
+            (default is False)
+        show_text : bool, optional
+            determines whether the hover info should contain the text (section
+            of the source code) represented by each node  (default is False)
+
+        Returns
+        -------
+        dcc.Graph
+            dcc.Graph instance containing the scatterplot
+        """
+
         return dcc.Graph(
             id=dash_id,
             figure=self.get_figure(show_legend, show_text),

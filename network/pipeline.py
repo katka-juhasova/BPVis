@@ -1,3 +1,5 @@
+"""For more details see https://github.com/krockamichael/bachelor_thesis"""
+
 import os
 from constant import MODEL_NAME
 from preprocessing.module_handler import ModuleHandler
@@ -12,6 +14,7 @@ import csv
 import json
 
 MAX_CONTEXTS = 430
+LAYERS_COUNT = 5
 here = os.path.dirname(os.path.realpath(__file__))
 model_path = '{}/{}'.format(here, MODEL_NAME)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -30,7 +33,7 @@ def java_string_hashcode(s: str) -> int:
     return ((h + 0x80000000) & 0xFFFFFFFF) - 0x80000000
 
 
-# module preprocessing, output can be used as input for NN
+# module pre-processing, output can be used as input for NN
 def build_input_from_json(json_path: str) -> np.ndarray:
     # get context paths
     module_handler = ModuleHandler(json_path)
@@ -154,10 +157,8 @@ def dataset_activations(layer=None) -> (List[str], dict):
                                                     [int(.7 * len(names)),
                                                      int(.9 * len(names))])
 
-    layers_count = len(model.layers)
-
     # if the layer number is chosen
-    if layer and layer in range(layers_count):
+    if layer and layer in range(LAYERS_COUNT):
         # choose output layer
         encoder = Model(inputs=model.layers[0].input,
                         outputs=model.layers[layer].output, name='encoder')
@@ -169,12 +170,12 @@ def dataset_activations(layer=None) -> (List[str], dict):
 
     # if the whole network should be tracked
     layer_outputs = dict()
-    for i in range(layers_count):
+    for i in range(LAYERS_COUNT):
         # choose output layer
         encoder = Model(inputs=model.layers[0].input,
                         outputs=model.layers[i].output, name='encoder')
 
-        log.debug('Predicting output layer {}/{}'.format(i + 1, layers_count))
+        log.debug('Predicting output layer {}/{}'.format(i + 1, LAYERS_COUNT))
         x_encoder_model = encoder.predict(train)
 
         layer_outputs[i] = x_encoder_model

@@ -1,3 +1,5 @@
+"""For more details see https://github.com/krockamichael/bachelor_thesis"""
+
 import logging
 import numpy as np
 from typing import List
